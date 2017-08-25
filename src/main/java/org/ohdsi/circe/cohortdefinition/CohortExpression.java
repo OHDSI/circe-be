@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Authors: Christopher Knoll
+ * Authors: Christopher Knoll, Gowtham Rao
  *
  */
 package org.ohdsi.circe.cohortdefinition;
@@ -58,4 +58,6 @@ public class CohortExpression {
   @JsonProperty("CensoringCriteria")
   public Criteria[] censoringCriteria;
   
+  @JsonProperty("CollapseSettings")
+  public CollapseSettings collapseSettings;
 }
