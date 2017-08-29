@@ -59,5 +59,5 @@ public class CohortExpression {
   public Criteria[] censoringCriteria;
   
   @JsonProperty("CollapseSettings")
-  public CollapseSettings collapseSettings;
+  public CollapseSettings collapseSettings = new CollapseSettings();
 }
