@@ -541,6 +541,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
       clauses.add(String.format("A.END_DATE >= %s AND A.END_DATE <= %s", startExpression, endExpression));    
     }
+	
+	// RestrictVisit
+	boolean restrictVisit = corelatedCriteria.restrictVisit;
+	if (restrictVisit)
+	  clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
+  
     query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
 
     // Occurrence criteria
