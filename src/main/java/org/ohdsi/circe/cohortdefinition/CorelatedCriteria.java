@@ -35,5 +35,8 @@ public class CorelatedCriteria {
   public Window endWindow;  
   
   @JsonProperty("Occurrence")
-  public Occurrence occurrence;  
+  public Occurrence occurrence;
+  
+  @JsonProperty("restrictVisit")
+  public boolean restrictVisit = false;
 }
