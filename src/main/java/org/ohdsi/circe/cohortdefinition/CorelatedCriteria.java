@@ -37,6 +37,6 @@ public class CorelatedCriteria {
   @JsonProperty("Occurrence")
   public Occurrence occurrence;
   
-  @JsonProperty("restrictVisit")
+  @JsonProperty("RestrictVisit")
   public boolean restrictVisit = false;
 }
