@@ -212,7 +212,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String groupQuery = this.getCriteriaGroupQuery(group, String.format("(%s)", eventQuery));
     groupQuery = StringUtils.replace(groupQuery,"@indexId", "" + 0);
     String wrappedQuery = String.format(
-        "select PE.person_id, PE.event_id, PE.start_date, PE.end_date, PE.target_concept_id FROM (\n%s\n) PE\nJOIN (\n%s) AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n",
+        "select PE.person_id, PE.event_id, PE.start_date, PE.end_date, PE.target_concept_id, PE.visit_occurrence_id FROM (\n%s\n) PE\nJOIN (\n%s) AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n",
         query, groupQuery);
     return wrappedQuery;
   }
