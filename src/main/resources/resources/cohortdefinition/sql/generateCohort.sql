@@ -56,7 +56,7 @@ from #included_events;
 
 @censoringInserts
 
-with collapse_constructor_input (person_id, start_date, end_date) as
+with collapse_input (person_id, start_date, end_date) as
 (
 	select F.person_id, F.start_date, F.end_date
 	FROM (
@@ -67,8 +67,8 @@ with collapse_constructor_input (person_id, start_date, end_date) as
 	WHERE F.ordinal = 1
 )
 select person_id, start_date, end_date
-into #collapse_constructor_input
-from collapse_constructor_input
+into #collapse_input
+from collapse_input
 ;
 
 @collapseConstructor
@@ -126,11 +126,11 @@ FROM
 ;
 }
 
-TRUNCATE TABLE #collapse_constructor_input;
-DROP TABLE #collapse_constructor_input;
+TRUNCATE TABLE #collapse_input;
+DROP TABLE #collapse_input;
 
-TRUNCATE TABLE #collapse_constructor_output;
-DROP TABLE #collapse_constructor_output;
+TRUNCATE TABLE #collapse_output;
+DROP TABLE #collapse_output;
 
 TRUNCATE TABLE #cohort_ends;
 DROP TABLE #cohort_ends;
