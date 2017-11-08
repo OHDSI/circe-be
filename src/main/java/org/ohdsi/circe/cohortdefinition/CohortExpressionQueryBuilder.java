@@ -352,7 +352,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     resultSql = StringUtils.replace(resultSql, "@collapseConstructor", getCollapseConstructorQuery(expression.collapseSettings));
 	
 	// table from which to records are read and inserted into the db
-    resultSql = StringUtils.replace(resultSql, "@output_table", "#collapse_constructor_output");
+    resultSql = StringUtils.replace(resultSql, "@output_table", "#collapse_output");
 	
     if (options != null)
     {
