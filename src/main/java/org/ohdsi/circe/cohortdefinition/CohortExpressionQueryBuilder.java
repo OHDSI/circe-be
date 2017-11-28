@@ -20,6 +20,7 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.Concept;
@@ -237,9 +238,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
  
   private String getCensoringEventsQuery(Criteria[] censoringCriteria)
   {
-    if (censoringCriteria == null || censoringCriteria.length == 0)
-      return "";
-    
     ArrayList<String> criteriaQueries = new ArrayList<>();
     for (Criteria c : censoringCriteria)    
     {
@@ -247,7 +245,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       criteriaQueries.add(StringUtils.replace(CENSORING_QUERY_TEMPLATE, "@criteriaQuery", criteriaQuery));
     }
     
-    return StringUtils.join(criteriaQueries,"\n");
+    return StringUtils.join(criteriaQueries,"\nUNION ALL\n");
   }
   
   public String getPrimaryEventsQuery(PrimaryCriteria primaryCriteria) {
@@ -319,17 +317,35 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     else
       resultSql = StringUtils.replace(resultSql, "@QualifiedLimitFilter","");    
     
-    ArrayList<String> inclusionRuleInserts = new ArrayList<>();
-    for (int i = 0; i < expression.inclusionRules.size(); i++)
-    {
-      CriteriaGroup cg = expression.inclusionRules.get(i).expression;
-      String inclusionRuleInsert = getInclusionRuleQuery(cg);
-      inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@inclusion_rule_id", "" +  i);
-      inclusionRuleInserts.add(inclusionRuleInsert);
-    }
-    
-    resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts,"\n"));
+    if (expression.inclusionRules.size() > 0) {
+			ArrayList<String> inclusionRuleInserts = new ArrayList<>();
+			ArrayList<String> inclusionRuleTempTables = new ArrayList<>();
 
+			for (int i = 0; i < expression.inclusionRules.size(); i++)
+			{
+				CriteriaGroup cg = expression.inclusionRules.get(i).expression;
+				String inclusionRuleInsert = getInclusionRuleQuery(cg);
+				inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@inclusion_rule_id", "" +  i);
+				inclusionRuleInserts.add(inclusionRuleInsert);
+				inclusionRuleTempTables.add(String.format("#InclusionRuleCohort_%d", i));
+			}
+			
+			String irTempUnion = inclusionRuleTempTables.stream()
+				.map(d -> String.format("select inclusion_rule_id, person_id, event_id from %s", d))
+				.collect(Collectors.joining("\nUNION ALL\n"));
+			
+			inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusionRuleCohorts\nFROM (%s) I;",irTempUnion));
+			
+			inclusionRuleInserts.addAll(inclusionRuleTempTables.stream()
+				.map(d-> String.format("TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
+				.collect(Collectors.toList())
+			);
+			
+			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts,"\n"));
+		} else {
+			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusionRuleCohorts (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n)");
+		}
+    
     resultSql = StringUtils.replace(resultSql, "@IncludedEventSort", (expression.expressionLimit.type != null && expression.expressionLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
 
     if (expression.expressionLimit.type != null && !expression.expressionLimit.type.equalsIgnoreCase("ALL"))
@@ -341,18 +357,30 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     resultSql = StringUtils.replace(resultSql, "@ruleTotal", String.valueOf(expression.inclusionRules.size()));
 
-    if (expression.endStrategy != null)
-      resultSql = StringUtils.replace(resultSql, "@strategyInserts", expression.endStrategy.accept(this, "#included_events"));
-    else
-      resultSql = StringUtils.replace(resultSql, "@strategyInserts", "");
-    
-      
-    resultSql = StringUtils.replace(resultSql, "@censoringInserts", getCensoringEventsQuery(expression.censoringCriteria));
-    
-    resultSql = StringUtils.replace(resultSql, "@collapseConstructor", getCollapseConstructorQuery(expression.collapseSettings));
+		ArrayList<String> endDateSelects = new ArrayList<>();
 	
-	// table from which to records are read and inserted into the db
-    resultSql = StringUtils.replace(resultSql, "@output_table", "#collapse_output");
+		if (!(expression.endStrategy instanceof DateOffsetStrategy)) {
+			endDateSelects.add("-- By default, cohort exit at the event's op end date\nselect event_id, person_id, op_end_date as end_date from #included_events");
+		}
+		
+		if (expression.endStrategy != null) {
+			// replace @strategy_ends placeholders with temp table creation and cleanup scripts.
+			resultSql = StringUtils.replace(resultSql,"@strategy_ends_temp_tables",expression.endStrategy.accept(this, "#included_events"));
+			resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
+			endDateSelects.add(String.format("-- End Date Strategy\n%s\n","SELECT event_id, person_id, end_date from #strategy_ends"));
+		} else {
+			// replace @trategy_ends placeholders with empty string
+			resultSql = StringUtils.replace(resultSql,"@strategy_ends_temp_tables","");
+			resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup","");
+		}
+	
+    
+		if (expression.censoringCriteria != null && expression.censoringCriteria.length > 0)
+			endDateSelects.add(String.format("-- Censor Events\n%s\n",getCensoringEventsQuery(expression.censoringCriteria)));
+
+		resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects,"\nUNION ALL\n"));
+		
+		resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
 	
     if (options != null)
     {
@@ -543,10 +571,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 	
 	// RestrictVisit
-	boolean restrictVisit = corelatedCriteria.restrictVisit;
-	if (restrictVisit)
-	  clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
-  
+		boolean restrictVisit = corelatedCriteria.restrictVisit;
+		if (restrictVisit) {
+			clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
+		}
+		
     query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
 
     // Occurrence criteria
@@ -1882,14 +1911,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getStrategySql(DateOffsetStrategy strat, String eventTable) 
   {
-    String insertSql = "-- Date Offset Strategy\nINSERT INTO #cohort_ends (event_id,  person_id, end_date)\n@dateOffsetStrategySql;";
-    
-    String strategySql = StringUtils.replace(DATE_OFFSET_STRATEGY_TEMPLATE, "@eventTable",eventTable);
-    strategySql = StringUtils.replace(strategySql, "@offset",Integer.toString(strat.offset));
-    strategySql = StringUtils.replace(strategySql, "@dateField",getDateFieldForOffsetStrategy(strat.dateField));
-   
-    insertSql = StringUtils.replace(insertSql, "@dateOffsetStrategySql",strategySql);
-    return insertSql;
+    String strategySql = StringUtils.replace(DATE_OFFSET_STRATEGY_TEMPLATE, "@eventTable", eventTable);
+    strategySql = StringUtils.replace(strategySql, "@offset", Integer.toString(strat.offset));
+    strategySql = StringUtils.replace(strategySql, "@dateField", getDateFieldForOffsetStrategy(strat.dateField));
+
+		return strategySql;
   }
 
   @Override
@@ -1898,16 +1924,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (strat.drugCodesetId == null)
       throw new RuntimeException("Drug Codeset ID can not be NULL.");
     
-    String insertSql = "-- Custom Era Strategy\nINSERT INTO #cohort_ends (event_id,  person_id, end_date)\n@customEraStrategySql;";
-
-    String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable",eventTable);
-    strategySql = StringUtils.replace(strategySql, "@drugCodesetId",strat.drugCodesetId.toString());
-    strategySql = StringUtils.replace(strategySql, "@gapDays",Integer.toString(strat.gapDays));
-    strategySql = StringUtils.replace(strategySql, "@offset",Integer.toString(strat.offset));
+    String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
+    strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
+    strategySql = StringUtils.replace(strategySql, "@gapDays", Integer.toString(strat.gapDays));
+    strategySql = StringUtils.replace(strategySql, "@offset", Integer.toString(strat.offset));
     
-    insertSql = StringUtils.replace(insertSql, "@customEraStrategySql",strategySql);
-    
-    return insertSql;    
+    return strategySql;    
   }
 
 // </editor-fold>
