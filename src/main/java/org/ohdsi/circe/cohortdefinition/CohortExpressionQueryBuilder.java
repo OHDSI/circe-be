@@ -19,6 +19,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +70,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String ERA_CONSTRUCTOR_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eraConstructor.sql");
   
   public static class BuildExpressionQueryOptions {
+	  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+		
     @JsonProperty("cohortId")  
     public Integer cohortId;
 
@@ -83,8 +86,20 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     @JsonProperty("generateStats")
     public boolean generateStats;
-  }  
-  
+		
+		public static CohortExpressionQueryBuilder.BuildExpressionQueryOptions fromJson(String json)
+		{
+			try {
+				CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = 
+					JSON_MAPPER.readValue(json, CohortExpressionQueryBuilder.BuildExpressionQueryOptions.class);
+				return options;
+			} catch (Exception e) {
+				throw new RuntimeException("Error parsing expression query options", e);
+			}
+		}
+		
+  }
+	
   private ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
     ArrayList<Long> conceptIdList = new ArrayList<>();
     for (Concept concept : concepts) {

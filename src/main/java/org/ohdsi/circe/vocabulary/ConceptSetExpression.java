@@ -18,11 +18,16 @@
  */
 package org.ohdsi.circe.vocabulary;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  *
  * A Class that encapsulates the elements of a Concept Set Expression.
  */
 public class ConceptSetExpression {
+	
+  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+	
   public static class ConceptSetItem
   {
     public Concept concept;
@@ -33,4 +38,12 @@ public class ConceptSetExpression {
 
   public ConceptSetItem[] items;
   
+	public ConceptSetExpression fromJson(String json) {
+		try {
+			ConceptSetExpression expression = JSON_MAPPER.readValue(json, ConceptSetExpression.class);
+			return expression;
+		} catch (Exception e) {
+			throw new RuntimeException("Error parsing conceptset expression", e);
+		}
+	}
 }
