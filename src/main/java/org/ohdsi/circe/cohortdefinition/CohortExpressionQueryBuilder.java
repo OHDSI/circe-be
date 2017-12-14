@@ -358,7 +358,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 			
 			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts,"\n"));
 		} else {
-			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusionRuleCohorts (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n)");
+			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusionRuleCohorts (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
 		}
     
     resultSql = StringUtils.replace(resultSql, "@IncludedEventSort", (expression.expressionLimit.type != null && expression.expressionLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
