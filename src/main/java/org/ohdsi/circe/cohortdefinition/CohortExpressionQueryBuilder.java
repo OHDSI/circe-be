@@ -342,14 +342,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 				String inclusionRuleInsert = getInclusionRuleQuery(cg);
 				inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@inclusion_rule_id", "" +  i);
 				inclusionRuleInserts.add(inclusionRuleInsert);
-				inclusionRuleTempTables.add(String.format("#InclusionRuleCohort_%d", i));
+				inclusionRuleTempTables.add(String.format("#Inclusion_%d", i));
 			}
 			
 			String irTempUnion = inclusionRuleTempTables.stream()
 				.map(d -> String.format("select inclusion_rule_id, person_id, event_id from %s", d))
 				.collect(Collectors.joining("\nUNION ALL\n"));
 			
-			inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusionRuleCohorts\nFROM (%s) I;",irTempUnion));
+			inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusion_events\nFROM (%s) I;",irTempUnion));
 			
 			inclusionRuleInserts.addAll(inclusionRuleTempTables.stream()
 				.map(d-> String.format("TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
@@ -358,7 +358,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 			
 			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts,"\n"));
 		} else {
-			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusionRuleCohorts (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
+			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusion_events (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
 		}
     
     resultSql = StringUtils.replace(resultSql, "@IncludedEventSort", (expression.expressionLimit.type != null && expression.expressionLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");

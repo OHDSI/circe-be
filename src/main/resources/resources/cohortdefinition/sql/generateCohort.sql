@@ -26,7 +26,7 @@ with cteIncludedEvents(event_id, person_id, start_date, end_date, op_start_date,
   (
     select Q.event_id, Q.person_id, Q.start_date, Q.end_date, Q.op_start_date, Q.op_end_date, SUM(coalesce(POWER(cast(2 as bigint), I.inclusion_rule_id), 0)) as inclusion_rule_mask
     from #qualified_events Q
-    LEFT JOIN #inclusionRuleCohorts I on I.person_id = Q.person_id and I.event_id = Q.event_id
+    LEFT JOIN #inclusion_events I on I.person_id = Q.person_id and I.event_id = Q.event_id
     GROUP BY Q.event_id, Q.person_id, Q.start_date, Q.end_date, Q.op_start_date, Q.op_end_date
   ) MG -- matching groups
 {@ruleTotal != 0}?{
@@ -128,7 +128,7 @@ from
 (
   select Q.person_id, Q.event_id, CAST(SUM(coalesce(POWER(cast(2 as bigint), I.inclusion_rule_id), 0)) AS bigint) as inclusion_rule_mask
   from #qualified_events Q
-  LEFT JOIN #inclusionRuleCohorts I on q.person_id = i.person_id and q.event_id = i.event_id
+  LEFT JOIN #inclusion_events I on q.person_id = i.person_id and q.event_id = i.event_id
   GROUP BY Q.person_id, Q.event_id
 ) MG -- matching groups
 group by inclusion_rule_mask
@@ -143,7 +143,7 @@ left join
 (
   select i.inclusion_rule_id, count(i.event_id) as person_count
   from #qualified_events Q
-  JOIN #inclusionRuleCohorts i on Q.person_id = I.person_id and Q.event_id = i.event_id
+  JOIN #inclusion_events i on Q.person_id = I.person_id and Q.event_id = i.event_id
   group by i.inclusion_rule_id
 ) T on ir.rule_sequence = T.inclusion_rule_id
 CROSS JOIN (select count(*) as total_rules from @results_database_schema.cohort_inclusion where cohort_definition_id = @target_cohort_id) RuleTotal
@@ -174,8 +174,8 @@ DROP TABLE #cohort_rows;
 TRUNCATE TABLE #final_cohort;
 DROP TABLE #final_cohort;
 
-TRUNCATE TABLE #inclusionRuleCohorts;
-DROP TABLE #inclusionRuleCohorts;
+TRUNCATE TABLE #inclusion_events;
+DROP TABLE #inclusion_events;
 
 TRUNCATE TABLE #qualified_events;
 DROP TABLE #qualified_events;
