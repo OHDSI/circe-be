@@ -63,7 +63,7 @@ select @eraGroup, start_date, end_date
 into #collapse_output
 from
 (
-	select distinct @eraGroup , min(b.start_date) as start_date, b.end_date
+	select @eraGroup , min(b.start_date) as start_date, b.end_date
 	from
 		(select distinct @eraGroup, groupid from cteSource) as a
 	inner join
