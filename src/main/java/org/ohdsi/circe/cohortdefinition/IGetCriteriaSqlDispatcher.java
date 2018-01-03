@@ -33,6 +33,7 @@ public interface IGetCriteriaSqlDispatcher {
   String getCriteriaSql(Measurement measurementCriteria);
   String getCriteriaSql(Observation observationCriteria);
   String getCriteriaSql(ObservationPeriod observationPeriodCriteria);
+  String getCriteriaSql(PayerPlanPeriod payerPlanPeriodCriteria);
   String getCriteriaSql(ProcedureOccurrence procedureOccurrenceCriteria);
   String getCriteriaSql(Specimen specimenCriteria);
   String getCriteriaSql(VisitOccurrence specimenCriteria);
