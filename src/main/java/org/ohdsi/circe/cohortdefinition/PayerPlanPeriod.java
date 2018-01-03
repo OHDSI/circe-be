@@ -38,7 +38,7 @@ public class PayerPlanPeriod extends Criteria {
 	public NumericRange periodLength;
 	
 	@JsonProperty("AgeAtStart")
-	public NumericRange ageAtstart;
+	public NumericRange ageAtStart;
 	
 	@JsonProperty("AgeAtEnd")
 	public NumericRange ageAtEnd;
