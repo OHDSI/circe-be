@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Authors: Christopher Knoll, Gowtham Rao
+ * Authors: Chris Knoll, Gowtham Rao
  *
  */
 package org.ohdsi.circe.cohortdefinition;
@@ -59,6 +59,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");  
+  private final static String PAYER_PLAN_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/payerPlanPeriod.sql");
   
   private final static String EVENT_TABLE_EXPRESSION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eventTableExpression.sql");  
   private final static String DEMOGRAPHIC_CRITERIA_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/demographicCriteria.sql");
@@ -1614,7 +1615,147 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     return query;
   }
-
+  
+  @Override
+  public String getCriteriaSql(PayerPlanPeriod criteria)
+  {
+	String query = PAYER_PLAN_PERIOD_TEMPLATE;
+	
+	String startDateExpression = "C.payer_plan_period_start_date";
+	String endDateExpression = "C.payer_plan_period_end_date";
+	
+	ArrayList<String> joinClauses = new ArrayList<>();
+	
+	if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0))
+	  joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+	
+	query = StringUtils.replace(query, "@joinClause", StringUtils.join(joinClauses, "\n"));
+	
+	ArrayList<String> whereClauses = new ArrayList<>();
+	
+	//first
+	if (criteria.first != null && criteria.first == true)
+	  whereClauses.add("C.ordinal = 1");
+  
+	// check for user defined start/end dates
+	if (criteria.userDefinedPeriod != null)
+	{
+	  Period userDefinedPeriod = criteria.userDefinedPeriod;
+	  
+	  if (userDefinedPeriod.startDate != null)
+	  {
+		startDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.startDate);
+		whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
+	  }
+	  
+	  if (userDefinedPeriod.endDate != null)
+	  {
+		endDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.endDate);
+		whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
+	  }
+	}
+	
+	query = StringUtils.replace(query, "@startDateExpression", startDateExpression);
+	query = StringUtils.replace(query, "@endDateExpression", endDateExpression);
+	
+	//periodStartDate
+	if (criteria.periodStartDate != null)
+	{
+	  whereClauses.add(buildDateRangeClause("C.payer_plan_period_start_date", criteria.periodStartDate));
+	}
+	
+	//periodEndDate
+	if (criteria.periodEndDate != null)
+	{
+	  whereClauses.add(buildDateRangeClause("C.payer_plan_period_end_date",criteria.periodEndDate));
+	}
+	
+	//periodLength
+	if (criteria.periodLength != null)
+	{
+	  whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.payer_plan_period_start_date, C.payer_plan_period_end_date)", criteria.periodLength));
+	}
+	
+	//ageAtStart
+	if (criteria.ageAtStart != null)
+	{
+	  whereClauses.add(buildNumericRangeClause("YEAR(C.payer_plan_period_start_date) - P.year_of_birth", criteria.ageAtStart));
+	}
+	
+	//ageAtEnd
+	if (criteria.ageAtEnd != null)
+	{
+	  whereClauses.add(buildNumericRangeClause("YEAR(C.payer_plan_period_end_date) - P.year_of_birth", criteria.ageAtEnd));
+	}
+	
+	//gender
+	if (criteria.gender != null && criteria.gender.length > 0)
+    {
+	  ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.gender);
+      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(conceptIds,",")));
+    }
+	
+	// payer concept
+	if (criteria.payerConcept != null)
+	{
+	  whereClauses.add(String.format("C.payer_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.payerConcept));
+	}
+	
+	// plan concept
+	if (criteria.planConcept != null)
+	{
+	  whereClauses.add(String.format("C.plan_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.planConcept));
+	}
+	
+	// sponsor concept
+	if (criteria.sponsorConcept != null)
+	{
+	  whereClauses.add(String.format("C.sponsor_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.sponsorConcept));
+	}
+	
+	// stop reason concept
+	if (criteria.stopReasonConcept != null)
+	{
+	  whereClauses.add(String.format("C.stop_reason_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.stopReasonConcept));
+	}
+	
+	// payer SourceConcept
+	if (criteria.payerSourceConcept != null)
+	{
+	  whereClauses.add(String.format("C.payer_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.payerSourceConcept));
+	}
+	
+	// plan SourceConcept
+	if (criteria.planSourceConcept != null)
+	{
+	  whereClauses.add(String.format("C.plan_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.planSourceConcept));
+	}
+	
+	// sponsor SourceConcept
+	if (criteria.sponsorSourceConcept != null)
+	{
+	  whereClauses.add(String.format("C.sponsor_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.sponsorSourceConcept));
+	}
+	
+	// stop reason SourceConcept
+	if (criteria.stopReasonSourceConcept != null)
+	{
+	  whereClauses.add(String.format("C.stop_reason_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.stopReasonSourceConcept));
+	}
+	
+	String whereClause = "";
+	if (whereClauses.size() > 0)
+	  whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
+	query = StringUtils.replace(query, "@whereClause", whereClause);
+	
+	if (criteria.CorrelatedCriteria != null)
+	{
+	  query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+	}
+	
+	return query;
+  }
+  
   @Override
   public String getCriteriaSql(ProcedureOccurrence criteria)
   {
