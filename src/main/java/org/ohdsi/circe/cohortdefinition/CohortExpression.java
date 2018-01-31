@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Authors: Christopher Knoll
+ * Authors: Christopher Knoll, Gowtham Rao
  *
  */
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,8 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CohortExpression {
-  
+  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
   @JsonProperty("Title")  
   public String title;
   
@@ -58,4 +60,15 @@ public class CohortExpression {
   @JsonProperty("CensoringCriteria")
   public Criteria[] censoringCriteria;
   
+  @JsonProperty("CollapseSettings")
+  public CollapseSettings collapseSettings = new CollapseSettings();
+	
+	public static CohortExpression fromJson(String json) {
+		try {
+			CohortExpression expression = JSON_MAPPER.readValue(json, CohortExpression.class);
+			return expression;
+		} catch (Exception e) {
+			throw new RuntimeException("Error parsing cohort expression", e);
+		}
+	}
 }
