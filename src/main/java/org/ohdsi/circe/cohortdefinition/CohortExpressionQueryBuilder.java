@@ -303,6 +303,32 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		query = StringUtils.replace(query, "@eraconstructorpad", Integer.toString(collapseSettings.eraPad));
 		return query;
   }
+
+  public String getFinalCohortQuery(Period censorWindow) {
+
+    String query = "select @target_cohort_id as cohort_definition_id, person_id, @start_date, @end_date \n" +
+            "FROM #final_cohort CO";
+
+    String startDate = "start_date";
+    String endDate = "end_date";
+
+    if (censorWindow != null && (censorWindow.startDate != null || censorWindow.endDate != null)) {
+      if (censorWindow.startDate != null) {
+        String censorStartDate = dateStringToSql(censorWindow.startDate);
+        startDate = "CASE WHEN start_date > " + censorStartDate + " THEN start_date ELSE " + censorStartDate + " END";
+      }
+      if (censorWindow.endDate != null) {
+        String censorEndDate = dateStringToSql(censorWindow.endDate);
+        endDate = "CASE WHEN end_date < " + censorEndDate + " THEN end_date ELSE " + censorEndDate + " END";
+      }
+      query += "\nWHERE @start_date <= @end_date";
+    }
+
+    query = StringUtils.replace(query, "@start_date", startDate);
+    query = StringUtils.replace(query, "@end_date", endDate);
+
+    return query;
+  }
   
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
@@ -393,6 +419,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
 		if (expression.censoringCriteria != null && expression.censoringCriteria.length > 0)
 			endDateSelects.add(String.format("-- Censor Events\n%s\n",getCensoringEventsQuery(expression.censoringCriteria)));
+
+		resultSql = StringUtils.replace(resultSql, "@finalCohortQuery", getFinalCohortQuery(expression.censorWindow));
 
 		resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects,"\nUNION ALL\n"));
 		
