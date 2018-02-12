@@ -62,6 +62,9 @@ public class CohortExpression {
   
   @JsonProperty("CollapseSettings")
   public CollapseSettings collapseSettings = new CollapseSettings();
+
+  @JsonProperty("CensorWindow")
+  public Period censorWindow;
 	
 	public static CohortExpression fromJson(String json) {
 		try {
