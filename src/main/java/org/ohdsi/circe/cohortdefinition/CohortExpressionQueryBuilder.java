@@ -281,20 +281,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> primaryEventsFilters = new ArrayList<>();
     primaryEventsFilters.add(String.format(
-        "DATEADD(day,%d,OP.OBSERVATION_PERIOD_START_DATE) <= P.START_DATE AND DATEADD(day,%d,P.START_DATE) <= OP.OBSERVATION_PERIOD_END_DATE",
+        "DATEADD(day,%d,OP.OBSERVATION_PERIOD_START_DATE) <= E.START_DATE AND DATEADD(day,%d,E.START_DATE) <= OP.OBSERVATION_PERIOD_END_DATE",
         primaryCriteria.observationWindow.priorDays,
         primaryCriteria.observationWindow.postDays
       )
     );
     
-    query = StringUtils.replace(query, "@EventSort", (primaryCriteria.primaryLimit.type != null && primaryCriteria.primaryLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
-    
-    if (!primaryCriteria.primaryLimit.type.equalsIgnoreCase("ALL"))
-    {
-      primaryEventsFilters.add("P.ordinal = 1");
-    }
     query = StringUtils.replace(query,"@primaryEventsFilter", StringUtils.join(primaryEventsFilters," AND "));
-    
+
+    query = StringUtils.replace(query, "@EventSort", (primaryCriteria.primaryLimit.type != null && primaryCriteria.primaryLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
+		query = StringUtils.replace(query, "@primaryEventLimit", (!primaryCriteria.primaryLimit.type.equalsIgnoreCase("ALL") ? "WHERE P.ordinal = 1": ""));
+		
     return query;
   }
   
