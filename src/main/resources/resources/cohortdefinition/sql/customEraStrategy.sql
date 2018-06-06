@@ -3,7 +3,8 @@
 select de.PERSON_ID, DRUG_EXPOSURE_START_DATE,  COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE)) as DRUG_EXPOSURE_END_DATE 
 INTO #drugTarget
 FROM @cdm_database_schema.DRUG_EXPOSURE de
-WHERE de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = @drugCodesetId) 
+WHERE (de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = @drugCodesetId) 
+	or de.drug_source_concept_id in (SELECT concept_id from  #Codesets where codeset_id = @drugCodesetId))
 	AND de.person_id in (select person_id from @eventTable)
 ;
 
