@@ -16,20 +16,25 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.checkers;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
-public abstract class BaseCheck implements Check {
+public class EmptyConceptSetCheck extends BaseCheck {
+
+    private static final String EMPTY_ERROR = "Concept set %s contains no concepts";
+
     @Override
-    public final List<Warning> check(CohortExpression expression) {
+    protected void check(CohortExpression expression, WarningReporter reporter) {
 
-        List<Warning> warnings = new ArrayList<>();
-        check(expression, warnings);
-        return warnings;
+        Arrays.stream(expression.conceptSets)
+                .filter(conceptSet -> Objects.isNull(conceptSet.expression)
+                        || Objects.isNull(conceptSet.expression.items)
+                        || conceptSet.expression.items.length == 0)
+                .forEach(conceptSet -> reporter.add(EMPTY_ERROR, conceptSet.name));
     }
-
-    protected abstract void check(CohortExpression expression, List<Warning> warnings);
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.checkers;
 
 import java.util.Objects;
 import java.util.function.Function;

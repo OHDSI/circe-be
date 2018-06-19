@@ -16,20 +16,30 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.warnings;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.ohdsi.circe.check.warnings.ConceptSetWarning;
-import org.ohdsi.circe.check.warnings.DefaultWarning;
+import org.ohdsi.circe.check.WarningSeverity;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = DefaultWarning.class, name = "DefaultWarning"),
-        @JsonSubTypes.Type(value = ConceptSetWarning.class, name = "ConceptSetWarning")
-})
-public interface Warning {
-    @JsonProperty("message")
-    String toMessage();
+public class IncompleteRuleWarning extends BaseWarning {
+
+    private static final String INCOMPLETE_ERROR = "Inclusion criteria %s is opened but no criteria entered within";
+
+    private final String ruleName;
+
+    public IncompleteRuleWarning(WarningSeverity severity, String ruleName) {
+
+        super(severity);
+        this.ruleName = ruleName;
+    }
+
+    public String getRuleName() {
+
+        return ruleName;
+    }
+
+    @Override
+    public String toMessage() {
+
+        return String.format(INCOMPLETE_ERROR, ruleName);
+    }
 }

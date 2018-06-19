@@ -16,22 +16,22 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.checkers;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static org.ohdsi.circe.check.operations.Operations.match;
 
-public abstract class BaseWarning implements Warning {
+import java.util.Objects;
+import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
-    private WarningSeverity severity;
+public class NoExitCriteriaCheck extends BaseCheck {
 
-    public BaseWarning(WarningSeverity severity) {
+    private static final String NO_EXIT_CRITERIA_WARNING = " \"all events\" are selected and cohort exit criteria has not been specified";
 
-        this.severity = severity;
-    }
+    @Override
+    protected void check(CohortExpression expression, WarningReporter reporter) {
 
-    @JsonProperty("severity")
-    public WarningSeverity getSeverity() {
-
-        return severity;
+        match(expression)
+                .when(e -> Objects.equals("All", e.primaryCriteria.primaryLimit.type) && Objects.isNull(e.endStrategy))
+                .then(() -> reporter.add(NO_EXIT_CRITERIA_WARNING));
     }
 }

@@ -16,11 +16,13 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.warnings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+import org.ohdsi.circe.check.Warning;
+import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
 
 public class ConceptSetWarning extends BaseWarning implements Warning {

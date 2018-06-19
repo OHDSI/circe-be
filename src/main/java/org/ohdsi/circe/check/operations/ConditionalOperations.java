@@ -16,23 +16,14 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.operations;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public class DefaultWarning extends BaseWarning implements Warning {
-
-    private final String message;
-
-    public DefaultWarning(WarningSeverity severity, String message) {
-
-        super(severity);
-        this.message = message;
-    }
-
-    @Override
-    @JsonProperty("message")
-    public String toMessage() {
-        return message;
-    }
+public interface ConditionalOperations<T, V> {
+    ExecutiveOperations<T, V> when(Function<T, Boolean> condition);
+    ExecutiveOperations<T, V> isA(Class<?> clazz);
+    void orElse(Consumer<T> consumer);
+    V value();
 }

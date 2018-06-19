@@ -16,20 +16,24 @@
  *
  */
 
-package org.ohdsi.circe.check;
+package org.ohdsi.circe.check.warnings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.ohdsi.circe.check.warnings.ConceptSetWarning;
-import org.ohdsi.circe.check.warnings.DefaultWarning;
+import org.ohdsi.circe.check.Warning;
+import org.ohdsi.circe.check.WarningSeverity;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = DefaultWarning.class, name = "DefaultWarning"),
-        @JsonSubTypes.Type(value = ConceptSetWarning.class, name = "ConceptSetWarning")
-})
-public interface Warning {
-    @JsonProperty("message")
-    String toMessage();
+public abstract class BaseWarning implements Warning {
+
+    private WarningSeverity severity;
+
+    public BaseWarning(WarningSeverity severity) {
+
+        this.severity = severity;
+    }
+
+    @JsonProperty("severity")
+    public WarningSeverity getSeverity() {
+
+        return severity;
+    }
 }
