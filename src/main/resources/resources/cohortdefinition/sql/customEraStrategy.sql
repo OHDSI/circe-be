@@ -3,9 +3,9 @@
 select de.PERSON_ID, DRUG_EXPOSURE_START_DATE,  COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE)) as DRUG_EXPOSURE_END_DATE 
 INTO #drugTarget
 FROM @cdm_database_schema.DRUG_EXPOSURE de
-WHERE (de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = @drugCodesetId) 
-	or de.drug_source_concept_id in (SELECT concept_id from  #Codesets where codeset_id = @drugCodesetId))
-	AND de.person_id in (select person_id from @eventTable)
+  JOIN @eventTable events on events.person_id = de.person_id
+  JOIN #Codesets cs on cs.codeset_id = @drugCodesetId AND
+    (de.drug_concept_id = cs.concept_id OR de.drug_source_concept_id = cs.concept_id)
 ;
 
 select et.event_id, et.person_id, ERAS.era_end_date as end_date
