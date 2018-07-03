@@ -340,7 +340,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     resultSql = StringUtils.replace(resultSql, "@primaryEventsQuery", primaryEventsQuery);
     
     String additionalCriteriaQuery = "";
-    if (expression.additionalCriteria != null)
+    if (expression.additionalCriteria != null && !expression.additionalCriteria.isEmpty())
     {
       CriteriaGroup acGroup = expression.additionalCriteria;
       String acGroupQuery = this.getCriteriaGroupQuery(acGroup, this.PRIMARY_CRITERIA_EVENTS_TABLE);//acGroup.accept(this);
@@ -375,14 +375,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 			String irTempUnion = inclusionRuleTempTables.stream()
 				.map(d -> String.format("select inclusion_rule_id, person_id, event_id from %s", d))
 				.collect(Collectors.joining("\nUNION ALL\n"));
-			
+
 			inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusion_events\nFROM (%s) I;",irTempUnion));
-			
+
 			inclusionRuleInserts.addAll(inclusionRuleTempTables.stream()
 				.map(d-> String.format("TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
 				.collect(Collectors.toList())
 			);
-			
 			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts,"\n"));
 		} else {
 			resultSql = StringUtils.replace(resultSql,"@inclusionCohortInserts", "create table #inclusion_events (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
@@ -449,7 +448,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable) {
     String query = GROUP_QUERY_TEMPLATE;
     ArrayList<String> additionalCriteriaQueries = new ArrayList<>();
-    
+    String joinType = "INNER";
+		
     int indexId = 0;
     for(CorelatedCriteria cc : group.criteriaList)
     {
@@ -490,15 +490,21 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       {
         if (group.type.toUpperCase().endsWith("LEAST"))
           occurrenceCountClause += ">= " + group.count;
-        else
+				else {
           occurrenceCountClause += "<= " + group.count;
+					joinType = "LEFT";
+				}
+				
+				if (group.count == 0) {
+					joinType = "LEFT"; //if you are looking for a zero count, you need to do a left join
+				}
       }
       query = StringUtils.replace(query, "@occurrenceCountClause", occurrenceCountClause);
+			query = StringUtils.replace(query, "@joinType", joinType);
     }
-    else // query group is empty so replace queries and occurence count clause with a friendly default
+    else // query group is empty so replace group query with a friendly default
     {
-      query = StringUtils.replace(query, "@criteriaQueries", "select ET.person_id, ET.event_id from @eventTable ET");
-      query = StringUtils.replace(query, "@occurrenceCountClause", "");
+			query = "-- Begin Criteria Group\n select @indexId as index_id, person_id, event_id FROM @eventTable\n-- End Criteria Group\n";				
     }
 
     query = StringUtils.replace(query, "@eventTable", eventTable);
@@ -509,8 +515,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private String getInclusionRuleQuery(CriteriaGroup inclusionRule)
   {
     String resultSql = INCLUSION_RULE_QUERY_TEMPLATE;
-    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
-    additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery,"@indexId", "" + 0);
+		String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
+		additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery,"@indexId", "" + 0);
     resultSql = StringUtils.replace(resultSql, "@additionalCriteriaQuery", additionalCriteriaQuery);
     return resultSql;
   }
@@ -634,8 +640,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       getOccurrenceOperator(corelatedCriteria.occurrence.type), 
       corelatedCriteria.occurrence.count
     );
+		
+		// join type is LEFT when counts of 0 or 'at most' is specified
+		String joinType = (corelatedCriteria.occurrence.type == 1 || corelatedCriteria.occurrence.count == 0) ?  "LEFT" : "INNER";
     
-    query = StringUtils.replace(query, "@occurrenceCriteria", occurrenceCriteria);
+    query = StringUtils.replace(query, "@joinType", joinType);
+
+		query = StringUtils.replace(query, "@occurrenceCriteria", occurrenceCriteria);
 
     return query;
   }
@@ -714,7 +725,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -767,7 +778,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.conditionType != null && criteria.conditionType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.conditionType);
-      whereClauses.add(String.format("C.condition_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.condition_type_concept_id %s in (%s)", (criteria.conditionTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // Stop Reason
@@ -811,7 +822,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -851,7 +862,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.deathType != null && criteria.deathType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.deathType);
-      whereClauses.add(String.format("C.death_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.death_type_concept_id %s in (%s)", (criteria.deathTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
 
     // deathSourceConcept
@@ -877,7 +888,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -929,7 +940,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.deviceType != null && criteria.deviceType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.deviceType);
-      whereClauses.add(String.format("C.device_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.device_type_concept_id %s in (%s)", (criteria.deviceTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // uniqueDeviceId
@@ -979,7 +990,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1067,7 +1078,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1153,7 +1164,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1205,7 +1216,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.drugType != null && criteria.drugType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.drugType);
-      whereClauses.add(String.format("C.drug_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.drug_type_concept_id %s in (%s)", (criteria.drugTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // Stop Reason
@@ -1291,7 +1302,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1338,7 +1349,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.measurementType != null && criteria.measurementType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.measurementType);
-      whereClauses.add(String.format("C.measurement_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.measurement_type_concept_id %s in (%s)", (criteria.measurementTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // operator
@@ -1433,7 +1444,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1480,7 +1491,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.observationType != null && criteria.observationType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.observationType);
-      whereClauses.add(String.format("C.observation_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.observation_type_concept_id %s in (%s)", (criteria.observationTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
        
     // valueAsNumber
@@ -1551,7 +1562,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1641,7 +1652,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1781,7 +1792,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 	  whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
 	query = StringUtils.replace(query, "@whereClause", whereClause);
 	
-	if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
 	{
 	  query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
 	}
@@ -1828,7 +1839,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.procedureType != null && criteria.procedureType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.procedureType);
-      whereClauses.add(String.format("C.procedure_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.procedure_type_concept_id %s in (%s)", (criteria.procedureTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // modifier
@@ -1880,7 +1891,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -1923,7 +1934,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.specimenType != null && criteria.specimenType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.specimenType);
-      whereClauses.add(String.format("C.specimen_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.specimen_type_concept_id %s in (%s)", (criteria.specimenTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
 
     // quantity
@@ -1976,7 +1987,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }
@@ -2030,7 +2041,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.visitType != null && criteria.visitType.length > 0)
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.visitType);
-      whereClauses.add(String.format("C.visit_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
     }
     
     // visitSourceConcept
@@ -2074,7 +2085,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     query = StringUtils.replace(query, "@whereClause",whereClause);
     
-    if (criteria.CorrelatedCriteria != null)
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
     {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
     }

@@ -39,6 +39,9 @@ public class Measurement extends Criteria {
   @JsonProperty("MeasurementType")
   public Concept[] measurementType;
 
+  @JsonProperty("MeasurementTypeExclude")
+  public boolean measurementTypeExclude = false;
+	
   @JsonProperty("Operator")
   public Concept[] operator;
 

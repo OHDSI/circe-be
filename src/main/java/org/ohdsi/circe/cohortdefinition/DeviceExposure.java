@@ -42,7 +42,10 @@ public class DeviceExposure extends Criteria {
   @JsonProperty("DeviceType")
   public Concept[] deviceType;
 
-  @JsonProperty("UniqueDeviceId")
+  @JsonProperty("DeviceTypeExclude")
+  public boolean deviceTypeExclude = false;
+
+	@JsonProperty("UniqueDeviceId")
   public TextFilter uniqueDeviceId;
 
   @JsonProperty("Quantity")

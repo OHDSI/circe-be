@@ -38,6 +38,9 @@ public class Specimen extends Criteria {
   
   @JsonProperty("SpecimenType")  
   public Concept[] specimenType;
+	
+  @JsonProperty("SpecimenTypeExclude")
+  public boolean specimenTypeExclude = false;
 
   @JsonProperty("Quantity")  
   public NumericRange quantity;
