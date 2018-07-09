@@ -728,10 +728,24 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = CONDITION_OCCURRENCE_TEMPLATE;
     
     String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where co.condition_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("co.condition_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
+		
+    // conditionSourceConcept
+    if (criteria.conditionSourceConcept != null)
+    {
+      codesetClauses.add(String.format("co.condition_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.conditionSourceConcept));
+    }
+		
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+		
     query = StringUtils.replace(query, "@codesetClause",codesetClause);
     
     ArrayList<String> joinClauses = new ArrayList<>();
@@ -774,12 +788,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (criteria.stopReason != null)
     {
       whereClauses.add(buildTextFilterClause("C.stop_reason",criteria.stopReason));
-    }
-    
-    // conditionSourceConcept
-    if (criteria.conditionSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.condition_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.conditionSourceConcept));
     }
     
     // age
@@ -826,10 +834,24 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = DEATH_TEMPLATE;
 
     String codesetClause = "";
-    if (criteria.codesetId != null)
+		ArrayList<String> codesetClauses = new ArrayList<>();
+
+		if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where d.cause_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("where d.cause_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
+
+		// deathSourceConcept
+    if (criteria.deathSourceConcept != null)
+    {
+      codesetClauses.add(String.format("d.cause_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.deathSourceConcept));
+    }    
+
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+
     query = StringUtils.replace(query, "@codesetClause",codesetClause);
     
     ArrayList<String> joinClauses = new ArrayList<>();
@@ -853,12 +875,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.deathType);
       whereClauses.add(String.format("C.death_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
-
-    // deathSourceConcept
-    if (criteria.deathSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.cause_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.deathSourceConcept));
-    }    
     
     // age
     if (criteria.age != null)
@@ -890,13 +906,27 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   {
     String query = DEVICE_EXPOSURE_TEMPLATE;
 
-    String codesetClause = "";
+		String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where de.device_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("de.device_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
 
+    // deviceSourceConcept
+    if (criteria.deviceSourceConcept != null)
+    {
+      codesetClauses.add(String.format("de.device_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.deviceSourceConcept));
+		}
+
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+		
+    query = StringUtils.replace(query, "@codesetClause",codesetClause);
+		
     ArrayList<String> joinClauses = new ArrayList<>();
     
     if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
@@ -943,13 +973,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       whereClauses.add(buildNumericRangeClause("C.quantity",criteria.quantity));
     }
-
-    // deviceSourceConcept
-    if (criteria.deviceSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.device_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.deviceSourceConcept));
-    }    
-    
+   
     // age
     if (criteria.age != null)
     {
@@ -1167,10 +1191,24 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = DRUG_EXPOSURE_TEMPLATE;
 
     String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
+		
+    // drugSourceConcept
+    if (criteria.drugSourceConcept != null)
+    {
+      codesetClauses.add(String.format("de.drug_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.drugSourceConcept));
+    }    
+		
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+		
     query = StringUtils.replace(query, "@codesetClause",codesetClause);
 
     ArrayList<String> joinClauses = new ArrayList<>();
@@ -1255,13 +1293,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       whereClauses.add(buildTextFilterClause("C.lot_number", criteria.lotNumber));
     }
-    
-    // drugSourceConcept
-    if (criteria.drugSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.drug_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.drugSourceConcept));
-    }    
-    
+        
     // age
     if (criteria.age != null)
     {
@@ -1305,11 +1337,25 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = MEASUREMENT_TEMPLATE;
     
     String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where m.measurement_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("m.measurement_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
+
+		// measurementSourceConcept
+    if (criteria.measurementSourceConcept != null)
+    {
+      codesetClauses.add(String.format("m.measurement_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.measurementSourceConcept));
+    }
+    
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+
+		query = StringUtils.replace(query, "@codesetClause",codesetClause);
     
     ArrayList<String> joinClauses = new ArrayList<>();
     
@@ -1398,12 +1444,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClauses.add("(C.value_as_number < C.range_low or C.value_as_number > C.range_high or C.value_as_concept_id in (4155142, 4155143))");
     }
     
-    // measurementSourceConcept
-    if (criteria.measurementSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.measurement_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.measurementSourceConcept));
-    }
-    
     // age
     if (criteria.age != null)
     {
@@ -1447,13 +1487,26 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = OBSERVATION_TEMPLATE;
     
     String codesetClause = "";
-    if (criteria.codesetId != null)
+ 		ArrayList<String> codesetClauses = new ArrayList<>();
+		
+   if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where o.observation_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("o.observation_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
+    // observationSourceConcept
+    if (criteria.observationSourceConcept != null)
+    {
+      codesetClauses.add(String.format("o.observation_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.observationSourceConcept));
+    }
+		
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+		
+		query = StringUtils.replace(query, "@codesetClause",codesetClause);
 
-    ArrayList<String> joinClauses = new ArrayList<>();
+		ArrayList<String> joinClauses = new ArrayList<>();
     
     if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
@@ -1514,12 +1567,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
       whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-       
-    // observationSourceConcept
-    if (criteria.observationSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.observation_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.observationSourceConcept));
     }
     
     // age
@@ -1795,10 +1842,24 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = PROCEDURE_OCCURRENCE_TEMPLATE;
     
     String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where po.procedure_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("po.procedure_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
+		
+    // procedureSourceConcept
+    if (criteria.procedureSourceConcept != null)
+    {
+      codesetClauses.add(String.format("po.procedure_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.procedureSourceConcept));
+    }
+		
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+
     query = StringUtils.replace(query, "@codesetClause",codesetClause);
 
     ArrayList<String> joinClauses = new ArrayList<>();
@@ -1843,13 +1904,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       whereClauses.add(buildNumericRangeClause("C.quantity",criteria.quantity));
     }
-    
-    // procedureSourceConcept
-    if (criteria.procedureSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.procedure_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.procedureSourceConcept));
-    }
-    
+        
     // age
     if (criteria.age != null)
     {
@@ -1894,7 +1949,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = SPECIMEN_TEMPLATE;
     
     String codesetClause = "";
-    if (criteria.codesetId != null)
+		if (criteria.codesetId != null)
     {
       codesetClause = String.format("where s.specimen_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
     }
@@ -1990,11 +2045,25 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = VISIT_OCCURRENCE_TEMPLATE;
     
     String codesetClause = "";
+		ArrayList<String> codesetClauses = new ArrayList<>();
+		
     if (criteria.codesetId != null)
     {
-      codesetClause = String.format("where vo.visit_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClauses.add(String.format("vo.visit_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId));
     }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
+
+		// visitSourceConcept
+    if (criteria.visitSourceConcept != null)
+    {
+      codesetClauses.add(String.format("vo.visit_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.visitSourceConcept));
+    }
+		
+		if (codesetClauses.size() > 0)
+		{
+			codesetClause = String.format("where (%s)", StringUtils.join(codesetClauses," OR "));
+		}
+
+		query = StringUtils.replace(query, "@codesetClause",codesetClause);
     
     ArrayList<String> joinClauses = new ArrayList<>();
     
@@ -2031,12 +2100,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.visitType);
       whereClauses.add(String.format("C.visit_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-    
-    // visitSourceConcept
-    if (criteria.visitSourceConcept != null)
-    {
-      whereClauses.add(String.format("C.visit_source_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.visitSourceConcept));
     }
     
     // visitLength
