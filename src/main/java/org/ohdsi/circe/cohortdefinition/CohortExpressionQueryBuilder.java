@@ -699,9 +699,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
     
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY ce.person_id ORDER BY ce.condition_era_start_date, ce.condition_era_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // eraStartDate
     if (criteria.eraStartDate != null)
@@ -783,9 +788,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
     
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY co.person_id ORDER BY co.condition_start_date, co.condition_occurrence_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -933,9 +943,15 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
     
     ArrayList<String> whereClauses = new ArrayList<>();
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.device_exposure_start_date, de.device_exposure_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
     
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -1027,9 +1043,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
 
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.dose_era_start_date, de.dose_era_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // eraStartDate
     if (criteria.eraStartDate != null)
@@ -1114,9 +1135,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
     
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.drug_era_start_date, de.drug_era_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // eraStartDate
     if (criteria.eraStartDate != null)
@@ -1203,9 +1229,15 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
     
     ArrayList<String> whereClauses = new ArrayList<>();
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.drug_exposure_start_date, de.drug_exposure_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
     
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -1336,9 +1368,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     ArrayList<String> whereClauses = new ArrayList<>();
   
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY m.person_id ORDER BY m.measurement_date, m.measurement_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -1472,9 +1509,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
   
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY o.person_id ORDER BY o.observation_date, o.observation_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -1814,9 +1856,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
     
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY po.person_id ORDER BY po.procedure_date, po.procedure_occurrence_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -1903,9 +1950,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
     
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY s.person_id ORDER BY s.specimen_date, s.specimen_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
@@ -2004,9 +2056,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> whereClauses = new ArrayList<>();
 
-    // first
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
+		// first
+		if (criteria.first != null && criteria.first == true) {
+			whereClauses.add("C.ordinal = 1");
+			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY vo.person_id ORDER BY vo.visit_start_date, vo.visit_occurrence_id) as ordinal");
+		}
+		else {
+			query = StringUtils.replace(query, "@ordinalExpression","");
+		}
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null)
