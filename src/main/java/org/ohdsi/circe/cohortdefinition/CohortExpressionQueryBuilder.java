@@ -486,20 +486,20 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       if (group.type.equalsIgnoreCase("ANY")) // count must be > 0 for an 'ANY' criteria
         occurrenceCountClause += "> 0"; 
 
-      if (group.type.toUpperCase().startsWith("AT_"))
-      {
-        if (group.type.toUpperCase().endsWith("LEAST"))
-          occurrenceCountClause += ">= " + group.count;
-				else {
-          occurrenceCountClause += "<= " + group.count;
+			if (group.type.toUpperCase().startsWith("AT_")) {
+				if (group.type.toUpperCase().endsWith("LEAST")) { // AT_LEAST
+					occurrenceCountClause += ">= " + group.count;
+				} else { // AT_MOST, which includes zero
+					occurrenceCountClause += "<= " + group.count;
 					joinType = "LEFT";
 				}
-				
-				if (group.count == 0) {
-					joinType = "LEFT"; //if you are looking for a zero count, you need to do a left join
+
+				if (group.count == 0) { //if you are looking for a zero count within an AT_LEAST/AT_MOST, you need to do a left join
+					joinType = "LEFT";
 				}
-      }
-      query = StringUtils.replace(query, "@occurrenceCountClause", occurrenceCountClause);
+			}
+
+			query = StringUtils.replace(query, "@occurrenceCountClause", occurrenceCountClause);
 			query = StringUtils.replace(query, "@joinType", joinType);
     }
     else // query group is empty so replace group query with a friendly default
@@ -515,8 +515,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private String getInclusionRuleQuery(CriteriaGroup inclusionRule)
   {
     String resultSql = INCLUSION_RULE_QUERY_TEMPLATE;
-		String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
-		additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery,"@indexId", "" + 0);
+    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
+    additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery,"@indexId", "" + 0);
     resultSql = StringUtils.replace(resultSql, "@additionalCriteriaQuery", additionalCriteriaQuery);
     return resultSql;
   }
