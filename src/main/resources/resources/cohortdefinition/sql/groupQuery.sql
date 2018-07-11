@@ -4,7 +4,7 @@ FROM
 (
   select E.person_id, E.event_id 
   FROM @eventTable E
-  LEFT JOIN
+  @joinType JOIN
   (
     @criteriaQueries
   ) CQ on E.person_id = CQ.person_id and E.event_id = CQ.event_id

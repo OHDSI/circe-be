@@ -43,6 +43,9 @@ public class DrugExposure extends Criteria {
   @JsonProperty("DrugType")
   public Concept[] drugType;
 
+  @JsonProperty("DrugTypeExclude")
+  public boolean drugTypeExclude = false;
+	
   @JsonProperty("StopReason")
   public TextFilter stopReason;
   

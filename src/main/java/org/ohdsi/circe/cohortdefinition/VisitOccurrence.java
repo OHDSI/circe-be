@@ -42,6 +42,9 @@ public class VisitOccurrence extends Criteria {
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("VisitTypeExclude")
+  public boolean visitTypeExclude = false;
+	
   @JsonProperty("VisitSourceConcept")
   public Integer visitSourceConcept;
 

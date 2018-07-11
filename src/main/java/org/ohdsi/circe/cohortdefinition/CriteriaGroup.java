@@ -40,4 +40,8 @@ public class CriteriaGroup {
 
   @JsonProperty("Groups")
   public CriteriaGroup[] groups = new CriteriaGroup[0];
+	
+	public boolean isEmpty() {
+		return !(criteriaList.length > 0 || demographicCriteriaList.length > 0 || groups.length > 0);
+	}
 }

@@ -25,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author cknoll1
  */
 public class Occurrence {
+	public static final int EXACTLY = 0;
+	public static final int AT_MOST = 1;
+	public static final int AT_LEAST = 2;
+	
   @JsonProperty("Type")
   public int type;
 

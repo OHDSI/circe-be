@@ -35,6 +35,9 @@ public class Death extends Criteria {
   @JsonProperty("DeathType")
   public Concept[] deathType;
 
+  @JsonProperty("DeathTypeExclude")
+  public boolean deathTypeExclude = false;
+
   @JsonProperty("DeathSourceConcept")
   public Integer deathSourceConcept;
 
