@@ -642,7 +642,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     );
 		
 		// join type is LEFT when counts of 0 or 'at most' is specified
-		String joinType = (corelatedCriteria.occurrence.type == 1 || corelatedCriteria.occurrence.count == 0) ?  "LEFT" : "INNER";
+		String joinType = (corelatedCriteria.occurrence.type == Occurrence.AT_MOST || corelatedCriteria.occurrence.count == 0) ?  "LEFT" : "INNER";
     
     query = StringUtils.replace(query, "@joinType", joinType);
 
