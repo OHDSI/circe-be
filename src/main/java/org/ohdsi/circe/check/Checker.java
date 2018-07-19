@@ -59,7 +59,6 @@ public class Checker implements Check {
         checks.add(new NoExitCriteriaCheck());
         checks.add(new ConceptSetCriteriaCheck());
         checks.add(new GenderCriteriaCheck());
-        checks.add(new ProviderSpecialtyCheck());
         checks.add(new DrugExposureCheck());
         checks.add(new MeasurementCheck());
         checks.add(new DrugEraCheck());
