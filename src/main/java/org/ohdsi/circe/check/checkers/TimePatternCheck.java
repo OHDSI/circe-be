@@ -55,14 +55,40 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
         long maxFreq = freq.values().stream().mapToLong(v -> v).max().orElse(0);
         if (maxFreq > 1) {
             int mostCommon = freq.entrySet().stream().filter(en -> Objects.equals(en.getValue(), maxFreq)).map(Map.Entry::getKey).findFirst().orElse(0);
-            timeWindowInfoList.stream().forEach(info -> {
-                int start = startDays(info.start);
-                long currFreq = freq.getOrDefault(start, 0L);
-                if (maxFreq - currFreq > 0) {
-                    reporter.add("%s time window breaks common pattern", info.getName());
-                }
-            });
+            TimeWindowInfo mostCommonInfo = timeWindowInfoList.stream().filter(ti -> {
+                long currFreq = freq.getOrDefault(startDays(ti.start), 0L);
+                return currFreq == maxFreq;
+            }).findFirst().orElse(null);
+            if (Objects.nonNull(mostCommonInfo)) {
+                timeWindowInfoList.forEach(info -> {
+                    int start = startDays(info.start);
+                    long currFreq = freq.getOrDefault(start, 0L);
+                    if (maxFreq - currFreq > 0) {
+                        reporter.add("%s time window differs from most common pattern prior '%s', shouldn't that be a valid pattern?",
+                                info.getName(), formatTimeWindow(mostCommonInfo));
+                    }
+                });
+            }
         }
+    }
+
+    private String formatTimeWindow(TimeWindowInfo ti) {
+        String result = "";
+        if (ti != null && ti.start != null && ti.start.start != null) {
+            result += formatDays(ti.start.start) + " days " + formatCoeff(ti.start.start);
+        }
+        if (ti != null && ti.start != null && ti.start.end != null) {
+            result += " and " + formatDays(ti.start.end) + " days " + formatCoeff(ti.start.end);
+        }
+        return result;
+    }
+
+    private String formatDays(Window.Endpoint endpoint) {
+        return Objects.nonNull(endpoint.days) ? String.valueOf(endpoint.days) : "all";
+    }
+
+    private String formatCoeff(Window.Endpoint endpoint) {
+        return endpoint.coeff < 0 ? "before " : "after ";
     }
 
     private Integer startDays(Window window) {

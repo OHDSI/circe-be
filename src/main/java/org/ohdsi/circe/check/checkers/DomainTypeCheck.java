@@ -20,10 +20,15 @@ package org.ohdsi.circe.check.checkers;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Execution;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
+import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.Death;
@@ -37,19 +42,20 @@ import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
 
 public class DomainTypeCheck extends BaseCriteriaCheck {
 
-    private static final String WARNING = "It's not specified what type of records to look for in a %s at %s";
+    private static final String WARNING = "It's not specified what type of records to look for in %s";
+    private List<String> warnNames = new ArrayList<>();
 
     @Override
     protected WarningSeverity defineSeverity() {
 
-        return WarningSeverity.WARNING;
+        return WarningSeverity.INFO;
     }
 
     @Override
     protected void checkCriteria(Criteria criteria, String groupName, WarningReporter reporter) {
 
         final String name = CriteriaNameHelper.getCriteriaName(criteria);
-        final Execution addWarning = () -> reporter.add(WARNING, name, groupName);
+        final Execution addWarning = () -> warnNames.add(name + " at " + groupName);
         match(criteria)
                 .isA(ConditionOccurrence.class)
                 .then(c -> match((ConditionOccurrence)c)
@@ -87,5 +93,13 @@ public class DomainTypeCheck extends BaseCriteriaCheck {
                 .then(c -> match((VisitOccurrence)c)
                         .when(visitOccurrence -> Objects.isNull(visitOccurrence.visitType) || visitOccurrence.visitType.length == 0)
                         .then(addWarning));
+    }
+
+    @Override
+    protected void afterCheck(WarningReporter reporter, CohortExpression expression) {
+
+        if (!warnNames.isEmpty()) {
+            reporter.add(WARNING, warnNames.stream().collect(Collectors.joining(", ")));
+        }
     }
 }

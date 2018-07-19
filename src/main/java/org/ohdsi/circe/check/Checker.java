@@ -72,7 +72,6 @@ public class Checker implements Check {
         checks.add(new TimeWindowCheck());
         checks.add(new TimePatternCheck());
         checks.add(new DomainTypeCheck());
-        checks.add(new FirstTimeInHistoryCheck());
         checks.add(new CriteriaContradictionsCheck());
         return checks;
     }
