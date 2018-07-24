@@ -40,7 +40,10 @@ public class EventsProgressionCheck extends BaseCheck {
 
         int initialWeight = getWeight(expression.primaryCriteria.primaryLimit);
         int cohortInitialWeight = getWeight(expression.qualifiedLimit);
-        int qualifyingWeight = getWeight(expression.expressionLimit);
+        // qualifying limit is ignored when no additionalCriteria specified
+				int qualifyingWeight = (expression.additionalCriteria != null) ? 
+								getWeight(expression.expressionLimit) 
+								: LimitType.NONE.getWeigt();
         if (initialWeight - cohortInitialWeight < 0) {
             reporter.add(WARNING, "Cohort of initial events");
         }
