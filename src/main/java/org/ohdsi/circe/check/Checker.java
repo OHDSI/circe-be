@@ -29,6 +29,7 @@ import org.ohdsi.circe.check.checkers.DrugExposureCheck;
 import org.ohdsi.circe.check.checkers.DuplicatesConceptSetCheck;
 import org.ohdsi.circe.check.checkers.DuplicatesCriteriaCheck;
 import org.ohdsi.circe.check.checkers.EmptyConceptSetCheck;
+import org.ohdsi.circe.check.checkers.EmptyDomainTypeCheck;
 import org.ohdsi.circe.check.checkers.EventsProgressionCheck;
 import org.ohdsi.circe.check.checkers.ExitCriteriaCheck;
 import org.ohdsi.circe.check.checkers.ExitCriteriaDaysOffsetCheck;
@@ -70,6 +71,7 @@ public class Checker implements Check {
         checks.add(new EventsProgressionCheck());
         checks.add(new TimeWindowCheck());
         checks.add(new TimePatternCheck());
+        checks.add(new EmptyDomainTypeCheck());
         checks.add(new DomainTypeCheck());
         checks.add(new CriteriaContradictionsCheck());
         return checks;

@@ -40,11 +40,11 @@ public class ProviderSpecialtyCheck extends BaseCriteriaCheck {
         match(criteria)
                 .isA(ConditionOccurrence.class)
                 .then(c -> match((ConditionOccurrence)c)
-                        .when(conditionOccurrence -> Objects.isNull(conditionOccurrence.providerSpecialty) || conditionOccurrence.providerSpecialty.length == 0)
+                        .when(conditionOccurrence -> Objects.nonNull(conditionOccurrence.providerSpecialty) && conditionOccurrence.providerSpecialty.length == 0)
                         .then(addWarning))
                 .isA(VisitOccurrence.class)
                 .then(c -> match((VisitOccurrence)c)
-                        .when(visitOccurrence -> Objects.isNull(visitOccurrence.providerSpecialty) || visitOccurrence.providerSpecialty.length == 0)
+                        .when(visitOccurrence -> Objects.nonNull(visitOccurrence.providerSpecialty) && visitOccurrence.providerSpecialty.length == 0)
                         .then(addWarning));
     }
 }

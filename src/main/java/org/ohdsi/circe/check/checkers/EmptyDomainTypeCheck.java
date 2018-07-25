@@ -23,7 +23,6 @@ import static org.ohdsi.circe.check.operations.Operations.match;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Execution;
@@ -40,58 +39,57 @@ import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
 import org.ohdsi.circe.cohortdefinition.Specimen;
 import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
 
-public class DomainTypeCheck extends BaseCriteriaCheck {
+public class EmptyDomainTypeCheck extends BaseCriteriaCheck {
 
-    private static final String WARNING = "It's not specified what type of records to look for in %s";
+    private static final String WARNING = "There are an empty domain types in the following criteria: %s";
     private List<String> warnNames = new ArrayList<>();
 
     @Override
     protected WarningSeverity defineSeverity() {
 
-        return WarningSeverity.INFO;
+        return WarningSeverity.WARNING;
     }
 
     @Override
     protected void checkCriteria(Criteria criteria, String groupName, WarningReporter reporter) {
-
         final String name = CriteriaNameHelper.getCriteriaName(criteria);
         final Execution addWarning = () -> warnNames.add(name + " at " + groupName);
         match(criteria)
                 .isA(ConditionOccurrence.class)
                 .then(c -> match((ConditionOccurrence)c)
-                        .when(conditionOccurrence -> Objects.isNull(conditionOccurrence.conditionType))
+                        .when(conditionOccurrence -> Objects.nonNull(conditionOccurrence.conditionType) && conditionOccurrence.conditionType.length == 0)
                         .then(addWarning))
                 .isA(Death.class)
                 .then(c -> match((Death)c)
-                        .when(death -> Objects.isNull(death.deathType))
+                        .when(death -> Objects.nonNull(death.deathType) && death.deathType.length == 0)
                         .then(addWarning))
                 .isA(DeviceExposure.class)
                 .then(c -> match((DeviceExposure)c)
-                        .when(deviceExposure -> Objects.isNull(deviceExposure.deviceType))
+                        .when(deviceExposure -> Objects.nonNull(deviceExposure.deviceType) && deviceExposure.deviceType.length == 0)
                         .then(addWarning))
                 .isA(DrugExposure.class)
                 .then(c -> match((DrugExposure)c)
-                        .when(drugExposure -> Objects.isNull(drugExposure.drugType))
+                        .when(drugExposure -> Objects.nonNull(drugExposure.drugType) && drugExposure.drugType.length == 0)
                         .then(addWarning))
                 .isA(Measurement.class)
                 .then(c -> match((Measurement)c)
-                        .when(measurement -> Objects.isNull(measurement.measurementType))
+                        .when(measurement -> Objects.nonNull(measurement.measurementType) && measurement.measurementType.length == 0)
                         .then(addWarning))
                 .isA(Observation.class)
                 .then(c -> match((Observation)c)
-                        .when(observation -> Objects.isNull(observation.observationType))
+                        .when(observation -> Objects.nonNull(observation.observationType) && observation.observationType.length == 0)
                         .then(addWarning))
                 .isA(ProcedureOccurrence.class)
                 .then(c -> match((ProcedureOccurrence)c)
-                        .when(procedureOccurrence -> Objects.isNull(procedureOccurrence.procedureType))
+                        .when(procedureOccurrence -> Objects.nonNull(procedureOccurrence.procedureType) && procedureOccurrence.procedureType.length == 0)
                         .then(addWarning))
                 .isA(Specimen.class)
                 .then(c -> match((Specimen)c)
-                        .when(specimen -> Objects.isNull(specimen.specimenType))
+                        .when(specimen -> Objects.nonNull(specimen.specimenType) && specimen.specimenType.length == 0)
                         .then(addWarning))
                 .isA(VisitOccurrence.class)
                 .then(c -> match((VisitOccurrence)c)
-                        .when(visitOccurrence -> Objects.isNull(visitOccurrence.visitType))
+                        .when(visitOccurrence -> Objects.nonNull(visitOccurrence.visitType) && visitOccurrence.visitType.length == 0)
                         .then(addWarning));
     }
 
