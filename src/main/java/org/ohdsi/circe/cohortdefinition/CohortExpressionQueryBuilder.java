@@ -70,7 +70,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String CUSTOM_ERA_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/customEraStrategy.sql");
   
   private final static String ERA_CONSTRUCTOR_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eraConstructor.sql");
-  
+
   public static class BuildExpressionQueryOptions {
 	  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 		
@@ -330,29 +330,41 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getFinalCohortQuery(Period censorWindow) {
-
     String query = "select @target_cohort_id as cohort_definition_id, person_id, @start_date, @end_date \n" +
-            "FROM #final_cohort CO";
+            "FROM #final_cohort CO" + getCensorWindowCondition(censorWindow);
+    query = StringUtils.replace(query, "@start_date", getStartDate(censorWindow));
+    query = StringUtils.replace(query, "@end_date", getEndDate(censorWindow));
+    return query;
+  }
 
-    String startDate = "start_date";
-    String endDate = "end_date";
+  public String getCensorWindowCondition(Period censorWindow) {
+    String query = "";
 
     if (censorWindow != null && (censorWindow.startDate != null || censorWindow.endDate != null)) {
-      if (censorWindow.startDate != null) {
-        String censorStartDate = dateStringToSql(censorWindow.startDate);
-        startDate = "CASE WHEN start_date > " + censorStartDate + " THEN start_date ELSE " + censorStartDate + " END";
-      }
-      if (censorWindow.endDate != null) {
-        String censorEndDate = dateStringToSql(censorWindow.endDate);
-        endDate = "CASE WHEN end_date < " + censorEndDate + " THEN end_date ELSE " + censorEndDate + " END";
-      }
-      query += "\nWHERE @start_date <= @end_date";
+      String startDate = getStartDate(censorWindow);
+      String endDate = getEndDate(censorWindow);
+      query += "\nWHERE " + startDate + " <= " + endDate;
     }
 
-    query = StringUtils.replace(query, "@start_date", startDate);
-    query = StringUtils.replace(query, "@end_date", endDate);
-
     return query;
+  }
+
+  private String getStartDate(Period censorWindow) {
+    String startDate = "start_date";
+    if (censorWindow != null && censorWindow.startDate != null) {
+      String censorStartDate = dateStringToSql(censorWindow.startDate);
+      startDate = "CASE WHEN start_date > " + censorStartDate + " THEN start_date ELSE " + censorStartDate + " END";
+    }
+    return startDate;
+  }
+
+  private String getEndDate(Period censorWindow) {
+    String endDate = "end_date";
+    if (censorWindow != null && censorWindow.endDate != null) {
+      String censorEndDate = dateStringToSql(censorWindow.endDate);
+      endDate = "CASE WHEN end_date < " + censorEndDate + " THEN end_date ELSE " + censorEndDate + " END";
+    }
+    return endDate;
   }
   
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
@@ -445,6 +457,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 			endDateSelects.add(String.format("-- Censor Events\n%s\n",getCensoringEventsQuery(expression.censoringCriteria)));
 
 		resultSql = StringUtils.replace(resultSql, "@finalCohortQuery", getFinalCohortQuery(expression.censorWindow));
+
+		resultSql = StringUtils.replace(resultSql, "@whereCensorWindow", getCensorWindowCondition(expression.censorWindow));
 
 		resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects,"\nUNION ALL\n"));
 		
