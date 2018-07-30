@@ -61,7 +61,7 @@ public class GenderCriteriaCheck extends BaseCriteriaCheck {
                 .isA(Death.class)
                 .then(c -> match((Death)c).when(death -> Objects.nonNull(death.gender) && death.gender.length == 0).then(addWarning))
                 .isA(DeviceExposure.class)
-                .then(c -> match((DeviceExposure)c).when(deviceExposure -> Objects.nonNull(deviceExposure) && deviceExposure.gender.length == 0).then(addWarning))
+                .then(c -> match((DeviceExposure)c).when(deviceExposure -> Objects.nonNull(deviceExposure.gender) && deviceExposure.gender.length == 0).then(addWarning))
                 .isA(DoseEra.class)
                 .then(c -> match((DoseEra)c).when(doseEra -> Objects.nonNull(doseEra.gender) && doseEra.gender.length == 0).then(addWarning))
                 .isA(DrugEra.class)
