@@ -65,6 +65,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DEMOGRAPHIC_CRITERIA_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/demographicCriteria.sql");
 	private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets codesets on (@codesetClauses)";
   
+	private final static String COHORT_INCLUSION_ANALYSIS_TEMPALTE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cohortInclusionAnalysis.sql");
+
   // Strategy templates
   private final static String DATE_OFFSET_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateOffsetStrategy.sql");
   private final static String CUSTOM_ERA_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/customEraStrategy.sql");
@@ -355,6 +357,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
   
+	private String getInclusionAnalysisQuery(String eventTable, int modeId) {
+		String resultSql = COHORT_INCLUSION_ANALYSIS_TEMPALTE;
+		resultSql = StringUtils.replace(resultSql, "@inclusionImpactMode", Integer.toString(modeId));
+		resultSql = StringUtils.replace(resultSql, "@eventTable", eventTable);
+		return resultSql;
+	}
+	
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
@@ -450,6 +459,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		
 		resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
 	
+		resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
+		resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
+		
     if (options != null)
     {
       // replease query parameters with tokens
