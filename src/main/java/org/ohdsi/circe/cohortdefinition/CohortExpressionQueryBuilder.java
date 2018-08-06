@@ -632,13 +632,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     // StartWindow
     Window startWindow = corelatedCriteria.startWindow;
+		String startDateExpression = startWindow.useEndDate ? "P.END_DATE" : "P.START_DATE";
     if (startWindow.start.days != null)
-      startExpression = String.format("DATEADD(day,%d,P.START_DATE)", startWindow.start.coeff * startWindow.start.days);
+      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startDateExpression);
     else
       startExpression = startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 
     if (startWindow.end.days != null)
-      endExpression = String.format("DATEADD(day,%d,P.START_DATE)", startWindow.end.coeff * startWindow.end.days);
+      endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startDateExpression);
     else
       endExpression = startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
     
@@ -649,13 +650,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     if (endWindow != null)
     {
+			String endDateExpression = endWindow.useEndDate ? "P.END_DATE" : "P.START_DATE";
       if (endWindow.start.days != null)
-          startExpression = String.format("DATEADD(day,%d,P.START_DATE)", endWindow.start.coeff * endWindow.start.days);
+          startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endDateExpression );
       else
         startExpression = endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 
       if (endWindow.end.days != null)
-          endExpression = String.format("DATEADD(day,%d,P.START_DATE)", endWindow.end.coeff * endWindow.end.days);
+          endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endDateExpression);
       else
         endExpression = endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 

@@ -32,12 +32,15 @@ public class Window {
 
     @JsonProperty("Coeff")
     public int coeff;
-  }
+	}
   
   @JsonProperty("Start")
   public Endpoint start;  
 
   @JsonProperty("End")
   public Endpoint end;  
-  
+
+	@JsonProperty("UseEndDate")
+	public boolean useEndDate = false;
+	
 }
