@@ -40,7 +40,10 @@ public class Window {
   @JsonProperty("End")
   public Endpoint end;  
 
-	@JsonProperty("UseEndDate")
-	public boolean useEndDate = false;
+	@JsonProperty("UseIndexEnd")
+	public Boolean useIndexEnd;
+
+	@JsonProperty("UseEventEnd")
+	public Boolean useEventEnd;
 	
 }
