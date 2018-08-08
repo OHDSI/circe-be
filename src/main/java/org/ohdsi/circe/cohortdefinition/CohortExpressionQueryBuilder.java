@@ -632,34 +632,39 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     // StartWindow
     Window startWindow = corelatedCriteria.startWindow;
+		String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
+		String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
     if (startWindow.start.days != null)
-      startExpression = String.format("DATEADD(day,%d,P.START_DATE)", startWindow.start.coeff * startWindow.start.days);
+      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
     else
       startExpression = startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 
     if (startWindow.end.days != null)
-      endExpression = String.format("DATEADD(day,%d,P.START_DATE)", startWindow.end.coeff * startWindow.end.days);
+      endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
     else
       endExpression = startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
     
-    clauses.add(String.format("A.START_DATE >= %s and A.START_DATE <= %s", startExpression, endExpression));
+    clauses.add(String.format("%s >= %s and %s <= %s", startEventDateExpression, startExpression, startEventDateExpression, endExpression));
     
     // EndWindow
     Window endWindow = corelatedCriteria.endWindow;
 
     if (endWindow != null)
     {
+			String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
+			// for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
+			String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
       if (endWindow.start.days != null)
-          startExpression = String.format("DATEADD(day,%d,P.START_DATE)", endWindow.start.coeff * endWindow.start.days);
+          startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression );
       else
         startExpression = endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 
       if (endWindow.end.days != null)
-          endExpression = String.format("DATEADD(day,%d,P.START_DATE)", endWindow.end.coeff * endWindow.end.days);
+          endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
       else
         endExpression = endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
 
-      clauses.add(String.format("A.END_DATE >= %s AND A.END_DATE <= %s", startExpression, endExpression));    
+      clauses.add(String.format("%s >= %s AND %s <= %s", endEventDateExpression, startExpression, endEventDateExpression, endExpression));    
     }
 	
 	// RestrictVisit
