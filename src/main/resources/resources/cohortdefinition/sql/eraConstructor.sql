@@ -6,7 +6,7 @@ WITH cteSource (@eraGroup, start_date, end_date, groupid) AS
 		, start_date
 		, end_date
 		, dense_rank() over(order by @eraGroup) as groupid
-	FROM #collapse_input as so
+	FROM #collapse_input so
 )
 ,
 --------------------------------------------------------------------------------------------------------------
@@ -64,11 +64,10 @@ into #collapse_output
 from
 (
 	select @eraGroup , min(b.start_date) as start_date, b.end_date
-	from
-		(select distinct @eraGroup, groupid from cteSource) as a
-	inner join
-		cteEnds as b
-	on a.groupid = b.groupid
+	from (
+		select distinct @eraGroup, groupid from cteSource
+	) a
+	inner join cteEnds b on a.groupid = b.groupid
 	group by @eraGroup, end_date
 ) q
 ;
