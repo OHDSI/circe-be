@@ -80,15 +80,15 @@ public class CohortExpressionQueryBuilder {
         switch(domainId.toUpperCase()) {
             case "CONDITION":
                 dc.domainConceptId = "condition_concept_id";
-                dc.domainTable = "condition_era";
-                dc.domainStartDate = "condition_era_start_date";
-                dc.domainEndDate = "condition_era_end_date";
+                dc.domainTable = "condition_occurrence";
+                dc.domainStartDate = "condition_start_date";
+                dc.domainEndDate = "condition_end_date";
                 break;
             case "DRUG":
                 dc.domainConceptId = "drug_concept_id";
-                dc.domainTable = "drug_era";
-                dc.domainStartDate = "drug_era_start_date";
-                dc.domainEndDate = "drug_era_end_date";
+                dc.domainTable = "drug_exposure";
+                dc.domainStartDate = "drug_exposure_start_date";
+                dc.domainEndDate = "drug_exposure_end_date";
                 break;
             case "DEVICE":
                 dc.domainConceptId = "device_concept_id";
