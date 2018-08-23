@@ -34,39 +34,22 @@ import org.ohdsi.circe.cohortdefinition.InclusionRule;
 
 public class IncompleteRuleCheck extends BaseCheck {
 
+	@Override
+	protected WarningReporter getReporter(WarningSeverity severity, List<Warning> warnings) {
+			return (name, params) -> warnings.add(new IncompleteRuleWarning(defineSeverity(), name));
+	}
 
-    @Override
-    protected WarningReporter getReporter(WarningSeverity severity, List<Warning> warnings) {
+	@Override
+	protected void check(CohortExpression expression, WarningReporter reporter) {
+		if (Objects.nonNull(expression.inclusionRules)) {
+			expression.inclusionRules
+				.forEach(rule -> checkInclusionRule(rule, reporter));
+		}
+	}
 
-        return (name, params) -> warnings.add(new IncompleteRuleWarning(defineSeverity(), name));
-    }
-
-    @Override
-    protected void check(CohortExpression expression, WarningReporter reporter) {
-
-        if (Objects.nonNull(expression.inclusionRules)) {
-            expression.inclusionRules
-                    .forEach(rule -> checkInclusionRule(rule, reporter));
-        }
-    }
-
-    private void checkInclusionRule(InclusionRule rule, WarningReporter reporter) {
-
-        checkCriteriaList(Arrays.asList(rule.expression.criteriaList), rule.name, reporter);
-        Arrays.stream(rule.expression.groups)
-                .forEach(group -> checkCriteriaGroup(group, rule.name, reporter));
-    }
-
-    private void checkCriteriaGroup(CriteriaGroup group, String ruleName, WarningReporter reporter) {
-
-        checkCriteriaList(Arrays.asList(group.criteriaList), ruleName + " has group that ", reporter);
-        Arrays.stream(group.groups).forEach(g -> checkCriteriaGroup(g, ruleName, reporter));
-    }
-
-    private void checkCriteriaList(List<CorelatedCriteria> criteriaList, String name, WarningReporter reporter) {
-
-        match(criteriaList)
-                .when(Collection::isEmpty)
-                .then(c -> reporter.add(name));
-    }
+	private void checkInclusionRule(InclusionRule rule, WarningReporter reporter) {
+		if (rule.expression.isEmpty()) {
+			reporter.add(rule.name + " has no criteria");
+		}
+	}
 }

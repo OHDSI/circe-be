@@ -22,7 +22,7 @@ import org.ohdsi.circe.check.WarningSeverity;
 
 public class IncompleteRuleWarning extends BaseWarning {
 
-    private static final String INCOMPLETE_ERROR = "Inclusion criteria %s is opened but no criteria entered within";
+    private static final String INCOMPLETE_ERROR = "Inclusion rule %s.";
 
     private final String ruleName;
 
