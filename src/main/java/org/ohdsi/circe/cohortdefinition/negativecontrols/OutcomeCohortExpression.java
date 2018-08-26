@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CohortExpression {
+public class OutcomeCohortExpression {
  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
  
  @JsonProperty("occurrenceType")

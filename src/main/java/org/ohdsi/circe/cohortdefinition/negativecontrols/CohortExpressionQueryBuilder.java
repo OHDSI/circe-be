@@ -5,17 +5,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 public class CohortExpressionQueryBuilder {
+    private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/codesetQuery.sql");
     private final static String DOMAIN_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/domainQuery.sql");
     private final static String FIRST_OCCURRENCE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/firstOccurrence.sql");
     private final static String INSERT_COHORT_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/insertCohort.sql");
     private final static String DETECT_ON_DESCENDANTS_CLAUSE = "INNER JOIN @cdm_database_schema.concept_ancestor\n ON @domain_concept_id = descendant_concept_id";
     
-    public String buildExpressionQuery(CohortExpression expression) throws Exception {
+    public String buildExpressionQuery(OutcomeCohortExpression expression) throws Exception {
         StringBuilder sb = new StringBuilder();
         if (expression.domainIds.isEmpty()) {
             throw new Exception("You must specify 1 or more domains for the expression");
         }
         try {
+            sb.append(this.getCodesetQuery(expression.detectOnDescendants));
             String domainQuery = this.getDomainQuery(expression.domainIds, expression.detectOnDescendants);
             if (expression.occurrenceType == OccurrenceType.FIRST) {
                 domainQuery = this.getFirstOccurenceQuery(domainQuery);
@@ -26,6 +28,16 @@ public class CohortExpressionQueryBuilder {
             throw e;
         }
         return sb.toString();
+    }
+    
+    public String getCodesetQuery(boolean detectOnDescendants) {
+        String codesetInserts = "INSERT INTO #Codesets (ancestor_concept_id, concept_id)\n";
+        if (detectOnDescendants) {
+            codesetInserts += "SELECT ancestor_concept_id, descendant_concept_id\nFROM @cdm_database_schema.CONCEPT_ANCESTOR\nWHERE ancestor_concept_id IN (@outcome_ids)\n;";
+        } else {
+            codesetInserts += "SELECT concept_id, concept_id\nFROM @cdm_database_schema.CONCEPT\nWHERE concept_id IN (@outcome_ids)\n;";
+        }
+        return StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codeset_inserts", codesetInserts);
     }
     
     protected String getFirstOccurenceQuery(String domainQuery) {
@@ -58,15 +70,12 @@ public class CohortExpressionQueryBuilder {
     public String getDomainQuery(int tempTableId, String domainId, boolean detectOnDescendants) throws Exception {
         String query = DOMAIN_QUERY_TEMPLATE;
         
-        String detectOnDescendantsClause = detectOnDescendants ? DETECT_ON_DESCENDANTS_CLAUSE : "";
-        query = StringUtils.replace(query, "@detect_on_descendants_clause", detectOnDescendantsClause);
-
         DomainConfiguration dc = this.getDomainConfiguration(domainId);
         if (!dc.domainTable.isEmpty()) {
             query = StringUtils.replace(query, "@domain_table", dc.domainTable);
             query = StringUtils.replace(query, "@domain_start_date", dc.domainStartDate);
             query = StringUtils.replace(query, "@domain_end_date", dc.domainEndDate);
-            query = StringUtils.replace(query, "@domain_concept_id", detectOnDescendants ? "ancestor_concept_id" : dc.domainConceptId);            
+            query = StringUtils.replace(query, "@domain_concept_id", dc.domainConceptId);            
         } else {
             throw new Exception("Domain " + domainId + " not supported");
         }
