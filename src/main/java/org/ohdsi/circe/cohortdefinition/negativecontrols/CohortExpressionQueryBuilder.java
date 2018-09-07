@@ -7,9 +7,9 @@ import org.ohdsi.circe.helper.ResourceHelper;
 public class CohortExpressionQueryBuilder {
     private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/codesetQuery.sql");
     private final static String DOMAIN_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/domainQuery.sql");
+    private final static String ALL_OCCURRENCES_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/allOccurrences.sql");
     private final static String FIRST_OCCURRENCE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/firstOccurrence.sql");
     private final static String INSERT_COHORT_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/insertCohort.sql");
-    private final static String DETECT_ON_DESCENDANTS_CLAUSE = "INNER JOIN @cdm_database_schema.concept_ancestor\n ON @domain_concept_id = descendant_concept_id";
     
     public String buildExpressionQuery(OutcomeCohortExpression expression) throws Exception {
         StringBuilder sb = new StringBuilder();
@@ -21,6 +21,8 @@ public class CohortExpressionQueryBuilder {
             String domainQuery = this.getDomainQuery(expression.domainIds, expression.detectOnDescendants);
             if (expression.occurrenceType == OccurrenceType.FIRST) {
                 domainQuery = this.getFirstOccurenceQuery(domainQuery);
+            } else {
+                domainQuery = this.getAllOccurrencesQuery(domainQuery);
             }
             String insertQuery = this.getInsertCohortQuery(domainQuery);
             sb.append(insertQuery);
@@ -42,6 +44,12 @@ public class CohortExpressionQueryBuilder {
     
     protected String getFirstOccurenceQuery(String domainQuery) {
         String query = FIRST_OCCURRENCE_QUERY_TEMPLATE;
+        query = StringUtils.replace(query, "@domain_query", domainQuery);
+        return query;
+    }
+    
+    protected String getAllOccurrencesQuery(String domainQuery) {
+        String query = ALL_OCCURRENCES_QUERY_TEMPLATE;
         query = StringUtils.replace(query, "@domain_query", domainQuery);
         return query;
     }
