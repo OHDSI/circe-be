@@ -13,12 +13,12 @@ public class CohortExpressionQueryBuilder {
     
     public String buildExpressionQuery(OutcomeCohortExpression expression) throws Exception {
         StringBuilder sb = new StringBuilder();
-        if (expression.domainIds.isEmpty()) {
+        if (expression.domains.isEmpty()) {
             throw new Exception("You must specify 1 or more domains for the expression");
         }
         try {
             sb.append(this.getCodesetQuery(expression.detectOnDescendants));
-            String domainQuery = this.getDomainQuery(expression.domainIds, expression.detectOnDescendants);
+            String domainQuery = this.getDomainQuery(expression.domains, expression.detectOnDescendants);
             if (expression.occurrenceType == OccurrenceType.FIRST) {
                 domainQuery = this.getFirstOccurenceQuery(domainQuery);
             } else {
@@ -33,11 +33,11 @@ public class CohortExpressionQueryBuilder {
     }
     
     public String getCodesetQuery(boolean detectOnDescendants) {
-        String codesetInserts = "INSERT INTO #Codesets (ancestor_concept_id, concept_id)\n";
+        String codesetInserts = "INSERT INTO #Codesets (ancestor_concept_id, concept_id)\n ";
         if (detectOnDescendants) {
-            codesetInserts += "SELECT ancestor_concept_id, descendant_concept_id\nFROM @cdm_database_schema.CONCEPT_ANCESTOR\nWHERE ancestor_concept_id IN (@outcome_ids)\n;";
+            codesetInserts += "SELECT ancestor_concept_id, descendant_concept_id\n FROM @cdm_database_schema.CONCEPT_ANCESTOR\n WHERE ancestor_concept_id IN (@outcome_ids)\n;";
         } else {
-            codesetInserts += "SELECT concept_id, concept_id\nFROM @cdm_database_schema.CONCEPT\nWHERE concept_id IN (@outcome_ids)\n;";
+            codesetInserts += "SELECT concept_id, concept_id\n FROM @cdm_database_schema.CONCEPT\n WHERE concept_id IN (@outcome_ids)\n;";
         }
         return StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codeset_inserts", codesetInserts);
     }
