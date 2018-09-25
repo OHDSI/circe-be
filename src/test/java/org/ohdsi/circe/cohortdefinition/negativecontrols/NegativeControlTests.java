@@ -21,13 +21,13 @@ public class NegativeControlTests extends BaseTest {
 		OutcomeCohortExpression testExpression = new OutcomeCohortExpression();
 		testExpression.occurrenceType = OccurrenceType.FIRST;
 		testExpression.detectOnDescendants = true;
-		testExpression.domainIds.add("CONDITION");
-		testExpression.domainIds.add("DRUG");
-		testExpression.domainIds.add("DEVICE");
-		testExpression.domainIds.add("MEASUREMENT");
-		testExpression.domainIds.add("OBSERVATION");
-		testExpression.domainIds.add("PROCEDURE");
-		testExpression.domainIds.add("VISIT");
+		testExpression.domains.add("CONDITION");
+		testExpression.domains.add("DRUG");
+		testExpression.domains.add("DEVICE");
+		testExpression.domains.add("MEASUREMENT");
+		testExpression.domains.add("OBSERVATION");
+		testExpression.domains.add("PROCEDURE");
+		testExpression.domains.add("VISIT");
 
 		CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
 		String query = queryBuilder.buildExpressionQuery(testExpression);
@@ -42,8 +42,8 @@ public class NegativeControlTests extends BaseTest {
 		OutcomeCohortExpression testExpression = new OutcomeCohortExpression();
 		testExpression.occurrenceType = OccurrenceType.ALL;
 		testExpression.detectOnDescendants = true;
-		testExpression.domainIds.add("CONDITION");
-		testExpression.domainIds.add("MEASUREMENT");
+		testExpression.domains.add("CONDITION");
+		testExpression.domains.add("MEASUREMENT");
 
 		CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
 		String query = queryBuilder.buildExpressionQuery(testExpression);
@@ -58,7 +58,7 @@ public class NegativeControlTests extends BaseTest {
         OutcomeCohortExpression testExpression = new OutcomeCohortExpression();
         testExpression.occurrenceType = OccurrenceType.FIRST;
         testExpression.detectOnDescendants = false;
-        testExpression.domainIds.add("PROCEDURE");
+        testExpression.domains.add("PROCEDURE");
 
 		CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
 		String query = queryBuilder.buildExpressionQuery(testExpression);
