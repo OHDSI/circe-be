@@ -18,6 +18,7 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -41,6 +42,7 @@ public class CriteriaGroup {
   @JsonProperty("Groups")
   public CriteriaGroup[] groups = new CriteriaGroup[0];
 	
+  @JsonIgnore
 	public boolean isEmpty() {
 		return !(criteriaList.length > 0 || demographicCriteriaList.length > 0 || groups.length > 0);
 	}
