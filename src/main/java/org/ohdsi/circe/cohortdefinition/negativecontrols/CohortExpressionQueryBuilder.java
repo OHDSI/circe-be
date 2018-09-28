@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 public class CohortExpressionQueryBuilder {
+    private final static String CODESET_TEMP_TABLE = "#Codesets";
     private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/codesetQuery.sql");
     private final static String DOMAIN_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/domainQuery.sql");
     private final static String ALL_OCCURRENCES_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/negativecontrols/sql/allOccurrences.sql");
@@ -26,6 +27,7 @@ public class CohortExpressionQueryBuilder {
             }
             String insertQuery = this.getInsertCohortQuery(domainQuery);
             sb.append(insertQuery);
+            sb.append("\n\nTRUNCATE TABLE " + CODESET_TEMP_TABLE + ";\nDROP TABLE " + CODESET_TEMP_TABLE + ";\n");
         } catch (Exception e) {
             throw e;
         }
@@ -33,7 +35,7 @@ public class CohortExpressionQueryBuilder {
     }
     
     public String getCodesetQuery(boolean detectOnDescendants) {
-        String codesetInserts = "INSERT INTO #Codesets (ancestor_concept_id, concept_id)\n ";
+        String codesetInserts = "INSERT INTO " + CODESET_TEMP_TABLE + " (ancestor_concept_id, concept_id)\n ";
         if (detectOnDescendants) {
             codesetInserts += "SELECT ancestor_concept_id, descendant_concept_id\n FROM @cdm_database_schema.CONCEPT_ANCESTOR\n WHERE ancestor_concept_id IN (@outcome_ids)\n;";
         } else {
