@@ -275,7 +275,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		}
 
 		if (codesetClauses.size() > 0) {
-			joinExpression = StringUtils.replace(CODESET_JOIN_TEMPLATE, "@codesetClauses", StringUtils.join(codesetClauses, " OR "));
+			joinExpression = StringUtils.replace(CODESET_JOIN_TEMPLATE, "@codesetClauses", StringUtils.join(codesetClauses, " AND "));
 		}
 
 		
