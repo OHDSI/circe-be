@@ -448,7 +448,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		if (expression.endStrategy != null) {
 			// replace @strategy_ends placeholders with temp table creation and cleanup scripts.
 			resultSql = StringUtils.replace(resultSql,"@strategy_ends_temp_tables",expression.endStrategy.accept(this, "#included_events"));
-//			resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
 			endDateSelects.add(String.format("-- End Date Strategy\n%s\n","SELECT event_id, person_id, end_date from #strategy_ends"));
 		} else {
 			// replace @trategy_ends placeholders with empty string
