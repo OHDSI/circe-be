@@ -21,6 +21,7 @@ package org.ohdsi.circe.cohortdefinition;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -37,6 +38,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/codesetQuery.sql");
   
   private final static String COHORT_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/generateCohort.sql");
+  private final static String COHORT_CLEANUP_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cleanupCohort.sql");
 
   private final static String PRIMARY_EVENTS_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/primaryEventsQuery.sql");
 
@@ -363,8 +365,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		resultSql = StringUtils.replace(resultSql, "@eventTable", eventTable);
 		return resultSql;
 	}
-	
+
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
+      return buildExpressionQueryInserts(expression, options) +
+              buildCohortExpressionCleanup(expression, options);
+  }
+	
+  public String buildExpressionQueryInserts(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
     String codesetQuery = getCodesetQuery(expression.conceptSets);
@@ -441,7 +448,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		if (expression.endStrategy != null) {
 			// replace @strategy_ends placeholders with temp table creation and cleanup scripts.
 			resultSql = StringUtils.replace(resultSql,"@strategy_ends_temp_tables",expression.endStrategy.accept(this, "#included_events"));
-			resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
+//			resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
 			endDateSelects.add(String.format("-- End Date Strategy\n%s\n","SELECT event_id, person_id, end_date from #strategy_ends"));
 		} else {
 			// replace @trategy_ends placeholders with empty string
@@ -476,12 +483,25 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       } else if (options.cdmSchema != null) {
         resultSql = StringUtils.replace(resultSql, "@vocabulary_database_schema", options.cdmSchema);
       }
-      if (options.cohortId != null)
-        resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
-       resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1": "0");
+      if (options.cohortId != null) {
+          resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
+      }
+      resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1": "0");
     }
     return resultSql;
   }
+
+  public String buildCohortExpressionCleanup(CohortExpression expression, BuildExpressionQueryOptions options) {
+
+      String resultSql = COHORT_CLEANUP_TEMPLATE;
+      if (Objects.nonNull(expression.endStrategy)) {
+          resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
+      } else {
+          resultSql = StringUtils.replace(resultSql,"@strategy_ends_cleanup","");
+      }
+      return StringUtils.replace(resultSql, "@generateStats", Objects.nonNull(options) && options.generateStats ? "1": "0");
+  }
+
   public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable) {
     String query = GROUP_QUERY_TEMPLATE;
     ArrayList<String> additionalCriteriaQueries = new ArrayList<>();
