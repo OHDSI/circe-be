@@ -41,8 +41,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private final static String PRIMARY_EVENTS_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/primaryEventsQuery.sql");
 
-  private final static String WINDOWED_CRITERIA_TEMMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/windowedCriteria.sql");
-  private final static String ADDITIONAL_CRITERIA_TEMMPLATE = StringUtils.replace(ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/additionalCriteria.sql"), "@windowedCriteria", WINDOWED_CRITERIA_TEMMPLATE);
+  private final static String WINDOWED_CRITERIA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/windowedCriteria.sql");
+  private final static String ADDITIONAL_CRITERIA_TEMPLATE = StringUtils.replace(ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/additionalCriteria.sql"), "@windowedCriteria", WINDOWED_CRITERIA_TEMPLATE);
   private final static String GROUP_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/groupQuery.sql");
   
   private final static String CONDITION_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionEra.sql");
@@ -695,14 +695,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
-      String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMMPLATE, criteria, eventTable, false);
+      String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable, false);
       query = StringUtils.replace(query, "@joinType", "INNER");
       return query;
   }
   
   public String getCorelatedlCriteriaQuery(CorelatedCriteria corelatedCriteria, String eventTable)
   {
-    String query = ADDITIONAL_CRITERIA_TEMMPLATE;
+    String query = ADDITIONAL_CRITERIA_TEMPLATE;
     
     query = getWindowedCriteriaQuery(query, corelatedCriteria, eventTable, true);
 
