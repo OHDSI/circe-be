@@ -21,6 +21,7 @@ package org.ohdsi.circe.cohortdefinition;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -40,7 +41,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private final static String PRIMARY_EVENTS_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/primaryEventsQuery.sql");
 
-  private final static String ADDITIONAL_CRITERIA_TEMMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/additionalCriteria.sql");
+  private final static String WINDOWED_CRITERIA_TEMMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/windowedCriteria.sql");
+  private final static String ADDITIONAL_CRITERIA_TEMMPLATE = StringUtils.replace(ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/additionalCriteria.sql"), "@windowedCriteria", WINDOWED_CRITERIA_TEMMPLATE);
   private final static String GROUP_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/groupQuery.sql");
   
   private final static String CONDITION_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionEra.sql");
@@ -615,65 +617,94 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     return query;
   }
+
+  public String getWindowedCriteriaQuery(String sqlTemplate, WindowedCriteria criteria, String eventTable, boolean checkObservationPeriod) {
+
+      String query = sqlTemplate;
+
+      String criteriaQuery = criteria.criteria.accept(this);
+      query = StringUtils.replace(query,"@criteriaQuery",criteriaQuery);
+      query = StringUtils.replace(query,"@eventTable",eventTable);
+
+      // build index date window expression
+      String startExpression;
+      String endExpression;
+      List<String> clauses = new ArrayList<>();
+      if (checkObservationPeriod) {
+          clauses.add("A.START_DATE >= P.OP_START_DATE AND A.START_DATE <= P.OP_END_DATE");
+      }
+
+      // StartWindow
+      Window startWindow = criteria.startWindow;
+      String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
+      String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
+      if (startWindow.start.days != null)
+          startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+      else
+          startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+
+      if (startExpression != null) {
+          clauses.add(String.format("%s >= %s", startEventDateExpression, startExpression));
+      }
+
+      if (startWindow.end.days != null)
+          endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
+      else
+          endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+
+      if (endExpression != null) {
+          clauses.add(String.format("%s <= %s", startEventDateExpression, endExpression));
+      }
+
+      // EndWindow
+      Window endWindow = criteria.endWindow;
+
+      if (endWindow != null)
+      {
+          String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
+          // for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
+          String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
+          if (endWindow.start.days != null)
+              startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression );
+          else
+              startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+
+          if (startExpression != null) {
+              clauses.add(String.format("%s >= %s", endEventDateExpression, startExpression));
+          }
+
+          if (endWindow.end.days != null)
+              endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
+          else
+              endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+
+          if (endExpression != null) {
+              clauses.add(String.format("%s <= %s", endEventDateExpression, endExpression));
+          }
+      }
+
+      // RestrictVisit
+      boolean restrictVisit = criteria.restrictVisit;
+      if (restrictVisit) {
+          clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
+      }
+
+      query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
+
+      return query;
+  }
+
+  public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
+      String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMMPLATE, criteria, eventTable, false);
+      query = StringUtils.replace(query, "@joinType", "INNER");
+      return query;
+  }
   
   public String getCorelatedlCriteriaQuery(CorelatedCriteria corelatedCriteria, String eventTable)
   {
     String query = ADDITIONAL_CRITERIA_TEMMPLATE;
     
-    String criteriaQuery = corelatedCriteria.criteria.accept(this);
-    query = StringUtils.replace(query,"@criteriaQuery",criteriaQuery);
-    query = StringUtils.replace(query,"@eventTable",eventTable);
-    
-    // build index date window expression
-    String startExpression;
-    String endExpression;
-    ArrayList<String> clauses = new ArrayList<>();
-    clauses.add("A.START_DATE >= P.OP_START_DATE AND A.START_DATE <= P.OP_END_DATE");
-    
-    // StartWindow
-    Window startWindow = corelatedCriteria.startWindow;
-		String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
-		String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-    if (startWindow.start.days != null)
-      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
-    else
-      startExpression = startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
-
-    if (startWindow.end.days != null)
-      endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
-    else
-      endExpression = startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
-    
-    clauses.add(String.format("%s >= %s and %s <= %s", startEventDateExpression, startExpression, startEventDateExpression, endExpression));
-    
-    // EndWindow
-    Window endWindow = corelatedCriteria.endWindow;
-
-    if (endWindow != null)
-    {
-			String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
-			// for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
-			String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-      if (endWindow.start.days != null)
-          startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression );
-      else
-        startExpression = endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
-
-      if (endWindow.end.days != null)
-          endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
-      else
-        endExpression = endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE";
-
-      clauses.add(String.format("%s >= %s AND %s <= %s", endEventDateExpression, startExpression, endEventDateExpression, endExpression));    
-    }
-	
-	// RestrictVisit
-		boolean restrictVisit = corelatedCriteria.restrictVisit;
-		if (restrictVisit) {
-			clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
-		}
-		
-    query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
+    query = getWindowedCriteriaQuery(query, corelatedCriteria, eventTable, true);
 
     // Occurrence criteria
     String occurrenceCriteria = String.format(
