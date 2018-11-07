@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Authors: Christopher Knoll
+ * Authors: Pavel Grafkin
  *
  */
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- *
- * @author cknoll1
- */
-public class CorelatedCriteria extends WindowedCriteria {
+public class WindowedCriteria {
+  @JsonProperty("Criteria")
+  public Criteria criteria;
   
-  @JsonProperty("Occurrence")
-  public Occurrence occurrence;
+  @JsonProperty("StartWindow")
+  public Window startWindow;  
+
+  @JsonProperty("EndWindow")
+  public Window endWindow;
+  
+  @JsonProperty("RestrictVisit")
+  public boolean restrictVisit = false;
+
+  @JsonProperty("IgnoreObservationPeriod")
+  public boolean ignoreObservationPeriod = false;
 }
