@@ -618,9 +618,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-  public String getWindowedCriteriaQuery(String sqlTemplate, WindowedCriteria criteria, String eventTable, boolean checkObservationPeriod) {
+  public String getWindowedCriteriaQuery(String sqlTemplate, WindowedCriteria criteria, String eventTable) {
 
       String query = sqlTemplate;
+      boolean checkObservationPeriod = !criteria.ignoreObservationPeriod;
 
       String criteriaQuery = criteria.criteria.accept(this);
       query = StringUtils.replace(query,"@criteriaQuery",criteriaQuery);
@@ -695,7 +696,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
-      String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable, false);
+      String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable);
       query = StringUtils.replace(query, "@joinType", "INNER");
       return query;
   }
@@ -704,7 +705,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   {
     String query = ADDITIONAL_CRITERIA_TEMPLATE;
     
-    query = getWindowedCriteriaQuery(query, corelatedCriteria, eventTable, true);
+    query = getWindowedCriteriaQuery(query, corelatedCriteria, eventTable);
 
     // Occurrence criteria
     String occurrenceCriteria = String.format(

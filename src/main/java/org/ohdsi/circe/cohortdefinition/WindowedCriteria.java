@@ -32,4 +32,7 @@ public class WindowedCriteria {
   
   @JsonProperty("RestrictVisit")
   public boolean restrictVisit = false;
+
+  @JsonProperty("IgnoreObservationPeriod")
+  public boolean ignoreObservationPeriod = false;
 }
