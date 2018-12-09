@@ -52,6 +52,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DOSE_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/doseEra.sql");
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
+  private final static String LOCATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/location.sql");
   private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");;
   private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
   private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
@@ -690,7 +691,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
           clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
       }
 
-      query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
+      query = StringUtils.replace(query,"@windowCriteria", clauses.size() > 0 ? StringUtils.join(clauses, " AND ") : "1=1");
 
       return query;
   }
@@ -2175,6 +2176,26 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     return query;
   }
+
+    @Override
+    public String getCriteriaSql(LocationArea criteria)
+    {
+        String query = LOCATION_TEMPLATE;
+
+        query = StringUtils.replace(query, "@codesetClause",
+                getCodesetJoinExpression(criteria.codesetId,
+                        "l.region_concept_id",
+                        null,
+                        null)
+        );
+
+        if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
+        {
+            query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+        }
+
+        return query;
+    }
   
 // </editor-fold>
 
