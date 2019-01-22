@@ -466,7 +466,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
 
 		resultSql = StringUtils.replace(resultSql, "@cohortCensoredStatsQuery",
-						(expression.censoringCriteria != null && expression.censoringCriteria.length > 0) ? COHORT_CENSORED_STATS_TEMPLATE : "");
+			(expression.censorWindow != null && (!StringUtils.isEmpty(expression.censorWindow.startDate) || !StringUtils.isEmpty(expression.censorWindow.endDate))) 
+				? COHORT_CENSORED_STATS_TEMPLATE 
+				: "");
 
     if (options != null)
     {
