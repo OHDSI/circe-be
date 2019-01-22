@@ -68,6 +68,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 	private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets codesets on (@codesetClauses)";
   
 	private final static String COHORT_INCLUSION_ANALYSIS_TEMPALTE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cohortInclusionAnalysis.sql");
+	private final static String COHORT_CENSORED_STATS_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cohortCensoredStats.sql");
 
   // Strategy templates
   private final static String DATE_OFFSET_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateOffsetStrategy.sql");
@@ -365,7 +366,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		resultSql = StringUtils.replace(resultSql, "@eventTable", eventTable);
 		return resultSql;
 	}
-	
+
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
@@ -463,7 +464,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 	
 		resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
 		resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
-		
+
+		resultSql = StringUtils.replace(resultSql, "@cohortCensoredStatsQuery",
+			(expression.censorWindow != null && (!StringUtils.isEmpty(expression.censorWindow.startDate) || !StringUtils.isEmpty(expression.censorWindow.endDate))) 
+				? COHORT_CENSORED_STATS_TEMPLATE 
+				: "");
+
     if (options != null)
     {
       // replease query parameters with tokens
