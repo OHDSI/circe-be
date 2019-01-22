@@ -32,15 +32,21 @@ WHERE ir.cohort_definition_id = @target_cohort_id
 
 -- calculate totals
 delete from @results_database_schema.cohort_summary_stats where cohort_definition_id = @target_cohort_id and mode_id = @inclusionImpactMode;
-insert into @results_database_schema.cohort_summary_stats (cohort_definition_id, base_count, final_count, mode_id, lost_count)
-select @target_cohort_id as cohort_definition_id, PC.total as person_count, coalesce(FC.total, 0) as final_count, @inclusionImpactMode as mode_id, coalesce(FCC.total_people - TC.total, 0) as lost_count
+insert into @results_database_schema.cohort_summary_stats (cohort_definition_id, base_count, final_count, mode_id)
+select @target_cohort_id as cohort_definition_id, PC.total as person_count, coalesce(FC.total, 0) as final_count, @inclusionImpactMode as mode_id
 FROM
 (select count_big(event_id) as total from @eventTable) PC,
-(select count_big(distinct person_id) as total_people from #final_cohort) FCC,
-(select count_big(distinct subject_id) as total from @target_database_schema.@target_cohort_table t where t.cohort_definition_id = @target_cohort_id) TC,
 (select sum(sr.person_count) as total
   from @results_database_schema.cohort_inclusion_result sr
   CROSS JOIN (select count(*) as total_rules from @results_database_schema.cohort_inclusion where cohort_definition_id = @target_cohort_id) RuleTotal
   where sr.mode_id = @inclusionImpactMode and sr.cohort_definition_id = @target_cohort_id and sr.inclusion_rule_mask = POWER(cast(2 as bigint),RuleTotal.total_rules)-1
 ) FC
 ;
+
+-- calculate censored
+delete from @results_database_schema.cohort_censor_stats where cohort_definition_id = @target_cohort_id;
+insert into @results_database_schema.cohort_censor_stats (cohort_definition_id, lost_count)
+select @target_cohort_id as cohort_definition_id, coalesce(FCC.total_people - TC.total, 0) as lost_count
+FROM
+  (select count_big(distinct person_id) as total_people from #final_cohort) FCC,
+  (select count_big(distinct subject_id) as total from @target_database_schema.@target_cohort_table t where t.cohort_definition_id = @target_cohort_id) TC;
