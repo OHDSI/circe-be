@@ -18,6 +18,7 @@
 
 package org.ohdsi.circe.check.checkers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +52,19 @@ public class UnusedConceptsCheck extends BaseCheck {
     @Override
     public void check(CohortExpression expression, WarningReporter reporter) {
 
-        for(final ConceptSet conceptSet : expression.conceptSets) {
+        List<Criteria> additionalCriterion;
+        if (Objects.nonNull(expression.additionalCriteria)) {
+            additionalCriterion = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
+            additionalCriterion.addAll(toCriteriaList(expression.additionalCriteria.groups));
+        } else {
+            additionalCriterion = Collections.emptyList();
+        }
+        for (final ConceptSet conceptSet : expression.conceptSets) {
             boolean hasUsed;
-            if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {
-                List<Criteria> additionalCriterion = Objects.nonNull(expression.additionalCriteria) ?
-                        toCriteriaList(expression.additionalCriteria.criteriaList) : Collections.emptyList();
+            if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {                
                 if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriterion))) {
-                    for(InclusionRule rule : expression.inclusionRules){
-                        if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)){
+                    for (InclusionRule rule : expression.inclusionRules) {
+                        if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)) {
                             break;
                         }
                     }
@@ -94,5 +100,15 @@ public class UnusedConceptsCheck extends BaseCheck {
 
         return Objects.nonNull(criteriaList) ? Arrays.stream(criteriaList)
                 .map(c -> c.criteria).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
+    private List<Criteria> toCriteriaList(CriteriaGroup[] groups) {
+
+        List<Criteria> criterias = new ArrayList<>();
+        Arrays.stream(groups)
+                .map(c -> c.criteriaList)
+                .map(this::toCriteriaList)
+                .forEach(criterias::addAll);
+        return criterias;
     }
 }
