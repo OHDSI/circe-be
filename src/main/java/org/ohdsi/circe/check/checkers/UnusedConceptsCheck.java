@@ -52,17 +52,17 @@ public class UnusedConceptsCheck extends BaseCheck {
     @Override
     public void check(CohortExpression expression, WarningReporter reporter) {
 
-        List<Criteria> additionalCriterion;
+        List<Criteria> additionalCriteria;
         if (Objects.nonNull(expression.additionalCriteria)) {
-            additionalCriterion = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
-            additionalCriterion.addAll(toCriteriaList(expression.additionalCriteria.groups));
+            additionalCriteria = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
+            additionalCriteria.addAll(toCriteriaList(expression.additionalCriteria.groups));
         } else {
-            additionalCriterion = Collections.emptyList();
+            additionalCriteria = Collections.emptyList();
         }
         for (final ConceptSet conceptSet : expression.conceptSets) {
             boolean hasUsed;
             if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {                
-                if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriterion))) {
+                if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriteria))) {
                     for (InclusionRule rule : expression.inclusionRules) {
                         if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)) {
                             break;
@@ -104,11 +104,11 @@ public class UnusedConceptsCheck extends BaseCheck {
 
     private List<Criteria> toCriteriaList(CriteriaGroup[] groups) {
 
-        List<Criteria> criterias = new ArrayList<>();
+        List<Criteria> criteria = new ArrayList<>();
         Arrays.stream(groups)
                 .map(c -> c.criteriaList)
                 .map(this::toCriteriaList)
-                .forEach(criterias::addAll);
-        return criterias;
+                .forEach(criteria::addAll);
+        return criteria;
     }
 }
