@@ -53,7 +53,8 @@ class CriteriaCheckerFactory {
         if (criteria instanceof ConditionEra) {
             result = c -> Objects.equals(((ConditionEra)c).codesetId, conceptSet.id);
         } else if (criteria instanceof ConditionOccurrence) {
-            result = c -> Objects.equals(((ConditionOccurrence)c).codesetId, conceptSet.id);
+            result = c -> 
+                    Objects.equals(((ConditionOccurrence)c).codesetId, conceptSet.id) || Objects.equals(((ConditionOccurrence)c).conditionSourceConcept, conceptSet.id);
         } else if (criteria instanceof Death) {
             result = c -> Objects.equals(((Death)c).codesetId, conceptSet.id);
         } else if (criteria instanceof DeviceExposure) {
