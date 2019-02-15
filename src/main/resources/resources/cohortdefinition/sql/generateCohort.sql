@@ -151,6 +151,10 @@ WHERE ranked.rank_value = 1
 @inclusionImpactAnalysisByPersonQuery
 -- END: Inclusion Impact Analysis - person
 
+-- BEGIN: Censored Stats
+@cohortCensoredStatsQuery
+-- END: Censored Stats
+
 TRUNCATE TABLE #best_events;
 DROP TABLE #best_events;
 
