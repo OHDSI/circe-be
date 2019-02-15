@@ -61,7 +61,7 @@ public class UnusedConceptsCheck extends BaseCheck {
         }
         for (final ConceptSet conceptSet : expression.conceptSets) {
             boolean hasUsed;
-            if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {                
+            if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {
                 if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriteria))) {
                     for (InclusionRule rule : expression.inclusionRules) {
                         if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)) {
@@ -83,10 +83,17 @@ public class UnusedConceptsCheck extends BaseCheck {
         }
     }
 
-    private boolean isConceptSetUsed(ConceptSet concept, List<Criteria> criteriaList) {
+    private boolean isConceptSetUsed(ConceptSet conceptSet, List<Criteria> criteriaList) {
 
-        CriteriaCheckerFactory factory = CriteriaCheckerFactory.getFactory(concept);
-        return criteriaList.stream().anyMatch(criteria -> factory.getCriteriaChecker(criteria).apply(criteria));
+        CriteriaCheckerFactory factory = CriteriaCheckerFactory.getFactory(conceptSet);
+        boolean mainCheck = criteriaList.stream().anyMatch(criteria -> factory.getCriteriaChecker(criteria).apply(criteria));
+        return mainCheck || criteriaList.stream().anyMatch(criteria -> {
+            if (criteria.CorrelatedCriteria != null) {
+                return isConceptSetUsed(conceptSet, criteria.CorrelatedCriteria);
+            } else {
+                return false;
+            }
+        });
     }
 
     private boolean isConceptSetUsed(ConceptSet conceptSet, CriteriaGroup group) {
