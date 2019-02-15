@@ -18,6 +18,7 @@
 
 package org.ohdsi.circe.check.checkers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +52,19 @@ public class UnusedConceptsCheck extends BaseCheck {
     @Override
     public void check(CohortExpression expression, WarningReporter reporter) {
 
-        for(final ConceptSet conceptSet : expression.conceptSets) {
+        List<Criteria> additionalCriteria;
+        if (Objects.nonNull(expression.additionalCriteria)) {
+            additionalCriteria = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
+            additionalCriteria.addAll(toCriteriaList(expression.additionalCriteria.groups));
+        } else {
+            additionalCriteria = Collections.emptyList();
+        }
+        for (final ConceptSet conceptSet : expression.conceptSets) {
             boolean hasUsed;
             if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {
-                List<Criteria> additionalCriterion = Objects.nonNull(expression.additionalCriteria) ?
-                        toCriteriaList(expression.additionalCriteria.criteriaList) : Collections.emptyList();
-                if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriterion))) {
-                    for(InclusionRule rule : expression.inclusionRules){
-                        if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)){
+                if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriteria))) {
+                    for (InclusionRule rule : expression.inclusionRules) {
+                        if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)) {
                             break;
                         }
                     }
@@ -77,10 +83,17 @@ public class UnusedConceptsCheck extends BaseCheck {
         }
     }
 
-    private boolean isConceptSetUsed(ConceptSet concept, List<Criteria> criteriaList) {
+    private boolean isConceptSetUsed(ConceptSet conceptSet, List<Criteria> criteriaList) {
 
-        CriteriaCheckerFactory factory = CriteriaCheckerFactory.getFactory(concept);
-        return criteriaList.stream().anyMatch(criteria -> factory.getCriteriaChecker(criteria).apply(criteria));
+        CriteriaCheckerFactory factory = CriteriaCheckerFactory.getFactory(conceptSet);
+        boolean mainCheck = criteriaList.stream().anyMatch(criteria -> factory.getCriteriaChecker(criteria).apply(criteria));
+        return mainCheck || criteriaList.stream().anyMatch(criteria -> {
+            if (criteria.CorrelatedCriteria != null) {
+                return isConceptSetUsed(conceptSet, criteria.CorrelatedCriteria);
+            } else {
+                return false;
+            }
+        });
     }
 
     private boolean isConceptSetUsed(ConceptSet conceptSet, CriteriaGroup group) {
@@ -94,5 +107,15 @@ public class UnusedConceptsCheck extends BaseCheck {
 
         return Objects.nonNull(criteriaList) ? Arrays.stream(criteriaList)
                 .map(c -> c.criteria).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
+    private List<Criteria> toCriteriaList(CriteriaGroup[] groups) {
+
+        List<Criteria> criteria = new ArrayList<>();
+        Arrays.stream(groups)
+                .map(c -> c.criteriaList)
+                .map(this::toCriteriaList)
+                .forEach(criteria::addAll);
+        return criteria;
     }
 }
