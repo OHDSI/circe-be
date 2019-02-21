@@ -20,29 +20,19 @@ package org.ohdsi.circe.check.checkers;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
 
-import java.util.Objects;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
 import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.ObservationFilter;
 
 public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 
 	private static final String MESSAGE = "%s criteria causes cohort cannot be created since a patient dies before being diagnosed with a condition";
-	private ObservationFilter observationFilter;
 
 	@Override
 	protected WarningSeverity defineSeverity() {
 
 		return WarningSeverity.WARNING;
-	}
-
-	@Override
-	protected void beforeCheck(WarningReporter reporter, CohortExpression expression) {
-
-		observationFilter = expression.primaryCriteria.observationWindow;
 	}
 
 	@Override
@@ -52,7 +42,7 @@ public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 		match(criteria.criteria)
 						.isA(Death.class)
 						.then(death -> match(criteria)
-										.when(c -> Objects.nonNull(c.startWindow) && Comparisons.compareTo(observationFilter, c.startWindow) < 0)
+										.when(c -> Comparisons.isBefore(c.startWindow))
 										.then(() -> reporter.add(MESSAGE, name))
 						);
 	}
