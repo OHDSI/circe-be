@@ -28,7 +28,7 @@ import org.ohdsi.circe.cohortdefinition.Criteria;
 public abstract class BaseCorelatedCriteriaCheck extends BaseIterableCheck {
 
     @Override
-    final protected void internalCheck(CohortExpression expression, WarningReporter reporter) {
+    protected void internalCheck(CohortExpression expression, WarningReporter reporter) {
 
         expression.inclusionRules.forEach(
                 inclusionRule ->

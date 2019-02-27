@@ -20,14 +20,18 @@ package org.ohdsi.circe.check.checkers;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
 
+import java.util.Arrays;
+import java.util.Objects;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
+import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
+import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.Death;
 
 public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 
-	private static final String MESSAGE = "%s criteria causes cohort cannot be created since a patient dies before being diagnosed with a condition";
+	private static final String MESSAGE = "%s attempts to identify death event prior to index event. Events post-death may not be available";
 
 	@Override
 	protected WarningSeverity defineSeverity() {
@@ -35,7 +39,6 @@ public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 		return WarningSeverity.WARNING;
 	}
 
-	@Override
 	protected void checkCriteria(CorelatedCriteria criteria, String groupName, WarningReporter reporter) {
 
 		String name = groupName + " " + CriteriaNameHelper.getCriteriaName(criteria.criteria);
@@ -46,4 +49,31 @@ public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 										.then(() -> reporter.add(MESSAGE, name))
 						);
 	}
+
+	@Override
+	protected void internalCheck(CohortExpression expression, WarningReporter reporter) {
+		super.internalCheck(expression, reporter);
+
+		checkCriteriaList(expression.additionalCriteria.criteriaList, ADDITIONAL_RULE, reporter);
+		checkCriteriaList(expression.primaryCriteria.criteriaList, INITIAL_EVENT, reporter);
+	}
+
+	private void checkCriteriaList(Object[] criteriaList, String groupName, WarningReporter reporter) {
+
+		if (Objects.nonNull(criteriaList)) {
+			Arrays.stream(criteriaList).forEach(c -> {
+				Criteria criteria = null;
+				if (c instanceof CorelatedCriteria) {
+					criteria = ((CorelatedCriteria)c).criteria;
+					checkCriteria((CorelatedCriteria) c, groupName, reporter);
+				} else if (c instanceof Criteria) {
+					criteria = (Criteria)c;
+				}
+				if (Objects.nonNull(criteria)) {
+					checkCriteriaGroup(criteria, groupName, reporter);
+				}
+			});
+		}
+	}
+
 }

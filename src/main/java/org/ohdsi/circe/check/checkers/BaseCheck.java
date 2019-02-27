@@ -28,6 +28,8 @@ import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
 public abstract class BaseCheck implements Check {
     protected static final String INCLUSION_RULE = "inclusion rule ";
+    protected static final String ADDITIONAL_RULE = "additional rule";
+    protected static final String INITIAL_EVENT = "initial event";
 
     @Override
     public final List<Warning> check(CohortExpression expression) {
