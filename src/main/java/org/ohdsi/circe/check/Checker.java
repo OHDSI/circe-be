@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.ohdsi.circe.check.checkers.ConceptSetCriteriaCheck;
 import org.ohdsi.circe.check.checkers.CriteriaContradictionsCheck;
+import org.ohdsi.circe.check.checkers.DeathTimeWindowCheck;
 import org.ohdsi.circe.check.checkers.DomainTypeCheck;
 import org.ohdsi.circe.check.checkers.DrugDomainCheck;
 import org.ohdsi.circe.check.checkers.DrugEraCheck;
@@ -74,6 +75,7 @@ public class Checker implements Check {
         checks.add(new EmptyDomainTypeCheck());
         checks.add(new DomainTypeCheck());
         checks.add(new CriteriaContradictionsCheck());
+        checks.add(new DeathTimeWindowCheck());
         return checks;
     }
 

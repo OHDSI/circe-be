@@ -179,4 +179,17 @@ public class Comparisons {
         }
         return result;
     }
+
+    public static boolean isBefore(Window window) {
+        return Objects.nonNull(window) && isBefore(window.start)
+                && !isAfter(window.end);
+    }
+
+    public static boolean isBefore(Window.Endpoint endpoint) {
+        return Objects.nonNull(endpoint) && endpoint.coeff < 0;
+    }
+
+    public static boolean isAfter(Window.Endpoint endpoint) {
+        return Objects.nonNull(endpoint) && endpoint.coeff > 0;
+    }
 }

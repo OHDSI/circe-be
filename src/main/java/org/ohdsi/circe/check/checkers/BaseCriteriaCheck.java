@@ -27,8 +27,6 @@ import org.ohdsi.circe.cohortdefinition.Criteria;
 
 public abstract class BaseCriteriaCheck extends BaseIterableCheck {
 
-    protected static final String INITIAL_EVENT = "initial event";
-
     @Override
     final protected void internalCheck(CohortExpression expression, WarningReporter reporter) {
 
