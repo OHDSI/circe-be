@@ -1091,7 +1091,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     ArrayList<String> joinClauses = new ArrayList<>();
     
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null) // join to PERSON
+    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0) ) // join to PERSON
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     
     query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
@@ -1183,7 +1183,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     ArrayList<String> joinClauses = new ArrayList<>();
     
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null) // join to PERSON
+    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0) ) // join to PERSON
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     
     query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
