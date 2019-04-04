@@ -695,8 +695,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       if (restrictVisit) {
           clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
       }
-
-      query = StringUtils.replace(query,"@windowCriteria",StringUtils.join(clauses, " AND "));
+			
+			query = StringUtils.replace(query,"@windowCriteria",clauses.size() > 0 ? " AND " + StringUtils.join(clauses, " AND ") : "");
 
       return query;
   }
