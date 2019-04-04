@@ -3,4 +3,4 @@ FROM @eventTable P
 @joinType JOIN
 (
   @criteriaQuery
-) A on A.person_id = P.person_id and @windowCriteria
+) A on A.person_id = P.person_id @windowCriteria
