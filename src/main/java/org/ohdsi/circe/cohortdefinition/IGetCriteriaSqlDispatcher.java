@@ -23,7 +23,7 @@ package org.ohdsi.circe.cohortdefinition;
  * @author cknoll1
  */
 public interface IGetCriteriaSqlDispatcher {
-  String getCriteriaSql(LocationArea locationArea);
+  String getCriteriaSql(LocationRegion locationRegion);
   String getCriteriaSql(ConditionEra conditionEraCriteria);
   String getCriteriaSql(ConditionOccurrence conditionOccurrenceCriteria);
   String getCriteriaSql(Death deathCriteria);

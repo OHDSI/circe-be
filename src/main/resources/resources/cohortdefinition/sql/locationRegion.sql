@@ -1,4 +1,4 @@
--- Begin Geo Area Criteria
+-- Begin Location region Criteria
 select
   C.entity_id AS person_id,
   C.location_history_id as event_id,
@@ -18,4 +18,4 @@ from
     WHERE concept_code = 'OMOP generated' AND domain_id = 'Metadata' AND concept_name = 'Person'
   )
 ) C
--- End Geo Area Criteria
+-- End Location region Criteria

@@ -52,7 +52,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DOSE_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/doseEra.sql");
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
-  private final static String LOCATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/location.sql");
+  private final static String LOCATION_REGION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/locationRegion.sql");
   private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");;
   private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
   private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
@@ -697,7 +697,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
           clauses.add("A.visit_occurrence_id = P.visit_occurrence_id");
       }
 
-      query = StringUtils.replace(query,"@windowCriteria", clauses.size() > 0 ? StringUtils.join(clauses, " AND ") : "1=1");
+      query = StringUtils.replace(query,"@windowCriteria",clauses.size() > 0 ? " AND " + StringUtils.join(clauses, " AND ") : "");
 
       return query;
   }
@@ -2184,9 +2184,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
     @Override
-    public String getCriteriaSql(LocationArea criteria)
+    public String getCriteriaSql(LocationRegion criteria)
     {
-        String query = LOCATION_TEMPLATE;
+        String query = LOCATION_REGION_TEMPLATE;
 
         query = StringUtils.replace(query, "@codesetClause",
                 getCodesetJoinExpression(criteria.codesetId,

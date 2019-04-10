@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
   @JsonSubTypes.Type(value = DoseEra.class, name = "DoseEra"),
   @JsonSubTypes.Type(value = DrugEra.class, name = "DrugEra"),
   @JsonSubTypes.Type(value = DrugExposure.class, name = "DrugExposure"),
-  @JsonSubTypes.Type(value = LocationArea.class, name = "LocationArea"),
+  @JsonSubTypes.Type(value = LocationRegion.class, name = "LocationRegion"),
   @JsonSubTypes.Type(value = Measurement.class, name = "Measurement"),
   @JsonSubTypes.Type(value = Observation.class, name = "Observation"),
   @JsonSubTypes.Type(value = ObservationPeriod.class, name = "ObservationPeriod"),

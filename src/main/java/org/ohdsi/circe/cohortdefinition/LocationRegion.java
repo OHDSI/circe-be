@@ -3,15 +3,11 @@ package org.ohdsi.circe.cohortdefinition;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("LocationArea")
-public class LocationArea extends GeoCriteria {
-
-    // TODO: Extract to common class
+@JsonTypeName("LocationRegion")
+public class LocationRegion extends GeoCriteria {
 
     @JsonProperty("CodesetId")
     public Integer codesetId;
-
-    //
 
     @Override
     public String accept(IGetCriteriaSqlDispatcher dispatcher)
