@@ -12,10 +12,6 @@ from
   FROM @cdm_database_schema.LOCATION l
     JOIN @cdm_database_schema.LOCATION_HISTORY lh ON l.location_id = lh.location_id
 @codesetClause
-  WHERE lh.domain_id = (
-    SELECT CAST(concept_id AS VARCHAR)
-    FROM @cdm_database_schema.CONCEPT
-    WHERE concept_code = 'OMOP generated' AND domain_id = 'Metadata' AND concept_name = 'Person'
-  )
+  WHERE lh.domain_id = 'PERSON'
 ) C
 -- End Location region Criteria
