@@ -20,7 +20,11 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ohdsi.analysis.Utils;
+import org.ohdsi.analysis.versioning.CdmCompatibilitySpec;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,48 +34,66 @@ import java.util.List;
  */
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CohortExpression {
+public class CohortExpression implements CdmCompatibilitySpec {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
-  @JsonProperty("Title")  
+  private double minCdmVersion = -1;
+  private double maxCdmVersion = -1;
+
+  @JsonProperty("Title")
   public String title;
-  
+
   @JsonProperty("PrimaryCriteria")
   public PrimaryCriteria primaryCriteria;
 
   @JsonProperty("AdditionalCriteria")
   public CriteriaGroup additionalCriteria;
-  
+
   @JsonProperty("ConceptSets")
   public ConceptSet[] conceptSets;
-  
-  @JsonProperty("QualifiedLimit")  
+
+  @JsonProperty("QualifiedLimit")
   public ResultLimit qualifiedLimit = new ResultLimit();
-  
+
   @JsonProperty("ExpressionLimit")
   public ResultLimit expressionLimit = new ResultLimit();
 
   @JsonProperty("InclusionRules")
   public List<InclusionRule> inclusionRules = new ArrayList<>();
-  
+
   @JsonProperty("EndStrategy")
   public EndStrategy endStrategy;
-  
+
   @JsonProperty("CensoringCriteria")
   public Criteria[] censoringCriteria;
-  
+
   @JsonProperty("CollapseSettings")
   public CollapseSettings collapseSettings = new CollapseSettings();
 
   @JsonProperty("CensorWindow")
   public Period censorWindow;
-	
-	public static CohortExpression fromJson(String json) {
-		try {
-			CohortExpression expression = JSON_MAPPER.readValue(json, CohortExpression.class);
-			return expression;
-		} catch (Exception e) {
-			throw new RuntimeException("Error parsing cohort expression", e);
-		}
-	}
+
+  @JsonProperty("minCdmVersion")
+  @Override
+  public double getMinCdmVersion() {
+    return minCdmVersion;
+  }
+
+  public void setMinCdmVersion(double minCdmVersion) {
+    this.minCdmVersion = minCdmVersion;
+  }
+
+  @JsonProperty("maxCdmVersion")
+  @Override
+  public double getMaxCdmVersion() {
+    return maxCdmVersion;
+  }
+
+  public void setMaxCdmVersion(double maxCdmVersion) {
+    this.maxCdmVersion = maxCdmVersion;
+  }
+
+  public static CohortExpression fromJson(String json) {
+      return Utils.deserialize(json, new TypeReference<CohortExpression>() {});
+  }
 }

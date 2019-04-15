@@ -19,8 +19,10 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ohdsi.analysis.versioning.CdmVersion;
 import org.ohdsi.circe.vocabulary.Concept;
 
+@CdmVersion(min = 5.3)
 public class PayerPlanPeriod extends Criteria {
 	@JsonProperty("First")
 	public Boolean first;

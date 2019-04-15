@@ -1,0 +1,20 @@
+{
+  "InclusionRules": [
+    {
+      "expression": {
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "PayerPlanPeriod": {}
+            }
+          },
+          {
+            "Criteria": {
+              "LocationRegion": {}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
