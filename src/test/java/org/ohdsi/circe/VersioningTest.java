@@ -23,7 +23,7 @@ public class VersioningTest extends BaseTest {
 
         CohortExpression cohortExpression = new CohortExpression();
         String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersionRange\":\"*\""));
+        assertThat(serialized, containsString("\"cdmVersionRange\":\">=5.0.0\""));
     }
 
     @Test

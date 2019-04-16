@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.ohdsi.analysis.Utils;
 import org.ohdsi.analysis.versioning.CdmCompatibilitySpec;
+import org.ohdsi.analysis.versioning.CdmVersion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.List;
  */
 
 @JsonIgnoreProperties(ignoreUnknown=true)
+@CdmVersion(range = ">=5.0.0")
 public class CohortExpression implements CdmCompatibilitySpec {
 
   @JsonProperty("cdmVersionRange")
