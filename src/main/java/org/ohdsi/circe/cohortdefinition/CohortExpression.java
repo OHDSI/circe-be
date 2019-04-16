@@ -37,8 +37,8 @@ import java.util.List;
 public class CohortExpression implements CdmCompatibilitySpec {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
-  private double minCdmVersion = -1;
-  private double maxCdmVersion = -1;
+  @JsonProperty("cdmVersion")
+  private String cdmVersion = null;
 
   @JsonProperty("Title")
   public String title;
@@ -73,27 +73,15 @@ public class CohortExpression implements CdmCompatibilitySpec {
   @JsonProperty("CensorWindow")
   public Period censorWindow;
 
-  @JsonProperty("minCdmVersion")
-  @Override
-  public double getMinCdmVersion() {
-    return minCdmVersion;
+  public String getCdmVersion() {
+    return cdmVersion;
   }
 
-  public void setMinCdmVersion(double minCdmVersion) {
-    this.minCdmVersion = minCdmVersion;
+  public void setCdmVersion(String cdmVersion) {
+    this.cdmVersion = cdmVersion;
   }
 
-  @JsonProperty("maxCdmVersion")
-  @Override
-  public double getMaxCdmVersion() {
-    return maxCdmVersion;
-  }
-
-  public void setMaxCdmVersion(double maxCdmVersion) {
-    this.maxCdmVersion = maxCdmVersion;
-  }
-
-  public static CohortExpression fromJson(String json) {
+    public static CohortExpression fromJson(String json) {
       return Utils.deserialize(json, new TypeReference<CohortExpression>() {});
   }
 }

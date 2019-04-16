@@ -25,7 +25,7 @@ public class VersioningTest extends BaseTest {
         String design = readResource("/versioning/payerPlanCohortExpression.json");
         CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
         assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getMinCdmVersion(), 5.3, 0);
+        assertEquals(cohortExpression.getCdmVersion(), ">=5.3.0");
     }
 
     @Test
@@ -34,7 +34,7 @@ public class VersioningTest extends BaseTest {
         String design = readResource("/versioning/locationRegionCohortExpression.json");
         CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
         assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getMinCdmVersion(), 6.1, 0);
+        assertEquals(cohortExpression.getCdmVersion(), ">=6.1.0");
     }
 
     @Test
@@ -43,7 +43,15 @@ public class VersioningTest extends BaseTest {
         String design = readResource("/versioning/mixedCohortExpression.json");
         CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
         assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getMinCdmVersion(), 6.1, 0);
+        assertEquals(cohortExpression.getCdmVersion(), ">=6.1.0");
+    }
+
+    @Test
+    public void checkSerializedNonVersioned() throws IOException {
+
+        CohortExpression cohortExpression = new CohortExpression();
+        String serialized = Utils.serialize(cohortExpression);
+        assertThat(serialized, containsString("\"cdmVersion\":\"*\""));
     }
 
     @Test
@@ -52,7 +60,7 @@ public class VersioningTest extends BaseTest {
         CohortExpression cohortExpression = new CohortExpression();
         cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
         String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"minCdmVersion\":5.3"));
+        assertThat(serialized, containsString("\"cdmVersion\":\">=5.3.0\""));
     }
 
     @Test
@@ -61,7 +69,7 @@ public class VersioningTest extends BaseTest {
         CohortExpression cohortExpression = new CohortExpression();
         cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getLocationRegionCriteria());
         String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"minCdmVersion\":6.1"));
+        assertThat(serialized, containsString("\"cdmVersion\":\">=6.1.0\""));
     }
 
     @Test
@@ -70,7 +78,7 @@ public class VersioningTest extends BaseTest {
         CohortExpression cohortExpression = new CohortExpression();
         cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getLocationRegionCriteria(), getPayerPlanCriteria());
         String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"minCdmVersion\":6.1"));
+        assertThat(serialized, containsString("\"cdmVersion\":\">=6.1.0\""));
     }
 
     private CorelatedCriteria getLocationRegionCriteria() {
