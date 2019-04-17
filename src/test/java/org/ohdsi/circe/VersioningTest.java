@@ -7,7 +7,6 @@ import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
-import org.ohdsi.circe.cohortdefinition.LocationRegion;
 import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
 
 import java.io.IOException;
@@ -19,71 +18,76 @@ import static org.junit.Assert.assertThat;
 
 public class VersioningTest extends BaseTest {
 
+    /**
+     * Checks deriving of default CDM range for Cohort Expression.
+     *
+     * Checks that, when a user has not filled "cdmVersionRange" manually,
+     * an empty Cohort Expression after serialization contains default derived CDM version range.
+     */
+    @Test
+    public void checkSerializedNonVersionedEmpty() {
+
+        CohortExpression cohortExpression = new CohortExpression();
+        String serialized = Utils.serialize(cohortExpression);
+        assertThat(serialized, containsString("\"cdmVersionRange\":\">=5.0.0\""));
+    }
+
+    /**
+     * Checks deriving of non-default CDM range for Cohort Expression.
+     *
+     * Checks that, when a user has not filled "cdmVersionRange" manually,
+     * a Cohort Expression having Payer Plan Period contains appropriate derived CDM version range after serialization.
+     */
+    @Test
+    public void checkSerializedNonVersionedPayerPlan() {
+
+        CohortExpression cohortExpression = new CohortExpression();
+        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
+        String serialized = Utils.serialize(cohortExpression);
+        assertThat(serialized, containsString("\"cdmVersionRange\":\">=5.3.0\""));
+    }
+
+    /**
+     * Checks that, if user-defined CDM range matches derived CDM range for Cohort Expression,
+     * the serialization finishes successfully.
+     */
+    @Test
+    public void checkSerializedProperlyVersionedPayerPlan() {
+
+        CohortExpression cohortExpression = new CohortExpression();
+        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
+        // User defined constraint
+        cohortExpression.setCdmVersionRange(">5.4.0");
+        String serialized = Utils.serialize(cohortExpression);
+        assertThat(serialized, containsString("\"cdmVersionRange\":\">5.4.0\""));
+    }
+
+    /**
+     * Checks that, if user-defined CDM range doesn't match derived CDM range for Cohort Expression,
+     * the serialization fails.
+     */
+    @Test
+    public void checkSerializedImproperlyVersionedPayerPlan() {
+
+        CohortExpression cohortExpression = new CohortExpression();
+        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
+        // User defined constraint
+        cohortExpression.setCdmVersionRange("<6.0.0");
+
+        try {
+            Utils.serialize(cohortExpression);
+        } catch (RuntimeException ex) {
+            assertEquals("User-defined CDM range (<6.0.0) does not include derived CDM range (>=5.3.0)", ex.getCause().getMessage());
+        }
+    }
+
     @Test
     public void checkDeserializedPayerPlanCompatibility() throws IOException {
 
         String design = readResource("/versioning/payerPlanCohortExpression.json");
         CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
         assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getCdmVersion(), ">=5.3.0");
-    }
-
-    @Test
-    public void checkDeserializedLocationRegionCompatibility() throws IOException {
-
-        String design = readResource("/versioning/locationRegionCohortExpression.json");
-        CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
-        assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getCdmVersion(), ">=6.1.0");
-    }
-
-    @Test
-    public void checkDeserializedMixedCompatibility() throws IOException {
-
-        String design = readResource("/versioning/mixedCohortExpression.json");
-        CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
-        assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getCdmVersion(), ">=6.1.0");
-    }
-
-    @Test
-    public void checkSerializedNonVersioned() throws IOException {
-
-        CohortExpression cohortExpression = new CohortExpression();
-        String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersion\":\"*\""));
-    }
-
-    @Test
-    public void checkSerializedPayerPlanCompatibility() {
-
-        CohortExpression cohortExpression = new CohortExpression();
-        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
-        String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersion\":\">=5.3.0\""));
-    }
-
-    @Test
-    public void checkSerializedLocationRegionCompatibility() {
-
-        CohortExpression cohortExpression = new CohortExpression();
-        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getLocationRegionCriteria());
-        String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersion\":\">=6.1.0\""));
-    }
-
-    @Test
-    public void checkSerializedMixedCompatibility() {
-
-        CohortExpression cohortExpression = new CohortExpression();
-        cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getLocationRegionCriteria(), getPayerPlanCriteria());
-        String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersion\":\">=6.1.0\""));
-    }
-
-    private CorelatedCriteria getLocationRegionCriteria() {
-
-        return getCorrelatedCriteriaWithCriteria(new LocationRegion());
+        assertEquals(cohortExpression.getCdmVersionRange(), ">=5.3.0");
     }
 
     private CorelatedCriteria getPayerPlanCriteria() {

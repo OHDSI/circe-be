@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.ohdsi.analysis.versioning.CdmVersion;
 import org.ohdsi.circe.vocabulary.Concept;
 
-@CdmVersion(semver = ">=5.3")
+@CdmVersion(range = ">=5.3")
 public class PayerPlanPeriod extends Criteria {
 	@JsonProperty("First")
 	public Boolean first;
