@@ -20,7 +20,11 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.ohdsi.analysis.Utils;
+import org.ohdsi.analysis.versioning.CdmCompatibilitySpec;
+import org.ohdsi.analysis.versioning.CdmVersion;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +34,11 @@ import java.util.List;
  */
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CohortExpression {
-  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+@CdmVersion(range = ">=5.0.0")
+public class CohortExpression implements CdmCompatibilitySpec {
+
+  @JsonProperty("cdmVersionRange")
+  private String cdmVersionRange = null;
 
   @JsonProperty("Title")  
   public String title;
@@ -65,13 +72,18 @@ public class CohortExpression {
 
   @JsonProperty("CensorWindow")
   public Period censorWindow;
-	
-	public static CohortExpression fromJson(String json) {
-		try {
-			CohortExpression expression = JSON_MAPPER.readValue(json, CohortExpression.class);
-			return expression;
-		} catch (Exception e) {
-			throw new RuntimeException("Error parsing cohort expression", e);
-		}
-	}
+
+  @Override
+  public String getCdmVersionRange() {
+    return cdmVersionRange;
+  }
+
+  @Override
+  public void setCdmVersionRange(String cdmVersionRange) {
+    this.cdmVersionRange = cdmVersionRange;
+  }
+
+  public static CohortExpression fromJson(String json) {
+	return Utils.deserialize(json, new TypeReference<CohortExpression>() {});
+  }
 }
