@@ -2187,6 +2187,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   private void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
+
     joinClauses.add("JOIN @cdm_database_schema.LOCATION_HISTORY LH " +
         "on LH.entity_id = CS.care_site_id " +
          "AND LH.domain_id = 'CARE_SITE' " +
