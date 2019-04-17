@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.ohdsi.analysis.versioning.CdmVersion;
 
 @JsonTypeName("LocationRegion")
-@CdmVersion(semver = ">=6.1")
+@CdmVersion(range = ">=6.1")
 public class LocationRegion extends GeoCriteria {
 
     @JsonProperty("CodesetId")
