@@ -2102,14 +2102,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     
     if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    if (criteria.placeOfService != null && criteria.placeOfService.length > 0)
+    if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) || criteria.placeOfServiceLocation != null)
       joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-    
-    
-    
+
     ArrayList<String> whereClauses = new ArrayList<>();
 
 		// first
@@ -2169,7 +2166,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     {
       whereClauses.add(String.format("CS.place_of_service_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.placeOfService),",")));
     }
-    
+
+    if (criteria.placeOfServiceLocation != null) {
+        addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
+    }
+
+    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
+
     String whereClause = "";
     if (whereClauses.size() > 0)
       whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
@@ -2181,6 +2184,23 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     
     return query;
+  }
+
+  private void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
+    joinClauses.add("JOIN @cdm_database_schema.LOCATION_HISTORY LH " +
+        "on LH.entity_id = CS.care_site_id " +
+         "AND LH.domain_id = 'CARE_SITE' " +
+          "AND C.visit_start_date >= LH.start_date " +
+           "AND C.visit_end_date <= ISNULL(LH.end_date, CAST('2099-12-31' AS DATE))");
+    joinClauses.add("JOIN @cdm_database_schema.LOCATION LOC on LOC.location_id = LH.location_id");
+    joinClauses.add(
+        getCodesetJoinExpression(
+            codesetId,
+            "LOC.region_concept_id",
+            null,
+            null
+        )
+    );
   }
 
     @Override
