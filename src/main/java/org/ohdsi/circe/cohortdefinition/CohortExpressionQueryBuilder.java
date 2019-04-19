@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.builders.BaseBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceBuilder;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.Concept;
 import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
@@ -32,7 +34,7 @@ import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
  *
  * @author cknoll1
  */
-public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, IGetEndStrategySqlDispatcher {
+public class CohortExpressionQueryBuilder extends BaseBuilder implements IGetCriteriaSqlDispatcher, IGetEndStrategySqlDispatcher {
 
   private final static ConceptSetExpressionQueryBuilder conceptSetQueryBuilder = new ConceptSetExpressionQueryBuilder();
   private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/codesetQuery.sql");
@@ -58,15 +60,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
   private final static String PROCEDURE_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/procedureOccurrence.sql");
   private final static String SPECIMEN_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/specimen.sql");
-  private final static String VISIT_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/visitOccurrence.sql");
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");  
   private final static String PAYER_PLAN_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/payerPlanPeriod.sql");
   
-  private final static String EVENT_TABLE_EXPRESSION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eventTableExpression.sql");  
+  private final static String EVENT_TABLE_EXPRESSION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eventTableExpression.sql");
   private final static String DEMOGRAPHIC_CRITERIA_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/demographicCriteria.sql");
-	private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets codesets on (@codesetClauses)";
   
 	private final static String COHORT_INCLUSION_ANALYSIS_TEMPALTE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cohortInclusionAnalysis.sql");
 	private final static String COHORT_CENSORED_STATS_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/cohortCensoredStats.sql");
@@ -110,28 +110,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 		}
 		
   }
-	
-  private ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
-    ArrayList<Long> conceptIdList = new ArrayList<>();
-    for (Concept concept : concepts) {
-      conceptIdList.add(concept.conceptId);
-    }
-    return conceptIdList;
-  }
-
-  private String getOperator(String op)
-  {
-    switch(op)
-    {
-      case "lt": return "<";
-      case "lte" : return "<=";
-      case "eq": return "=";
-      case "!eq": return "<>";
-      case "gt": return ">";
-      case "gte": return ">=";
-    }
-    throw new RuntimeException("Unknown operator type: " + op);
-  }
   
   private String getOccurrenceOperator(int type)
   {
@@ -145,81 +123,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     // recieved an unknown operator value
     return "??";
-  }
-  
-  private String getOperator(DateRange range)
-  {
-    return getOperator(range.op);
-  }
-  
-  private String getOperator(NumericRange range)
-  {
-    return getOperator(range.op);
-  }
-  
-  private String dateStringToSql(String date)
-  {
-    String[] dateParts = StringUtils.split(date,'-');
-    return String.format("DATEFROMPARTS(%s, %s, %s)", dateParts[0], dateParts[1], dateParts[2]);
-  }
-  
-  private String buildDateRangeClause(String sqlExpression, DateRange range)
-  {
-    String clause;
-    if (range.op.endsWith("bt")) // range with a 'between' op
-    {
-      clause = String.format("%s(%s >= %s and %s <= %s)",
-          range.op.startsWith("!") ? "not " : "",
-          sqlExpression,
-          dateStringToSql(range.value),
-          sqlExpression,
-          dateStringToSql(range.extent));
-    }
-    else // single value range (less than/eq/greater than, etc)
-    {
-      clause = String.format("%s %s %s", sqlExpression, getOperator(range), dateStringToSql(range.value));
-    }
-    return clause;
-  }
-  
-  // Assumes integer numeric range
-  private String buildNumericRangeClause(String sqlExpression, NumericRange range)
-  {
-    String clause;
-    if (range.op.endsWith("bt"))
-    {
-      clause = String.format("%s(%s >= %d and %s <= %d)",
-        range.op.startsWith("!") ? "not " : "",
-        sqlExpression,
-        range.value.intValue(),
-        sqlExpression,
-        range.extent.intValue());
-    }
-    else
-    {
-      clause = String.format("%s %s %d", sqlExpression, getOperator(range), range.value.intValue());
-    }
-    return clause;
-  }
- 
-  // assumes decimal range
-  private String buildNumericRangeClause(String sqlExpression, NumericRange range, String format)
-  {
-    String clause;
-    if (range.op.endsWith("bt"))
-    {
-      clause = String.format("%s(%s >= %" + format + " and %s <= %" + format + ")",
-        range.op.startsWith("!") ? "not " : "",
-        sqlExpression,
-        range.value.doubleValue(),
-        sqlExpression,
-        range.extent.doubleValue());
-    }
-    else
-    {
-      clause = String.format("%s %s %" + format, sqlExpression, getOperator(range), range.value.doubleValue());
-    }
-    return clause;
   }
 
   
@@ -243,11 +146,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         query, groupQuery);
     return wrappedQuery;
   }
-  
+
   public String getCodesetQuery(ConceptSet[] conceptSets) {
     String codesetQuery = CODESET_QUERY_TEMPLATE;
     ArrayList<String> codesetInserts = new ArrayList<>();
-    
+
     if (conceptSets.length > 0) {
       for (ConceptSet cs : conceptSets) {
         // construct main target codeset query
@@ -261,30 +164,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     codesetQuery = StringUtils.replace(codesetQuery, "@codesetInserts", StringUtils.join(codesetInserts, "\n"));
     return codesetQuery;
   }
-	
-	private String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
-
-		final String codsetJoinClause = "(%s = codesets.concept_id and codesets.codeset_id = %d)";
-		String joinExpression = "";
-		
-		ArrayList<String> codesetClauses = new ArrayList<>();
-
-		if (standardCodesetId != null) {
-			codesetClauses.add(String.format(codsetJoinClause, standardConceptColumn, standardCodesetId));
-		}
-
-		// conditionSourceConcept
-		if (sourceCodesetId != null) {
-			codesetClauses.add(String.format(codsetJoinClause, sourceConceptColumn, sourceCodesetId));
-		}
-
-		if (codesetClauses.size() > 0) {
-			joinExpression = StringUtils.replace(CODESET_JOIN_TEMPLATE, "@codesetClauses", StringUtils.join(codesetClauses, " AND "));
-		}
-
-		
-		return joinExpression;
-	}
  
   private String getCensoringEventsQuery(Criteria[] censoringCriteria)
   {
@@ -495,7 +374,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String query = GROUP_QUERY_TEMPLATE;
     ArrayList<String> additionalCriteriaQueries = new ArrayList<>();
     String joinType = "INNER";
-		
+
     int indexId = 0;
     for(CorelatedCriteria cc : group.criteriaList)
     {
@@ -504,33 +383,33 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       additionalCriteriaQueries.add(acQuery);
       indexId++;
     }
-    
+
     for(DemographicCriteria dc : group.demographicCriteriaList)
     {
       String dcQuery = this.getDemographicCriteriaQuery(dc, eventTable); //ac.accept(this);
       dcQuery = StringUtils.replace(dcQuery, "@indexId", "" + indexId);
       additionalCriteriaQueries.add(dcQuery);
       indexId++;
-    } 
-    
+    }
+
     for(CriteriaGroup g : group.groups)
     {
       String gQuery = this.getCriteriaGroupQuery(g, eventTable); //g.accept(this);
       gQuery = StringUtils.replace(gQuery, "@indexId", "" + indexId);
-      additionalCriteriaQueries.add(gQuery);  
+      additionalCriteriaQueries.add(gQuery);
       indexId++;
     }
-    
+
     if (indexId > 0) // this group is not empty
     {
       query = StringUtils.replace(query, "@criteriaQueries", StringUtils.join(additionalCriteriaQueries, "\nUNION ALL\n"));
-      
+
       String occurrenceCountClause = "HAVING COUNT(index_id) ";
       if (group.type.equalsIgnoreCase("ALL")) // count must match number of criteria + sub-groups in group.
         occurrenceCountClause += "= " + indexId;
 
       if (group.type.equalsIgnoreCase("ANY")) // count must be > 0 for an 'ANY' criteria
-        occurrenceCountClause += "> 0"; 
+        occurrenceCountClause += "> 0";
 
 			if (group.type.toUpperCase().startsWith("AT_")) {
 				if (group.type.toUpperCase().endsWith("LEAST")) { // AT_LEAST
@@ -550,12 +429,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     else // query group is empty so replace group query with a friendly default
     {
-			query = "-- Begin Criteria Group\n select @indexId as index_id, person_id, event_id FROM @eventTable\n-- End Criteria Group\n";				
+			query = "-- Begin Criteria Group\n select @indexId as index_id, person_id, event_id FROM @eventTable\n-- End Criteria Group\n";
     }
 
     query = StringUtils.replace(query, "@eventTable", eventTable);
-    
-    return query;    
+
+    return query;
   }
   
   private String getInclusionRuleQuery(CriteriaGroup inclusionRule)
@@ -733,6 +612,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // <editor-fold defaultstate="collapsed" desc="ICriteriaSqlDispatcher implementation">
+
+  public String getCriteriaSql(Criteria criteria) {
+    String query = null;
+    if (VisitOccurrence.class.isAssignableFrom(criteria.getClass())) {
+        query = new VisitOccurrenceBuilder().getCriteriaSql((VisitOccurrence) criteria);
+    }
+    if (query != null && criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
+        query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+    }
+    return query;
+  }
   
   @Override
   public String getCriteriaSql(ConditionEra criteria)
@@ -2084,124 +1974,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     
     return query;
-  }
-
-  @Override
-  public String getCriteriaSql(VisitOccurrence criteria) 
-  {
-    String query = VISIT_OCCURRENCE_TEMPLATE;
-    
-		query = StringUtils.replace(query, "@codesetClause",
-						getCodesetJoinExpression(criteria.codesetId,
-										"vo.visit_concept_id",
-										criteria.visitSourceConcept,
-										"vo.visit_source_concept_id")
-		);
-    
-    ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) || criteria.placeOfServiceLocation != null)
-      joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-
-    ArrayList<String> whereClauses = new ArrayList<>();
-
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY vo.person_id ORDER BY vo.visit_start_date, vo.visit_occurrence_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-
-    // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.visit_start_date",criteria.occurrenceStartDate));
-    }
-
-    // occurrenceEndDate
-    if (criteria.occurrenceEndDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.visit_end_date",criteria.occurrenceEndDate));
-    }
-    
-    // visitType
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.visitType);
-      whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
-    }
-    
-    // visitLength
-    if (criteria.visitLength != null)
-    {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitLength));
-    }
-
-    // age
-    if (criteria.age != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.visit_start_date) - P.year_of_birth", criteria.age));
-    }
-    
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-    
-    // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-    {
-      whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty),",")));
-    }
-
-    // placeOfService
-    if (criteria.placeOfService != null && criteria.placeOfService.length > 0)
-    {
-      whereClauses.add(String.format("CS.place_of_service_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.placeOfService),",")));
-    }
-
-    if (criteria.placeOfServiceLocation != null) {
-        addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
-    }
-
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
-  }
-
-  private void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
-
-    joinClauses.add("JOIN @cdm_database_schema.LOCATION_HISTORY LH " +
-        "on LH.entity_id = CS.care_site_id " +
-         "AND LH.domain_id = 'CARE_SITE' " +
-          "AND C.visit_start_date >= LH.start_date " +
-           "AND C.visit_end_date <= ISNULL(LH.end_date, CAST('2099-12-31' AS DATE))");
-    joinClauses.add("JOIN @cdm_database_schema.LOCATION LOC on LOC.location_id = LH.location_id");
-    joinClauses.add(
-        getCodesetJoinExpression(
-            codesetId,
-            "LOC.region_concept_id",
-            null,
-            null
-        )
-    );
   }
 
     @Override
