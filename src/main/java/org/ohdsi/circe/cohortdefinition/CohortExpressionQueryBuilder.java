@@ -616,17 +616,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // <editor-fold defaultstate="collapsed" desc="ICriteriaSqlDispatcher implementation">
-
-  public String getCriteriaSql(Criteria criteria) {
-    String query = null;
-    if (VisitOccurrence.class.isAssignableFrom(criteria.getClass())) {
-        query = new VisitOccurrenceBuilder().getCriteriaSql((VisitOccurrence) criteria);
-    }
-    if (query != null && criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
-        query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    return query;
-  }
   
   @Override
   public String getCriteriaSql(ConditionEra criteria)
