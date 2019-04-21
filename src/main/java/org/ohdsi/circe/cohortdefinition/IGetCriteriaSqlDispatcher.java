@@ -37,6 +37,5 @@ public interface IGetCriteriaSqlDispatcher {
   String getCriteriaSql(PayerPlanPeriod payerPlanPeriodCriteria);
   String getCriteriaSql(ProcedureOccurrence procedureOccurrenceCriteria);
   String getCriteriaSql(Specimen specimenCriteria);
-
-  <T extends Criteria> String getCriteriaSql(T criteria);
+  String getCriteriaSql(VisitOccurrence specimenCriteria);
 }

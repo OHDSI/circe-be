@@ -1980,6 +1980,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
+  @Override
+  public String getCriteriaSql(VisitOccurrence criteria) {
+    return new VisitOccurrenceBuilder<>().getCriteriaSql(criteria);
+  }
+
     @Override
     public String getCriteriaSql(LocationRegion criteria)
     {
