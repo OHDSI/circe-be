@@ -24,17 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.ohdsi.circe.cohortdefinition.builders.BaseBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceBuilder;
 import org.ohdsi.circe.helper.ResourceHelper;
-import org.ohdsi.circe.vocabulary.Concept;
 import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
+
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.dateStringToSql;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 /**
  *
  * @author cknoll1
  */
-public class CohortExpressionQueryBuilder extends BaseBuilder implements IGetCriteriaSqlDispatcher, IGetEndStrategySqlDispatcher {
+public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, IGetEndStrategySqlDispatcher {
 
   private final static ConceptSetExpressionQueryBuilder conceptSetQueryBuilder = new ConceptSetExpressionQueryBuilder();
   private final static String CODESET_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/codesetQuery.sql");

@@ -7,11 +7,11 @@ import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.ArrayList;
 
-public abstract class BaseBuilder {
+public abstract class BuilderUtils {
 
     private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets codesets on (@codesetClauses)";
 
-    protected String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
+    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
 
         final String codsetJoinClause = "(%s = codesets.concept_id and codesets.codeset_id = %d)";
         String joinExpression = "";
@@ -35,7 +35,7 @@ public abstract class BaseBuilder {
         return joinExpression;
     }
 
-    protected String getOperator(String op) {
+    public static String getOperator(String op) {
 
         switch (op) {
             case "lt":
@@ -54,23 +54,23 @@ public abstract class BaseBuilder {
         throw new RuntimeException("Unknown operator type: " + op);
     }
 
-    protected String getOperator(NumericRange range) {
+    public static String getOperator(NumericRange range) {
 
         return getOperator(range.op);
     }
 
-    protected String getOperator(DateRange range) {
+    public static String getOperator(DateRange range) {
 
         return getOperator(range.op);
     }
 
-    protected String dateStringToSql(String date) {
+    public static String dateStringToSql(String date) {
 
         String[] dateParts = StringUtils.split(date, '-');
         return String.format("DATEFROMPARTS(%s, %s, %s)", dateParts[0], dateParts[1], dateParts[2]);
     }
 
-    protected String buildDateRangeClause(String sqlExpression, DateRange range) {
+    public static String buildDateRangeClause(String sqlExpression, DateRange range) {
 
         String clause;
         if (range.op.endsWith("bt")) // range with a 'between' op
@@ -89,7 +89,7 @@ public abstract class BaseBuilder {
     }
 
     // assumes decimal range
-    protected String buildNumericRangeClause(String sqlExpression, NumericRange range, String format) {
+    public static String buildNumericRangeClause(String sqlExpression, NumericRange range, String format) {
 
         String clause;
         if (range.op.endsWith("bt")) {
@@ -106,7 +106,7 @@ public abstract class BaseBuilder {
     }
 
     // Assumes integer numeric range
-    protected String buildNumericRangeClause(String sqlExpression, NumericRange range) {
+    public static String buildNumericRangeClause(String sqlExpression, NumericRange range) {
 
         String clause;
         if (range.op.endsWith("bt")) {
@@ -122,7 +122,7 @@ public abstract class BaseBuilder {
         return clause;
     }
 
-    protected ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
+    public static ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
 
         ArrayList<Long> conceptIdList = new ArrayList<>();
         for (Concept concept : concepts) {
