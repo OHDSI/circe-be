@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceSqlBuilder;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
 
@@ -1971,7 +1971,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria) {
-    String query = new VisitOccurrenceBuilder<>().getCriteriaSql(criteria);
+    String query = new VisitOccurrenceSqlBuilder<>().getCriteriaSql(criteria);
     return processCorrelatedCriteria(query, criteria);
   }
 

@@ -7,28 +7,16 @@ import org.ohdsi.circe.helper.ResourceHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VisitOccurrenceBuilder<T extends VisitOccurrence> implements CriteriaBuilder<T> {
+public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends BaseCriteriaSqlBuilder<T> {
 
     private final static String VISIT_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/visitOccurrence.sql");
 
     @Override
-    public String getCriteriaSql(T criteria) {
-
-        String query = VISIT_OCCURRENCE_TEMPLATE;
-
-        query = embedCodesetClause(query, criteria);
-
-        List<String> joinClauses = resolveJoinClauses(criteria);
-        List<String> whereClauses = resolveWhereClauses(criteria);
-
-        query = embedOrdinalExpression(query, criteria, whereClauses);
-
-        query = embedJoinClauses(query, joinClauses);
-        query = embedWhereClauses(query, whereClauses);
-
-        return query;
+    protected String getQueryTemplate() {
+        return VISIT_OCCURRENCE_TEMPLATE;
     }
 
+    @Override
     protected String embedCodesetClause(String query, T criteria) {
 
         return StringUtils.replace(query, "@codesetClause",
@@ -39,6 +27,7 @@ public class VisitOccurrenceBuilder<T extends VisitOccurrence> implements Criter
         );
     }
 
+    @Override
     protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
         // first
         if (criteria.first != null && criteria.first == true) {
@@ -50,6 +39,7 @@ public class VisitOccurrenceBuilder<T extends VisitOccurrence> implements Criter
         return query;
     }
 
+    @Override
     protected List<String> resolveJoinClauses(T criteria) {
 
         List<String> joinClauses = new ArrayList<>();
@@ -68,11 +58,7 @@ public class VisitOccurrenceBuilder<T extends VisitOccurrence> implements Criter
         return joinClauses;
     }
 
-    protected String embedJoinClauses(String query, List<String> joinClauses) {
-
-        return StringUtils.replace(query, "@joinClause", StringUtils.join(joinClauses, "\n"));
-    }
-
+    @Override
     protected List<String> resolveWhereClauses(T criteria) {
 
         List<String> whereClauses = new ArrayList<>();
@@ -119,14 +105,6 @@ public class VisitOccurrenceBuilder<T extends VisitOccurrence> implements Criter
         }
 
         return whereClauses;
-    }
-
-    protected String embedWhereClauses(String query, List<String> whereClauses) {
-
-        String whereClause = "";
-        if (whereClauses.size() > 0)
-            whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-        return StringUtils.replace(query, "@whereClause", whereClause);
     }
 
     protected void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
