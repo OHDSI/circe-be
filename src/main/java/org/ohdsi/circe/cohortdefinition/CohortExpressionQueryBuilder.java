@@ -1971,7 +1971,16 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria) {
-    return new VisitOccurrenceBuilder<>().getCriteriaSql(criteria);
+    String query = new VisitOccurrenceBuilder<>().getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
+  }
+
+  protected String processCorrelatedCriteria(String query, Criteria criteria) {
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
+    {
+      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+    }
+    return query;
   }
 
     @Override
