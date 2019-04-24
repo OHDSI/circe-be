@@ -83,6 +83,23 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private final static String ERA_CONSTRUCTOR_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eraConstructor.sql");
 
+  // Builders
+  private final static ConditionOccurrenceSqlBuilder conditionOccurrenceSqlBuilder = new ConditionOccurrenceSqlBuilder<>();
+  private final static DeathSqlBuilder deathSqlBuilder = new DeathSqlBuilder<>();
+  private final static DeviceExposureSqlBuilder deviceExposureSqlBuilder = new DeviceExposureSqlBuilder<>();
+  private final static DoseEraSqlBuilder doseEraSqlBuilder = new DoseEraSqlBuilder<>();
+  private final static DrugEraSqlBuilder drugEraSqlBuilder = new DrugEraSqlBuilder<>();
+  private final static DrugExposureSqlBuilder drugExposureSqlBuilder = new DrugExposureSqlBuilder<>();
+  private final static LocationRegionSqlBuilder locationRegionSqlBuilder = new LocationRegionSqlBuilder<>();
+  private final static MeasurementSqlBuilder measurementSqlBuilder = new MeasurementSqlBuilder<>();
+  private final static ObservationPeriodSqlBuilder observationPeriodSqlBuilder = new ObservationPeriodSqlBuilder<>();
+  private final static ObservationSqlBuilder observationSqlBuilder = new ObservationSqlBuilder<>();
+  private final static PayerPlanPeriodSqlBuilder payerPlanPeriodSqlBuilder = new PayerPlanPeriodSqlBuilder<>();
+  private final static ProcedureOccurrenceSqlBuilder procedureOccurrenceSqlBuilder = new ProcedureOccurrenceSqlBuilder<>();
+  private final static SpecimenSqlBuilder specimenSqlBuilder = new SpecimenSqlBuilder<>();
+  private final static VisitOccurrenceSqlBuilder visitOccurrenceSqlBuilder = new VisitOccurrenceSqlBuilder<>();
+  private final static ConditionEraSqlBuilder conditionEraSqlBuilder = new ConditionEraSqlBuilder<>();
+
   public static class BuildExpressionQueryOptions {
 	  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
@@ -612,37 +629,37 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   @Override
   public String getCriteriaSql(ConditionEra criteria) {
-    return getCriteriaSql(new ConditionEraSqlBuilder<>(), criteria);
+    return getCriteriaSql(conditionEraSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(ConditionOccurrence criteria) {
-    return getCriteriaSql(new ConditionOccurrenceSqlBuilder<>(), criteria);
+    return getCriteriaSql(conditionOccurrenceSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(Death criteria) {
-    return getCriteriaSql(new DeathSqlBuilder<>(), criteria);
+    return getCriteriaSql(deathSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(DeviceExposure criteria) {
-    return getCriteriaSql(new DeviceExposureSqlBuilder<>(), criteria);
+    return getCriteriaSql(deviceExposureSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(DoseEra criteria) {
-    return getCriteriaSql(new DoseEraSqlBuilder<>(), criteria);
+    return getCriteriaSql(doseEraSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(DrugEra criteria) {
-      return getCriteriaSql(new DrugEraSqlBuilder<>(), criteria);
+      return getCriteriaSql(drugEraSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(DrugExposure criteria) {
-    return getCriteriaSql(new DrugExposureSqlBuilder<>(), criteria);
+    return getCriteriaSql(drugExposureSqlBuilder, criteria);
   }
 
   protected <T extends Criteria> String getCriteriaSql(BaseCriteriaSqlBuilder<T> builder, T criteria) {
@@ -652,37 +669,37 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   @Override
   public String getCriteriaSql(Measurement criteria) {
-    return getCriteriaSql(new MeasurementSqlBuilder<>(), criteria);
+    return getCriteriaSql(measurementSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(Observation criteria) {
-    return getCriteriaSql(new ObservationSqlBuilder<>(), criteria);
+    return getCriteriaSql(observationSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(ObservationPeriod criteria) {
-    return getCriteriaSql(new ObservationPeriodSqlBuilder<>(), criteria);
+    return getCriteriaSql(observationPeriodSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(PayerPlanPeriod criteria) {
-    return getCriteriaSql(new PayerPlanPeriodSqlBuilder<>(), criteria);
+    return getCriteriaSql(payerPlanPeriodSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(ProcedureOccurrence criteria) {
-    return getCriteriaSql(new ProcedureOccurrenceSqlBuilder<>(), criteria);
+    return getCriteriaSql(procedureOccurrenceSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(Specimen criteria) {
-    return getCriteriaSql(new SpecimenSqlBuilder<>(), criteria);
+    return getCriteriaSql(specimenSqlBuilder, criteria);
   }
 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria) {
-    return getCriteriaSql(new VisitOccurrenceSqlBuilder<>(), criteria);
+    return getCriteriaSql(visitOccurrenceSqlBuilder, criteria);
   }
 
   protected String processCorrelatedCriteria(String query, Criteria criteria) {
@@ -695,8 +712,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     @Override
     public String getCriteriaSql(LocationRegion criteria) {
-        String query = new LocationRegionSqlBuilder<>().getCriteriaSql(criteria);
-        return processCorrelatedCriteria(query, criteria);
+      return getCriteriaSql(locationRegionSqlBuilder, criteria);
     }
 
 // </editor-fold>
