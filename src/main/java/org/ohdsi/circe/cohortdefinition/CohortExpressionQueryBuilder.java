@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ObservationPeriodSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.ObservationSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.PayerPlanPeriodSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ProcedureOccurrenceSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.SpecimenSqlBuilder;
@@ -65,7 +66,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
   private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");;
-  private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -1416,120 +1416,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
   
   @Override
-  public String getCriteriaSql(Observation criteria)
-  {
-    String query = OBSERVATION_TEMPLATE;
-    
-		query = StringUtils.replace(query, "@codesetClause",
-						getCodesetJoinExpression(criteria.codesetId,
-										"o.observation_concept_id",
-										criteria.observationSourceConcept,
-										"o.observation_source_concept_id")
-		);
-
-		ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-      joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-    
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-    
-    ArrayList<String> whereClauses = new ArrayList<>();
-  
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY o.person_id ORDER BY o.observation_date, o.observation_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-
-    // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.observation_date",criteria.occurrenceStartDate));
-    }        
-  
-    // measurementType
-    if (criteria.observationType != null && criteria.observationType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.observationType);
-      whereClauses.add(String.format("C.observation_type_concept_id %s in (%s)", (criteria.observationTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
-    }
-       
-    // valueAsNumber
-    if (criteria.valueAsNumber != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.value_as_number",criteria.valueAsNumber,".4f"));
-    }
-    
-    // valueAsString
-    if (criteria.valueAsString != null)
-    {
-      whereClauses.add(buildTextFilterClause("C.value_as_string",criteria.valueAsString));
-    }
-
-    // valueAsConcept
-    if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.valueAsConcept);
-      whereClauses.add(String.format("C.value_as_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }    
-    
-    // qualifier
-    if (criteria.qualifier != null && criteria.qualifier.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.qualifier);
-      whereClauses.add(String.format("C.qualifier_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-    
-    // unit
-    if (criteria.unit != null && criteria.unit.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
-      whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-    
-    // age
-    if (criteria.age != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.observation_date) - P.year_of_birth", criteria.age));
-    }
-    
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-    
-    // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-    {
-      whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty),",")));
-    }
-    
-    // visitType
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-    {
-      whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType),",")));
-    }
-    
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
+  public String getCriteriaSql(Observation criteria) {
+    String query = new ObservationSqlBuilder<>().getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
   }  
 
   @Override

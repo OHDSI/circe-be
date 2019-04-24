@@ -16,7 +16,6 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptI
 public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends BaseCriteriaSqlBuilder<T> {
 
     private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");
-    ;
 
     @Override
     protected String getQueryTemplate() {
