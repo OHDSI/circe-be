@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BaseCriteriaSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.DrugExposureSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.MeasurementSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ObservationPeriodSqlBuilder;
@@ -66,7 +67,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DEVICE_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/deviceExposure.sql");
   private final static String DOSE_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/doseEra.sql");
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
-  private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -1138,141 +1138,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
   
   @Override
-  public String getCriteriaSql(DrugExposure criteria)
-  {
-    String query = DRUG_EXPOSURE_TEMPLATE;
-
-		query = StringUtils.replace(query, "@codesetClause",
-						getCodesetJoinExpression(criteria.codesetId,
-										"de.drug_concept_id",
-										criteria.drugSourceConcept,
-										"de.drug_source_concept_id")
-		);
-
-    ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-      joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-    
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-    
-    ArrayList<String> whereClauses = new ArrayList<>();
-
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.drug_exposure_start_date, de.drug_exposure_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-    
-    // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.drug_exposure_start_date",criteria.occurrenceStartDate));
-    }
-
-    // occurrenceEndDate
-    if (criteria.occurrenceEndDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.drug_exposure_end_date",criteria.occurrenceEndDate));
-    }
-
-    // drugType
-    if (criteria.drugType != null && criteria.drugType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.drugType);
-      whereClauses.add(String.format("C.drug_type_concept_id %s in (%s)", (criteria.drugTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
-    }
-    
-    // Stop Reason
-    if (criteria.stopReason != null)
-    {
-      whereClauses.add(buildTextFilterClause("C.stop_reason",criteria.stopReason));
-    }
-
-    // refills
-    if (criteria.refills != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.refills",criteria.refills));
-    }
-
-    // quantity
-    if (criteria.quantity != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.quantity",criteria.quantity,".4f"));
-    }
-
-    // days supply
-    if (criteria.daysSupply != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.days_supply",criteria.daysSupply));
-    }
-
-    // routeConcept
-    if (criteria.routeConcept != null && criteria.routeConcept.length > 0)
-    {
-      whereClauses.add(String.format("C.route_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.routeConcept),",")));
-    }
-    
-    // effectiveDrugDose
-    if (criteria.effectiveDrugDose != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.effective_drug_dose",criteria.effectiveDrugDose,".4f"));
-    }
-
-    // doseUnit
-    if (criteria.doseUnit != null && criteria.doseUnit.length > 0)
-    {
-      whereClauses.add(String.format("C.dose_unit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.doseUnit),",")));
-    }
-
-    // LotNumber
-    if (criteria.lotNumber != null)
-    {
-      whereClauses.add(buildTextFilterClause("C.lot_number", criteria.lotNumber));
-    }
-        
-    // age
-    if (criteria.age != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.drug_exposure_start_date) - P.year_of_birth", criteria.age));
-    }
-    
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-    
-    // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-    {
-      whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty),",")));
-    }
-    
-    // visitType
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-    {
-      whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType),",")));
-    }
-    
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
+  public String getCriteriaSql(DrugExposure criteria) {
+    return getCriteriaSql(new DrugExposureSqlBuilder<>(), criteria);
   }
 
   protected <T extends Criteria> String getCriteriaSql(BaseCriteriaSqlBuilder<T> builder, T criteria) {
