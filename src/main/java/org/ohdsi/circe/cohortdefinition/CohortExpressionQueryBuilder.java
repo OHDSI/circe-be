@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BaseCriteriaSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.DoseEraSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DrugEraSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DrugExposureSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
@@ -66,7 +67,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String CONDITION_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionOccurrence.sql");
   private final static String DEATH_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/death.sql");
   private final static String DEVICE_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/deviceExposure.sql");
-  private final static String DOSE_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/doseEra.sql");
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -955,95 +955,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   
   @Override
-  public String getCriteriaSql(DoseEra criteria)
-  {
-    String query = DOSE_ERA_TEMPLATE;
-    
-    String codesetClause = "";
-    if (criteria.codesetId != null)
-    {
-      codesetClause = String.format("where de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
-    }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
-
-    ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0) ) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-    
-    ArrayList<String> whereClauses = new ArrayList<>();
-
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.dose_era_start_date, de.dose_era_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-
-    // eraStartDate
-    if (criteria.eraStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.dose_era_start_date",criteria.eraStartDate));
-    }
-
-    // eraEndDate
-    if (criteria.eraEndDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.dose_era_end_date",criteria.eraEndDate));
-    }
-
-    // unit
-    if (criteria.unit != null && criteria.unit.length > 0)
-    {
-      whereClauses.add(String.format("c.unit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.unit),",")));
-    }
-    
-    // doseValue
-    if (criteria.doseValue != null)
-    {
-      whereClauses.add(buildNumericRangeClause("c.dose_value", criteria.doseValue, ".4f"));
-    }      
-
-    // eraLength
-    if (criteria.eraLength != null)
-    {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.dose_era_start_date, C.dose_era_end_date)", criteria.eraLength));
-    }      
-
-    // ageAtStart
-    if (criteria.ageAtStart != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.dose_era_start_date) - P.year_of_birth", criteria.ageAtStart));
-    }
-
-    // ageAtEnd
-    if (criteria.ageAtEnd != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.dose_era_end_date) - P.year_of_birth", criteria.ageAtEnd));
-    }
-
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-    
-    
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
+  public String getCriteriaSql(DoseEra criteria) {
+    return getCriteriaSql(new DoseEraSqlBuilder<>(), criteria);
   }
     
   @Override
