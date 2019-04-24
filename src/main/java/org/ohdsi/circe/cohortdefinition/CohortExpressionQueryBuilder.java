@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.ObservationPeriodSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.PayerPlanPeriodSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ProcedureOccurrenceSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.SpecimenSqlBuilder;
@@ -65,7 +66,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
   private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");;
   private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
-  private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -1533,93 +1533,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }  
 
   @Override
-  public String getCriteriaSql(ObservationPeriod criteria)
-  {
-    String query = OBSERVATION_PERIOD_TEMPLATE;
-    String startDateExpression = "C.observation_period_start_date";
-    String endDateExpression = "C.observation_period_end_date";
-    
-    ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-
-    ArrayList<String> whereClauses = new ArrayList<>();
-
-    if (criteria.first != null && criteria.first == true)
-      whereClauses.add("C.ordinal = 1");
-    
-    // check for user defined start/end dates
-    if (criteria.userDefinedPeriod != null)
-    {
-      Period userDefinedPeriod = criteria.userDefinedPeriod;
-      
-      if (userDefinedPeriod.startDate != null)
-      {
-        startDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.startDate);
-        whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
-      } 
-
-      if (userDefinedPeriod.endDate != null)
-      {
-        endDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.endDate);
-        whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
-      }
-    }
-    
-    query = StringUtils.replace(query, "@startDateExpression",startDateExpression);
-    query = StringUtils.replace(query, "@endDateExpression",endDateExpression);
-    
-    // periodStartDate
-    if (criteria.periodStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.observation_period_start_date",criteria.periodStartDate));
-    }        
-
-    // periodEndDate
-    if (criteria.periodEndDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.observation_period_end_date",criteria.periodEndDate));
-    }        
-    
-    // periodType
-    if (criteria.periodType != null && criteria.periodType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.periodType);
-      whereClauses.add(String.format("C.period_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-    
-    // periodLength
-    if (criteria.periodLength != null)
-    {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.observation_period_start_date, C.observation_period_end_date)", criteria.periodLength));
-    }      
-
-    // ageAtStart
-    if (criteria.ageAtStart != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.observation_period_start_date) - P.year_of_birth", criteria.ageAtStart));
-    }
-
-    // ageAtEnd
-    if (criteria.ageAtEnd != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.observation_period_end_date) - P.year_of_birth", criteria.ageAtEnd));
-    }
-    
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
+  public String getCriteriaSql(ObservationPeriod criteria) {
+    String query = new ObservationPeriodSqlBuilder<>().getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
   }
   
   @Override
