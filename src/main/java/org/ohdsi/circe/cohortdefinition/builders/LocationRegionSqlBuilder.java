@@ -6,6 +6,7 @@ import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 
@@ -43,7 +44,7 @@ public class LocationRegionSqlBuilder<T extends LocationRegion> extends BaseCrit
     }
 
     @Override
-    protected List<String> resolveWhereClauses(T criteria) {
+    protected List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables) {
 
         return new ArrayList<>();
     }

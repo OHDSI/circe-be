@@ -6,6 +6,7 @@ import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -66,7 +67,7 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     @Override
-    protected List<String> resolveWhereClauses(T criteria) {
+    protected List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables) {
 
         List<String> whereClauses = new ArrayList<>();
 

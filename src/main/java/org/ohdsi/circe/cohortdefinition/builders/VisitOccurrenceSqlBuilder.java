@@ -6,6 +6,7 @@ import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends BaseCriteriaSqlBuilder<T> {
 
@@ -59,7 +60,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends BaseCr
     }
 
     @Override
-    protected List<String> resolveWhereClauses(T criteria) {
+    protected List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables) {
 
         List<String> whereClauses = new ArrayList<>();
 
