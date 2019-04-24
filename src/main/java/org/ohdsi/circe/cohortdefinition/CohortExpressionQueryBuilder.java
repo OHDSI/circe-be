@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.SpecimenSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceSqlBuilder;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -60,7 +61,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DOSE_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/doseEra.sql");
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
-  private final static String LOCATION_REGION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/locationRegion.sql");
   private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");;
   private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
   private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
@@ -1881,23 +1881,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
     @Override
-    public String getCriteriaSql(LocationRegion criteria)
-    {
-        String query = LOCATION_REGION_TEMPLATE;
-
-        query = StringUtils.replace(query, "@codesetClause",
-                getCodesetJoinExpression(criteria.codesetId,
-                        "l.region_concept_id",
-                        null,
-                        null)
-        );
-
-        if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-        {
-            query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-        }
-
-        return query;
+    public String getCriteriaSql(LocationRegion criteria) {
+        String query = new LocationRegionSqlBuilder<>().getCriteriaSql(criteria);
+        return processCorrelatedCriteria(query, criteria);
     }
 
 // </editor-fold>
