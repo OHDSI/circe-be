@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.builders.BaseCriteriaSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.MeasurementSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ObservationPeriodSqlBuilder;
@@ -1272,49 +1273,46 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     
     return query;
-  }  
+  }
+
+  protected <T extends Criteria> String getCriteriaSql(BaseCriteriaSqlBuilder<T> builder, T criteria) {
+    String query = builder.getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
+  }
   
   @Override
-  public String getCriteriaSql(Measurement criteria)
-  {
-    String query = new MeasurementSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+  public String getCriteriaSql(Measurement criteria) {
+    return getCriteriaSql(new MeasurementSqlBuilder<>(), criteria);
   }
   
   @Override
   public String getCriteriaSql(Observation criteria) {
-    String query = new ObservationSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new ObservationSqlBuilder<>(), criteria);
   }
 
   @Override
   public String getCriteriaSql(ObservationPeriod criteria) {
-    String query = new ObservationPeriodSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new ObservationPeriodSqlBuilder<>(), criteria);
   }
   
   @Override
   public String getCriteriaSql(PayerPlanPeriod criteria) {
-    String query = new PayerPlanPeriodSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new PayerPlanPeriodSqlBuilder<>(), criteria);
   }
   
   @Override
   public String getCriteriaSql(ProcedureOccurrence criteria) {
-    String query = new ProcedureOccurrenceSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new ProcedureOccurrenceSqlBuilder<>(), criteria);
   }
   
   @Override
   public String getCriteriaSql(Specimen criteria) {
-    String query = new SpecimenSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new SpecimenSqlBuilder<>(), criteria);
   }
 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria) {
-    String query = new VisitOccurrenceSqlBuilder<>().getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
+    return getCriteriaSql(new VisitOccurrenceSqlBuilder<>(), criteria);
   }
 
   protected String processCorrelatedCriteria(String query, Criteria criteria) {
