@@ -1862,7 +1862,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   
   @Override
   public String getCriteriaSql(Specimen criteria) {
-    String query = new SpecimenSqlBuilder().getCriteriaSql(criteria);
+    String query = new SpecimenSqlBuilder<>().getCriteriaSql(criteria);
     return processCorrelatedCriteria(query, criteria);
   }
 

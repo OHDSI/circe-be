@@ -12,7 +12,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumeri
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class SpecimenSqlBuilder extends BaseCriteriaSqlBuilder<Specimen> {
+public class SpecimenSqlBuilder<T extends Specimen> extends BaseCriteriaSqlBuilder<T> {
 
     private final static String SPECIMEN_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/specimen.sql");
 
@@ -23,7 +23,7 @@ public class SpecimenSqlBuilder extends BaseCriteriaSqlBuilder<Specimen> {
     }
 
     @Override
-    protected String embedCodesetClause(String query, Specimen criteria) {
+    protected String embedCodesetClause(String query, T criteria) {
 
         String codesetClause = "";
         if (criteria.codesetId != null) {
@@ -33,7 +33,7 @@ public class SpecimenSqlBuilder extends BaseCriteriaSqlBuilder<Specimen> {
     }
 
     @Override
-    protected String embedOrdinalExpression(String query, Specimen criteria, List<String> whereClauses) {
+    protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
 
         // first
         if (criteria.first != null && criteria.first) {
@@ -46,7 +46,7 @@ public class SpecimenSqlBuilder extends BaseCriteriaSqlBuilder<Specimen> {
     }
 
     @Override
-    protected List<String> resolveJoinClauses(Specimen criteria) {
+    protected List<String> resolveJoinClauses(T criteria) {
 
         ArrayList<String> joinClauses = new ArrayList<>();
         // join to PERSON
@@ -57,7 +57,7 @@ public class SpecimenSqlBuilder extends BaseCriteriaSqlBuilder<Specimen> {
     }
 
     @Override
-    protected List<String> resolveWhereClauses(Specimen criteria) {
+    protected List<String> resolveWhereClauses(T criteria) {
 
         ArrayList<String> whereClauses = new ArrayList<>();
 
