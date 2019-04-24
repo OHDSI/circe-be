@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.builders.SpecimenSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceSqlBuilder;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.dateStringToSql;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
@@ -63,7 +65,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");;
   private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");;
   private final static String PROCEDURE_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/procedureOccurrence.sql");
-  private final static String SPECIMEN_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/specimen.sql");
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");  
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");  
@@ -129,16 +130,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return "??";
   }
 
-  
-  private String buildTextFilterClause(String sqlExpression, TextFilter filter)
-  {
-      String negation = filter.op.startsWith("!") ? "not" : "";
-      String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
-      String value = filter.text;
-      String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
-      
-      return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
-  }
+
   
   private String wrapCriteriaQuery(String query, CriteriaGroup group)
   {
@@ -1869,104 +1861,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
   
   @Override
-  public String getCriteriaSql(Specimen criteria) 
-  {
-    String query = SPECIMEN_TEMPLATE;
-    
-    String codesetClause = "";
-		if (criteria.codesetId != null)
-    {
-      codesetClause = String.format("where s.specimen_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
-    }
-    query = StringUtils.replace(query, "@codesetClause",codesetClause);
-    
-    ArrayList<String> joinClauses = new ArrayList<>();
-    
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-    
-    ArrayList<String> whereClauses = new ArrayList<>();
-    
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY s.person_id ORDER BY s.specimen_date, s.specimen_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-
-    // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.specimen_date",criteria.occurrenceStartDate));
-    }    
-    
-    // specimenType
-    if (criteria.specimenType != null && criteria.specimenType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.specimenType);
-      whereClauses.add(String.format("C.specimen_type_concept_id %s in (%s)", (criteria.specimenTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
-    }
-
-    // quantity
-    if (criteria.quantity != null)
-    {
-      whereClauses.add(buildNumericRangeClause("C.quantity", criteria.quantity, ".4f"));
-    }
-
-    // unit
-    if (criteria.unit != null && criteria.unit.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
-      whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-
-    // anatomicSite
-    if (criteria.anatomicSite != null && criteria.anatomicSite.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.anatomicSite);
-      whereClauses.add(String.format("C.anatomic_site_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-
-    // diseaseStatus
-    if (criteria.diseaseStatus != null && criteria.diseaseStatus.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.diseaseStatus);
-      whereClauses.add(String.format("C.disease_status_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
-    }
-
-    // sourceId
-    if (criteria.sourceId != null)
-    {
-      whereClauses.add(buildTextFilterClause("C.specimen_source_id",criteria.sourceId));
-    }
-
-    // age
-    if (criteria.age != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.specimen_date) - P.year_of_birth", criteria.age));
-    }
-    
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-    
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    
-    return query;
+  public String getCriteriaSql(Specimen criteria) {
+    String query = new SpecimenSqlBuilder().getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
   }
 
   @Override

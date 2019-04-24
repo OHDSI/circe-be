@@ -32,14 +32,19 @@ public abstract class BaseCriteriaSqlBuilder<T extends Criteria> {
     protected String embedWhereClauses(String query, List<String> whereClauses) {
 
         String whereClause = "";
-        if (whereClauses.size() > 0)
+        if (whereClauses.size() > 0) {
             whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
+        }
         return StringUtils.replace(query, "@whereClause", whereClause);
     }
 
     protected abstract String getQueryTemplate();
+
     protected abstract String embedCodesetClause(String query, T criteria);
+
     protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
+
     protected abstract List<String> resolveJoinClauses(T criteria);
+
     protected abstract List<String> resolveWhereClauses(T criteria);
 }

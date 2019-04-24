@@ -3,6 +3,7 @@ package org.ohdsi.circe.cohortdefinition.builders;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.DateRange;
 import org.ohdsi.circe.cohortdefinition.NumericRange;
+import org.ohdsi.circe.cohortdefinition.TextFilter;
 import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.ArrayList;
@@ -129,5 +130,15 @@ public abstract class BuilderUtils {
             conceptIdList.add(concept.conceptId);
         }
         return conceptIdList;
+    }
+
+    public static String buildTextFilterClause(String sqlExpression, TextFilter filter) {
+
+        String negation = filter.op.startsWith("!") ? "not" : "";
+        String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
+        String value = filter.text;
+        String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
+
+        return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
     }
 }
