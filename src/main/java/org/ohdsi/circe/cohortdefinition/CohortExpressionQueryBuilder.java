@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BaseCriteriaSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.ConditionOccurrenceSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DeathSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DeviceExposureSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DoseEraSqlBuilder;
@@ -66,7 +67,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String GROUP_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/groupQuery.sql");
 
   private final static String CONDITION_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionEra.sql");
-  private final static String CONDITION_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionOccurrence.sql");
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -696,100 +696,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   @Override
-  public String getCriteriaSql(ConditionOccurrence criteria)
-  {
-    String query = CONDITION_OCCURRENCE_TEMPLATE;
-
-    query = StringUtils.replace(query, "@codesetClause",
-						getCodesetJoinExpression(criteria.codesetId,
-										"co.condition_concept_id",
-										criteria.conditionSourceConcept,
-										"co.condition_source_concept_id")
-		);
-
-    ArrayList<String> joinClauses = new ArrayList<>();
-
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-      joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-      joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-
-    query = StringUtils.replace(query,"@joinClause", StringUtils.join(joinClauses,"\n"));
-
-    ArrayList<String> whereClauses = new ArrayList<>();
-
-		// first
-		if (criteria.first != null && criteria.first == true) {
-			whereClauses.add("C.ordinal = 1");
-			query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY co.person_id ORDER BY co.condition_start_date, co.condition_occurrence_id) as ordinal");
-		}
-		else {
-			query = StringUtils.replace(query, "@ordinalExpression","");
-		}
-
-    // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.condition_start_date",criteria.occurrenceStartDate));
-    }
-
-    // occurrenceEndDate
-    if (criteria.occurrenceEndDate != null)
-    {
-      whereClauses.add(buildDateRangeClause("C.condition_end_date",criteria.occurrenceEndDate));
-    }
-
-    // conditionType
-    if (criteria.conditionType != null && criteria.conditionType.length > 0)
-    {
-      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.conditionType);
-      whereClauses.add(String.format("C.condition_type_concept_id %s in (%s)", (criteria.conditionTypeExclude ? "not" : ""),  StringUtils.join(conceptIds, ",")));
-    }
-
-    // Stop Reason
-    if (criteria.stopReason != null)
-    {
-      whereClauses.add(buildTextFilterClause("C.stop_reason",criteria.stopReason));
-    }
-
-    // age
-    if (criteria.age != null)
-    {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.condition_start_date) - P.year_of_birth", criteria.age));
-    }
-
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0)
-    {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender),",")));
-    }
-
-    // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-    {
-      whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty),",")));
-    }
-
-    // visitType
-    if (criteria.visitType != null && criteria.visitType.length > 0)
-    {
-      whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType),",")));
-    }
-
-    String whereClause = "";
-    if (whereClauses.size() > 0)
-      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-    query = StringUtils.replace(query, "@whereClause",whereClause);
-
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty())
-    {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-
-
-    return query;
+  public String getCriteriaSql(ConditionOccurrence criteria) {
+    return getCriteriaSql(new ConditionOccurrenceSqlBuilder<>(), criteria);
   }
 
   @Override
