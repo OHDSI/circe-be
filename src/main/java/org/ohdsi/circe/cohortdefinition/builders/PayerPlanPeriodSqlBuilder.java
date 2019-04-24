@@ -13,7 +13,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRa
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends BaseCriteriaSqlBuilder<T> {
+public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends CriteriaSqlBuilder<T> {
 
     private final static String PAYER_PLAN_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/payerPlanPeriod.sql");
 

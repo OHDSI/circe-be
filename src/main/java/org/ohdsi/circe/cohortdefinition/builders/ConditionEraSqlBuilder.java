@@ -12,7 +12,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRa
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class ConditionEraSqlBuilder<T extends ConditionEra> extends BaseCriteriaSqlBuilder<T> {
+public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlBuilder<T> {
 
     private final static String CONDITION_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionEra.sql");
 

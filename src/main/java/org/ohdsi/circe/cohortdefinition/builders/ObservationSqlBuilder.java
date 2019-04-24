@@ -14,7 +14,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFi
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class ObservationSqlBuilder<T extends Observation> extends BaseCriteriaSqlBuilder<T> {
+public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBuilder<T> {
 
     private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");
 

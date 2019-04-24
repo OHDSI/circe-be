@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.ohdsi.circe.cohortdefinition.builders.BaseCriteriaSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.CriteriaSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ConditionEraSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.ConditionOccurrenceSqlBuilder;
 import org.ohdsi.circe.cohortdefinition.builders.DeathSqlBuilder;
@@ -45,9 +45,7 @@ import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
-import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.dateStringToSql;
-import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 /**
@@ -662,7 +660,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return getCriteriaSql(drugExposureSqlBuilder, criteria);
   }
 
-  protected <T extends Criteria> String getCriteriaSql(BaseCriteriaSqlBuilder<T> builder, T criteria) {
+  protected <T extends Criteria> String getCriteriaSql(CriteriaSqlBuilder<T> builder, T criteria) {
     String query = builder.getCriteriaSql(criteria);
     return processCorrelatedCriteria(query, criteria);
   }

@@ -13,7 +13,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumeri
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class MeasurementSqlBuilder<T extends Measurement> extends BaseCriteriaSqlBuilder<T> {
+public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBuilder<T> {
 
     private final static String MEASUREMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/measurement.sql");
 

@@ -14,7 +14,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFi
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extends BaseCriteriaSqlBuilder<T> {
+public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extends CriteriaSqlBuilder<T> {
 
     private final static String CONDITION_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/conditionOccurrence.sql");
 

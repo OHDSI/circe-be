@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BaseCriteriaSqlBuilder<T extends Criteria> {
+public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
     public String getCriteriaSql(T criteria) {
 

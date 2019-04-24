@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 
-public class LocationRegionSqlBuilder<T extends LocationRegion> extends BaseCriteriaSqlBuilder<T> {
+public class LocationRegionSqlBuilder<T extends LocationRegion> extends CriteriaSqlBuilder<T> {
 
     private final static String LOCATION_REGION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/locationRegion.sql");
 

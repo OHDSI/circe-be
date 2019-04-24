@@ -14,7 +14,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFi
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends BaseCriteriaSqlBuilder<T> {
+public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends CriteriaSqlBuilder<T> {
 
     private final static String DEVICE_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/deviceExposure.sql");
 

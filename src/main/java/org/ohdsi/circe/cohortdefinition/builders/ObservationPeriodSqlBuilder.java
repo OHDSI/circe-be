@@ -13,7 +13,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRa
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends BaseCriteriaSqlBuilder<T> {
+public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends CriteriaSqlBuilder<T> {
 
     private final static String OBSERVATION_PERIOD_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observationPeriod.sql");
 

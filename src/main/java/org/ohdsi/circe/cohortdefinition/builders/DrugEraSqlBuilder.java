@@ -12,7 +12,7 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRa
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
-public class DrugEraSqlBuilder<T extends DrugEra> extends BaseCriteriaSqlBuilder<T> {
+public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> {
 
     private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
 
