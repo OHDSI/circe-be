@@ -128,6 +128,6 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
                 "on " + alias + ".entity_id = " + entityIdField + " " +
                 "AND " + alias + ".domain_id = '" + domain + "' " +
                 "AND C.visit_start_date >= " + alias + ".start_date " +
-                "AND C.visit_end_date <= ISNULL(" + alias + ".end_date, CAST('2099-12-31' AS DATE))";
+                "AND C.visit_end_date <= ISNULL(" + alias + ".end_date, CAST('20991231' AS DATE))";
     }
 }
