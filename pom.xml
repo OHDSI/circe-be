@@ -12,7 +12,29 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-
+        <repositories>
+            <repository>
+              <id>ohdsi</id>
+              <name>repo.ohdsi.org</name>
+              <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+            </repository>
+            <repository>
+              <id>ohdsi.thirdparty</id>
+              <name>repo.ohdsi.org</name>
+              <url>http://repo.ohdsi.org:8085/nexus/content/repositories/thirdparty</url>
+            </repository>
+            <repository>
+              <id>ohdsi.snapshots</id>
+              <name>repo.ohdsi.org-snapshots</name>
+              <url>http://repo.ohdsi.org:8085/nexus/content/repositories/snapshots</url>
+              <releases>
+                <enabled>false</enabled>
+              </releases>
+              <snapshots>
+                <enabled>true</enabled>
+              </snapshots>
+            </repository>
+        </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
