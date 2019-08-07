@@ -1,6 +1,6 @@
 CREATE TABLE #Codesets (
-  ancestor_concept_id bigint NOT NULL,
-  concept_id bigint NOT NULL
+  ancestor_concept_id int NOT NULL,
+  concept_id int NOT NULL
 )
 ;
 
@@ -37,3 +37,6 @@ INNER JOIN #Codesets c ON c.concept_id = d.procedure_concept_id
 ) s
 WHERE s.ordinal = 1
 ;
+
+TRUNCATE TABLE #Codesets;
+DROP TABLE #Codesets;
