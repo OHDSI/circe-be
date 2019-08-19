@@ -126,6 +126,12 @@ public class UnusedConceptsCheck extends BaseCheck {
                 .map(c -> c.criteriaList)
                 .map(this::toCriteriaList)
                 .forEach(criteria::addAll);
+
+        for (CriteriaGroup group : groups) {
+            List<Criteria> criteriaFromChildGroups = toCriteriaList(group.groups);
+            criteria.addAll(criteriaFromChildGroups);
+        }
+
         return criteria;
     }
 }
