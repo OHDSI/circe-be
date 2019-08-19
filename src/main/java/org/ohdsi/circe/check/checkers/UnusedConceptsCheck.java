@@ -33,7 +33,6 @@ import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
 import org.ohdsi.circe.cohortdefinition.CustomEraStrategy;
-import org.ohdsi.circe.cohortdefinition.InclusionRule;
 
 public class UnusedConceptsCheck extends BaseCheck {
 
@@ -52,35 +51,46 @@ public class UnusedConceptsCheck extends BaseCheck {
     @Override
     public void check(CohortExpression expression, WarningReporter reporter) {
 
-        List<Criteria> additionalCriteria;
-        if (Objects.nonNull(expression.additionalCriteria)) {
-            additionalCriteria = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
-            additionalCriteria.addAll(toCriteriaList(expression.additionalCriteria.groups));
-        } else {
-            additionalCriteria = Collections.emptyList();
+        List<Criteria> additionalCriteria = getAdditionalCriteria(expression);
+
+        Arrays.stream(expression.conceptSets)
+                .filter(conceptSet -> this.isNotUsed(expression, additionalCriteria, conceptSet))
+                .forEach(conceptSet -> reporter.add("Concept Set \"%s\" is not used", conceptSet));
+
+    }
+
+    private List<Criteria> getAdditionalCriteria(CohortExpression expression) {
+
+        if (Objects.isNull(expression.additionalCriteria)) {
+            return Collections.emptyList();
         }
-        for (final ConceptSet conceptSet : expression.conceptSets) {
-            boolean hasUsed;
-            if (!(hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList)))) {
-                if (!(hasUsed = isConceptSetUsed(conceptSet, additionalCriteria))) {
-                    for (InclusionRule rule : expression.inclusionRules) {
-                        if (hasUsed = isConceptSetUsed(conceptSet, rule.expression)) {
-                            break;
-                        }
-                    }
-                    if (!hasUsed && expression.endStrategy instanceof CustomEraStrategy) {
-                        hasUsed = Objects.equals(((CustomEraStrategy) expression.endStrategy).drugCodesetId,
-                                conceptSet.id);
-                    }
-                    if (!hasUsed) {
-                        hasUsed = isConceptSetUsed(conceptSet, Arrays.asList(expression.censoringCriteria));
-                    }
-                }
-            }
-            if (!hasUsed) {
-                reporter.add("Concept Set \"%s\" is not used", conceptSet);
-            }
+        List<Criteria> additionalCriteria = new ArrayList<>(toCriteriaList(expression.additionalCriteria.criteriaList));
+        additionalCriteria.addAll(toCriteriaList(expression.additionalCriteria.groups));
+        return additionalCriteria;
+
+    }
+
+    private boolean isNotUsed(CohortExpression expression, List<Criteria> additionalCriteria, ConceptSet conceptSet) {
+        return !isUsed(expression, additionalCriteria, conceptSet);
+    }
+
+    private boolean isUsed(CohortExpression expression, List<Criteria> additionalCriteria, ConceptSet conceptSet) {
+        if (isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList))) {
+            return true;
         }
+        if (isConceptSetUsed(conceptSet, additionalCriteria)) {
+            return true;
+        }
+        if (expression.inclusionRules.stream().anyMatch(rule -> isConceptSetUsed(conceptSet, rule.expression))) {
+            return true;
+        }
+
+        if (expression.endStrategy instanceof CustomEraStrategy &&
+                Objects.equals(((CustomEraStrategy) expression.endStrategy).drugCodesetId, conceptSet.id)) {
+            return true;
+        }
+
+        return isConceptSetUsed(conceptSet, Arrays.asList(expression.censoringCriteria));
     }
 
     private boolean isConceptSetUsed(ConceptSet conceptSet, List<Criteria> criteriaList) {
