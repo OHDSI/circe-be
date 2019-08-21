@@ -101,6 +101,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   public static class BuildExpressionQueryOptions {
 	  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
+	@JsonProperty("cohortIdFieldName")
+	public String cohortIdFieldName;
+
     @JsonProperty("cohortId")
     public Integer cohortId;
 
@@ -228,7 +231,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   public String getFinalCohortQuery(Period censorWindow) {
 
-    String query = "select @target_cohort_id as cohort_definition_id, person_id, @start_date, @end_date \n" +
+    String query = "select @target_cohort_id as @cohort_id_field_name, person_id, @start_date, @end_date \n" +
             "FROM #final_cohort CO";
 
     String startDate = "start_date";
@@ -379,6 +382,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       if (options.cohortId != null)
         resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
        resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1": "0");
+
+      if (options.cohortIdFieldName != null) {
+        resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", options.cohortIdFieldName.toString());
+      }
     }
     return resultSql;
   }
