@@ -76,8 +76,8 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
             }
         }
 
-        additionalVariables.put("@startDateExpression", wrapDateConstantForPartitionOrderByExpression("C.payer_concept_id", startDateExpression));
-        additionalVariables.put("@endDateExpression", endDateExpression);
+        additionalVariables.put("@startDateExpression", wrapDateConstantForPartitionOrderByExpression("C.person_id", startDateExpression));
+        additionalVariables.put("@endDateExpression",   wrapDateConstantForPartitionOrderByExpression("C.person_id", endDateExpression));
 
         //periodStartDate
         if (criteria.periodStartDate != null) {

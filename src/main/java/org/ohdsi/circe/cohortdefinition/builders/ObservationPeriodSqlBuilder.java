@@ -76,7 +76,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
         }
 
         additionalVariables.put("@startDateExpression", wrapDateConstantForPartitionOrderByExpression("C.person_id", startDateExpression));
-        additionalVariables.put("@endDateExpression", endDateExpression);
+        additionalVariables.put("@endDateExpression",   wrapDateConstantForPartitionOrderByExpression("C.person_id", endDateExpression));
 
         // periodStartDate
         if (criteria.periodStartDate != null) {

@@ -143,11 +143,14 @@ public abstract class BuilderUtils {
     }
 
     /**
-     * impala does not support constant expressions in the ORDER BY clause of analytic function.
+     * Impala does not support constant expressions in the ORDER BY clause of analytic function.
      * This is a workaround to cover this user case.
      * https://issues.apache.org/jira/browse/IMPALA-2775
      */
      public static String wrapDateConstantForPartitionOrderByExpression(String idColumnName, String constantValue) {
+        if (StringUtils.isEmpty(constantValue) || StringUtils.isEmpty(idColumnName)) {
+            return constantValue;
+        }
 
          String expresionThatDoesNotChangeConstantButUseRealColumn = "DATEADD(dd, %s-%s, %s)";
          return String.format(
