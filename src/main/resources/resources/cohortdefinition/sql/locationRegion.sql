@@ -5,7 +5,8 @@ select
   C.start_date as start_date,
   ISNULL(C.end_date, DATEFROMPARTS(2099,12,31)) as end_date,
   C.region_concept_id as TARGET_CONCEPT_ID,
-  CAST(NULL as bigint) as visit_occurrence_id
+  CAST(NULL as bigint) as visit_occurrence_id,
+  C.start_date as sort_date,
 from 
 (
   select l.*, lh.*
