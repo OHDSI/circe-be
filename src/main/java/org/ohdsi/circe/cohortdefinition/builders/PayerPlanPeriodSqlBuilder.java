@@ -12,7 +12,6 @@ import java.util.Map;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
-import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.wrapDateConstantForPartitionOrderByExpression;
 
 public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends CriteriaSqlBuilder<T> {
 
@@ -76,8 +75,8 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
             }
         }
 
-        additionalVariables.put("@startDateExpression", wrapDateConstantForPartitionOrderByExpression("C.person_id", startDateExpression));
-        additionalVariables.put("@endDateExpression",   wrapDateConstantForPartitionOrderByExpression("C.person_id", endDateExpression));
+        additionalVariables.put("@startDateExpression", startDateExpression);
+        additionalVariables.put("@endDateExpression", endDateExpression);
 
         //periodStartDate
         if (criteria.periodStartDate != null) {

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
-import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.wrapDateConstantForPartitionOrderByExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends CriteriaSqlBuilder<T> {
@@ -75,8 +74,8 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
             }
         }
 
-        additionalVariables.put("@startDateExpression", wrapDateConstantForPartitionOrderByExpression("C.person_id", startDateExpression));
-        additionalVariables.put("@endDateExpression",   wrapDateConstantForPartitionOrderByExpression("C.person_id", endDateExpression));
+        additionalVariables.put("@startDateExpression", startDateExpression);
+        additionalVariables.put("@endDateExpression", endDateExpression);
 
         // periodStartDate
         if (criteria.periodStartDate != null) {
