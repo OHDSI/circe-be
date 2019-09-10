@@ -102,7 +102,7 @@ cteEnds (person_id, start_date, end_date) AS
 	SELECT
 		 c.person_id
 		, c.start_date
-		, MIN(e.end_date) AS era_end_date
+		, MIN(e.end_date) AS end_date
 	FROM #cohort_rows c
 	JOIN cteEndDates e ON c.person_id = e.person_id AND e.end_date >= c.start_date
 	GROUP BY c.person_id, c.start_date
@@ -120,8 +120,8 @@ INSERT INTO @target_database_schema.@target_cohort_table (cohort_definition_id, 
 
 {@generateStats != 0}?{
 -- Find the event that is the 'best match' per person.  
--- the 'best match' is defiend as the event that satisfies the most inclulsion rules.
--- ties are solved by choosign the event that matches the earliest inclusion rule, and then earliest.
+-- the 'best match' is defined as the event that satisfies the most inclusion rules.
+-- ties are solved by choosing the event that matches the earliest inclusion rule, and then earliest.
 
 select q.person_id, q.event_id
 into #best_events
