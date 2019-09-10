@@ -1,0 +1,195 @@
+{
+  "cdmVersionRange": ">=5.0.0",
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionOccurrence": {
+          "ConditionTypeExclude": false
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [
+      {
+        "Criteria": {
+          "ConditionOccurrence": {
+            "ConditionTypeExclude": false
+          }
+        },
+        "StartWindow": {
+          "Start": {
+            "Coeff": -1
+          },
+          "End": {
+            "Coeff": 1
+          },
+          "UseIndexEnd": false,
+          "UseEventEnd": false
+        },
+        "RestrictVisit": false,
+        "IgnoreObservationPeriod": false,
+        "Occurrence": {
+          "Type": 2,
+          "Count": 1,
+          "IsDistinct": false
+        }
+      }
+    ],
+    "DemographicCriteriaList": [],
+    "Groups": [
+      {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "DrugEra": {}
+            },
+            "StartWindow": {
+              "Start": {
+                "Coeff": -1
+              },
+              "End": {
+                "Coeff": 1
+              },
+              "UseIndexEnd": false,
+              "UseEventEnd": false
+            },
+            "RestrictVisit": false,
+            "IgnoreObservationPeriod": false,
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1,
+              "IsDistinct": false
+            }
+          },
+          {
+            "Criteria": {
+              "DrugEra": {}
+            },
+            "StartWindow": {
+              "Start": {
+                "Coeff": -1
+              },
+              "End": {
+                "Coeff": 1
+              },
+              "UseIndexEnd": false,
+              "UseEventEnd": false
+            },
+            "RestrictVisit": false,
+            "IgnoreObservationPeriod": false,
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1,
+              "IsDistinct": false
+            }
+          }
+        ],
+        "DemographicCriteriaList": [],
+        "Groups": [
+          {
+            "Type": "ANY",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CorrelatedCriteria": {
+                      "Type": "ALL",
+                      "CriteriaList": [
+                        {
+                          "Criteria": {
+                            "DrugEra": {
+                              "CodesetId": 1
+                            }
+                          },
+                          "StartWindow": {
+                            "Start": {
+                              "Coeff": -1
+                            },
+                            "End": {
+                              "Coeff": 1
+                            },
+                            "UseIndexEnd": false,
+                            "UseEventEnd": false
+                          },
+                          "RestrictVisit": false,
+                          "IgnoreObservationPeriod": false,
+                          "Occurrence": {
+                            "Type": 2,
+                            "Count": 1,
+                            "IsDistinct": false
+                          }
+                        }
+                      ],
+                      "DemographicCriteriaList": [],
+                      "Groups": []
+                    },
+                    "CodesetId": 0,
+                    "ConditionTypeExclude": false
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseIndexEnd": false,
+                  "UseEventEnd": false
+                },
+                "RestrictVisit": false,
+                "IgnoreObservationPeriod": false,
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1,
+                  "IsDistinct": false
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          }
+        ]
+      }
+    ]
+  },
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Empty Concept Set",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Empty Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {}
+}
