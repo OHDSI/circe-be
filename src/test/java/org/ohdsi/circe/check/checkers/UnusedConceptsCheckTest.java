@@ -20,7 +20,7 @@ public class UnusedConceptsCheckTest {
 
     @Test
     public void check_usageInTheChildGroups() throws IOException {
-        CohortExpression cohortExpression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/validation/childGroupExpression.json"));
+        CohortExpression cohortExpression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/childGroupExpression.json"));
         List<Warning> warnings = unusedConceptsCheck.check(cohortExpression);
         assertEquals(Collections.emptyList(), warnings);
     }
