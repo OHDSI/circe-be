@@ -1,5 +1,3 @@
-{DEFAULT @cohort_id_field_name cohort_definition_id}
-
 @codesetQuery
 
 with primary_events (event_id, person_id, start_date, end_date, op_start_date, op_end_date, visit_occurrence_id) as

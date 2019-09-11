@@ -97,12 +97,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static SpecimenSqlBuilder specimenSqlBuilder = new SpecimenSqlBuilder<>();
   private final static VisitOccurrenceSqlBuilder visitOccurrenceSqlBuilder = new VisitOccurrenceSqlBuilder<>();
   private final static ConditionEraSqlBuilder conditionEraSqlBuilder = new ConditionEraSqlBuilder<>();
+	private final static String DEFAULT_COHORT_ID_FIELD_NAME = "cohort_definition_id";
 
   public static class BuildExpressionQueryOptions {
 	  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
-	@JsonProperty("cohortIdFieldName")
-	public String cohortIdFieldName;
+		@JsonProperty("cohortIdFieldName")
+		public String cohortIdFieldName;
 
     @JsonProperty("cohortId")
     public Integer cohortId;
@@ -381,12 +382,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       }
       if (options.cohortId != null)
         resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
-       resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1": "0");
+ 
+			resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1": "0");
 
-      if (options.cohortIdFieldName != null) {
+			if (options.cohortIdFieldName != null) {
         resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", options.cohortIdFieldName.toString());
-      }
-    }
+      } else {
+        resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", DEFAULT_COHORT_ID_FIELD_NAME);
+			}
+    } else {
+			resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", DEFAULT_COHORT_ID_FIELD_NAME);
+		}
     return resultSql;
   }
   public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable) {
