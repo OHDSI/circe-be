@@ -81,6 +81,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private final static String ERA_CONSTRUCTOR_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eraConstructor.sql");
 
+  private final static String DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION = "COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE))";
+  
   // Builders
   private final static ConditionOccurrenceSqlBuilder conditionOccurrenceSqlBuilder = new ConditionOccurrenceSqlBuilder<>();
   private final static DeathSqlBuilder deathSqlBuilder = new DeathSqlBuilder<>();
@@ -735,14 +737,20 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   @Override
   public String getStrategySql(CustomEraStrategy strat, String eventTable) {
+
     if (strat.drugCodesetId == null) {
       throw new RuntimeException("Drug Codeset ID can not be NULL.");
     }
 
+    String drugExposureEndDateExpression = DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION;
+    if (strat.daysSupplyOverride != null) {
+      drugExposureEndDateExpression = String.format("DATEADD(day,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
+    }
     String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
     strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
     strategySql = StringUtils.replace(strategySql, "@gapDays", Integer.toString(strat.gapDays));
     strategySql = StringUtils.replace(strategySql, "@offset", Integer.toString(strat.offset));
+    strategySql = StringUtils.replace(strategySql, "@drugExposureEndDateExpression", drugExposureEndDateExpression);
 
     return strategySql;
   }
