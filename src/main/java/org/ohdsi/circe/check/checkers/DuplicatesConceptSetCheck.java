@@ -21,7 +21,6 @@ package org.ohdsi.circe.check.checkers;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;

@@ -1,12 +1,9 @@
 package org.ohdsi.circe.cohortdefinition.negativecontrols;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.ohdsi.circe.BaseTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
 /**

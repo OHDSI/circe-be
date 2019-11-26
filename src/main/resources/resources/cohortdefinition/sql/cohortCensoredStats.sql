@@ -1,5 +1,3 @@
-{DEFAULT @cohort_id_field_name cohort_definition_id}
-
 -- calculate censored
 delete from @results_database_schema.cohort_censor_stats where @cohort_id_field_name = @target_cohort_id;
 insert into @results_database_schema.cohort_censor_stats (@cohort_id_field_name, lost_count)

@@ -18,7 +18,6 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import static org.ohdsi.circe.check.operations.Operations.match;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.check.WarningSeverity;
-import org.ohdsi.circe.check.operations.Operations;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConditionEra;
