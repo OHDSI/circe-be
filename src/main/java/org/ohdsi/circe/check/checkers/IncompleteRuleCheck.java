@@ -18,18 +18,13 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import static org.ohdsi.circe.check.operations.Operations.match;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.warnings.IncompleteRuleWarning;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
-import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
 import org.ohdsi.circe.cohortdefinition.InclusionRule;
 
 public class IncompleteRuleCheck extends BaseCheck {

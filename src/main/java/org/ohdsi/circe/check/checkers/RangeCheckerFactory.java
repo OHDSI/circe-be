@@ -24,8 +24,6 @@ import static org.ohdsi.circe.check.operations.Operations.match;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.ohdsi.circe.check.Constants;
-import org.ohdsi.circe.check.WarningSeverity;
-import org.ohdsi.circe.check.warnings.DefaultWarning;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConditionEra;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;

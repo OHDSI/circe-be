@@ -19,9 +19,7 @@
 package org.ohdsi.circe.check.checkers;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
 public class EmptyConceptSetCheck extends BaseCheck {

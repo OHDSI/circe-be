@@ -20,10 +20,7 @@ package org.ohdsi.circe.check.checkers;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
 
-import java.util.List;
 import java.util.Objects;
-import org.ohdsi.circe.check.Warning;
-import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
 public class InitialEventCheck extends BaseCheck{

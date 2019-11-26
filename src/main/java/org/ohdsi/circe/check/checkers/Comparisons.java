@@ -23,7 +23,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -123,7 +122,6 @@ public class Comparisons {
 
     public static int compareTo(ObservationFilter filter, Window window) {
 
-        int result = 0;
         int range1 = filter.postDays + filter.priorDays;
         int range2Start = 0, range2End = 0;
         if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days)) {

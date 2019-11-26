@@ -84,21 +84,21 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION = "COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE))";
   
   // Builders
-  private final static ConditionOccurrenceSqlBuilder conditionOccurrenceSqlBuilder = new ConditionOccurrenceSqlBuilder<>();
-  private final static DeathSqlBuilder deathSqlBuilder = new DeathSqlBuilder<>();
-  private final static DeviceExposureSqlBuilder deviceExposureSqlBuilder = new DeviceExposureSqlBuilder<>();
-  private final static DoseEraSqlBuilder doseEraSqlBuilder = new DoseEraSqlBuilder<>();
-  private final static DrugEraSqlBuilder drugEraSqlBuilder = new DrugEraSqlBuilder<>();
-  private final static DrugExposureSqlBuilder drugExposureSqlBuilder = new DrugExposureSqlBuilder<>();
-  private final static LocationRegionSqlBuilder locationRegionSqlBuilder = new LocationRegionSqlBuilder<>();
-  private final static MeasurementSqlBuilder measurementSqlBuilder = new MeasurementSqlBuilder<>();
-  private final static ObservationPeriodSqlBuilder observationPeriodSqlBuilder = new ObservationPeriodSqlBuilder<>();
-  private final static ObservationSqlBuilder observationSqlBuilder = new ObservationSqlBuilder<>();
-  private final static PayerPlanPeriodSqlBuilder payerPlanPeriodSqlBuilder = new PayerPlanPeriodSqlBuilder<>();
-  private final static ProcedureOccurrenceSqlBuilder procedureOccurrenceSqlBuilder = new ProcedureOccurrenceSqlBuilder<>();
-  private final static SpecimenSqlBuilder specimenSqlBuilder = new SpecimenSqlBuilder<>();
-  private final static VisitOccurrenceSqlBuilder visitOccurrenceSqlBuilder = new VisitOccurrenceSqlBuilder<>();
-  private final static ConditionEraSqlBuilder conditionEraSqlBuilder = new ConditionEraSqlBuilder<>();
+  private final static ConditionOccurrenceSqlBuilder<ConditionOccurrence> conditionOccurrenceSqlBuilder = new ConditionOccurrenceSqlBuilder<>();
+  private final static DeathSqlBuilder<Death> deathSqlBuilder = new DeathSqlBuilder<>();
+  private final static DeviceExposureSqlBuilder<DeviceExposure> deviceExposureSqlBuilder = new DeviceExposureSqlBuilder<>();
+  private final static DoseEraSqlBuilder<DoseEra> doseEraSqlBuilder = new DoseEraSqlBuilder<>();
+  private final static DrugEraSqlBuilder<DrugEra> drugEraSqlBuilder = new DrugEraSqlBuilder<>();
+  private final static DrugExposureSqlBuilder<DrugExposure> drugExposureSqlBuilder = new DrugExposureSqlBuilder<>();
+  private final static LocationRegionSqlBuilder<LocationRegion> locationRegionSqlBuilder = new LocationRegionSqlBuilder<>();
+  private final static MeasurementSqlBuilder<Measurement> measurementSqlBuilder = new MeasurementSqlBuilder<>();
+  private final static ObservationPeriodSqlBuilder<ObservationPeriod> observationPeriodSqlBuilder = new ObservationPeriodSqlBuilder<>();
+  private final static ObservationSqlBuilder<Observation> observationSqlBuilder = new ObservationSqlBuilder<>();
+  private final static PayerPlanPeriodSqlBuilder<PayerPlanPeriod> payerPlanPeriodSqlBuilder = new PayerPlanPeriodSqlBuilder<>();
+  private final static ProcedureOccurrenceSqlBuilder<ProcedureOccurrence> procedureOccurrenceSqlBuilder = new ProcedureOccurrenceSqlBuilder<>();
+  private final static SpecimenSqlBuilder<Specimen> specimenSqlBuilder = new SpecimenSqlBuilder<>();
+  private final static VisitOccurrenceSqlBuilder<VisitOccurrence> visitOccurrenceSqlBuilder = new VisitOccurrenceSqlBuilder<>();
+  private final static ConditionEraSqlBuilder<ConditionEra> conditionEraSqlBuilder = new ConditionEraSqlBuilder<>();
   private final static String DEFAULT_COHORT_ID_FIELD_NAME = "cohort_definition_id";
 
   public static class BuildExpressionQueryOptions {
@@ -272,7 +272,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String additionalCriteriaQuery = "";
     if (expression.additionalCriteria != null && !expression.additionalCriteria.isEmpty()) {
       CriteriaGroup acGroup = expression.additionalCriteria;
-      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, this.PRIMARY_CRITERIA_EVENTS_TABLE);//acGroup.accept(this);
+      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, PRIMARY_CRITERIA_EVENTS_TABLE);//acGroup.accept(this);
       acGroupQuery = StringUtils.replace(acGroupQuery, "@indexId", "" + 0);
       additionalCriteriaQuery = "\nJOIN (\n" + acGroupQuery + ") AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n";
     }

@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 import static java.lang.String.format;

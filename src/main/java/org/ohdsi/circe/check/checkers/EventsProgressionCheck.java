@@ -18,9 +18,7 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import java.util.List;
 import java.util.Objects;
-import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ResultLimit;

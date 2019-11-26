@@ -20,7 +20,6 @@ package org.ohdsi.circe.check.checkers;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
 
-import java.security.MessageDigest;
 import java.util.Objects;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Execution;

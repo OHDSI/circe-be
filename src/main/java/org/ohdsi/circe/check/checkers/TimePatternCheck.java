@@ -54,7 +54,6 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
         Map<Integer, Long> freq = startDays.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         long maxFreq = freq.values().stream().mapToLong(v -> v).max().orElse(0);
         if (maxFreq > 1) {
-            int mostCommon = freq.entrySet().stream().filter(en -> Objects.equals(en.getValue(), maxFreq)).map(Map.Entry::getKey).findFirst().orElse(0);
             TimeWindowInfo mostCommonInfo = timeWindowInfoList.stream().filter(ti -> {
                 long currFreq = freq.getOrDefault(startDays(ti.start), 0L);
                 return currFreq == maxFreq;

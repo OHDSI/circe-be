@@ -1,5 +1,3 @@
-{DEFAULT @cohort_id_field_name cohort_definition_id}
-
 -- calculte matching group counts
 delete from @results_database_schema.cohort_inclusion_result where @cohort_id_field_name = @target_cohort_id and mode_id = @inclusionImpactMode;
 insert into @results_database_schema.cohort_inclusion_result (@cohort_id_field_name, inclusion_rule_mask, person_count, mode_id)
