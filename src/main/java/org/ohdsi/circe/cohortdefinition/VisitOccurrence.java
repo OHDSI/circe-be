@@ -19,6 +19,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ohdsi.analysis.versioning.CdmVersion;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -42,6 +43,9 @@ public class VisitOccurrence extends Criteria {
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("VisitTypeExclude")
+  public boolean visitTypeExclude = false;
+	
   @JsonProperty("VisitSourceConcept")
   public Integer visitSourceConcept;
 
@@ -60,6 +64,14 @@ public class VisitOccurrence extends Criteria {
   @JsonProperty("PlaceOfService")
   public Concept[] placeOfService;
 
+  /**
+   * ID of Codeset which defines Geo concepts.
+   * The care site's location.region_concept_id should match one of those.
+   */
+
+  @CdmVersion(range = ">=6.1")
+  @JsonProperty("PlaceOfServiceLocation")
+  public Integer placeOfServiceLocation;
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher)

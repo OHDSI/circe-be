@@ -102,7 +102,7 @@ cteEnds (person_id, start_date, end_date) AS
 	SELECT
 		 c.person_id
 		, c.start_date
-		, MIN(e.end_date) AS era_end_date
+		, MIN(e.end_date) AS end_date
 	FROM #cohort_rows c
 	JOIN cteEndDates e ON c.person_id = e.person_id AND e.end_date >= c.start_date
 	GROUP BY c.person_id, c.start_date
@@ -113,56 +113,51 @@ from cteEnds
 group by person_id, end_date
 ;
 
-DELETE FROM @target_database_schema.@target_cohort_table where cohort_definition_id = @target_cohort_id;
-INSERT INTO @target_database_schema.@target_cohort_table (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
+DELETE FROM @target_database_schema.@target_cohort_table where @cohort_id_field_name = @target_cohort_id;
+INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name, subject_id, cohort_start_date, cohort_end_date)
 @finalCohortQuery
 ;
 
 {@generateStats != 0}?{
--- calculte matching group counts
-delete from @results_database_schema.cohort_inclusion_result where cohort_definition_id = @target_cohort_id;
-insert into @results_database_schema.cohort_inclusion_result (cohort_definition_id, inclusion_rule_mask, person_count)
-select @target_cohort_id as cohort_definition_id, inclusion_rule_mask, count(*) as person_count
-from
-(
-  select Q.person_id, Q.event_id, CAST(SUM(coalesce(POWER(cast(2 as bigint), I.inclusion_rule_id), 0)) AS bigint) as inclusion_rule_mask
-  from #qualified_events Q
-  LEFT JOIN #inclusion_events I on q.person_id = i.person_id and q.event_id = i.event_id
-  GROUP BY Q.person_id, Q.event_id
-) MG -- matching groups
-group by inclusion_rule_mask
+-- Find the event that is the 'best match' per person.  
+-- the 'best match' is defined as the event that satisfies the most inclusion rules.
+-- ties are solved by choosing the event that matches the earliest inclusion rule, and then earliest.
+
+select q.person_id, q.event_id
+into #best_events
+from #qualified_events Q
+join (
+	SELECT R.person_id, R.event_id, ROW_NUMBER() OVER (PARTITION BY R.person_id ORDER BY R.rule_count DESC,R.min_rule_id ASC, R.start_date ASC) AS rank_value
+	FROM (
+		SELECT Q.person_id, Q.event_id, COALESCE(COUNT(DISTINCT I.inclusion_rule_id), 0) AS rule_count, COALESCE(MIN(I.inclusion_rule_id), 0) AS min_rule_id, Q.start_date
+		FROM #qualified_events Q
+		LEFT JOIN #inclusion_events I ON q.person_id = i.person_id AND q.event_id = i.event_id
+		GROUP BY Q.person_id, Q.event_id, Q.start_date
+	) R
+) ranked on Q.person_id = ranked.person_id and Q.event_id = ranked.event_id
+WHERE ranked.rank_value = 1
 ;
 
--- calculate gain counts
-delete from @results_database_schema.cohort_inclusion_stats where cohort_definition_id = @target_cohort_id;
-insert into @results_database_schema.cohort_inclusion_stats (cohort_definition_id, rule_sequence, person_count, gain_count, person_total)
-select ir.cohort_definition_id, ir.rule_sequence, coalesce(T.person_count, 0) as person_count, coalesce(SR.person_count, 0) gain_count, EventTotal.total
-from @results_database_schema.cohort_inclusion ir
-left join
-(
-  select i.inclusion_rule_id, count(i.event_id) as person_count
-  from #qualified_events Q
-  JOIN #inclusion_events i on Q.person_id = I.person_id and Q.event_id = i.event_id
-  group by i.inclusion_rule_id
-) T on ir.rule_sequence = T.inclusion_rule_id
-CROSS JOIN (select count(*) as total_rules from @results_database_schema.cohort_inclusion where cohort_definition_id = @target_cohort_id) RuleTotal
-CROSS JOIN (select count(event_id) as total from #qualified_events) EventTotal
-LEFT JOIN @results_database_schema.cohort_inclusion_result SR on SR.cohort_definition_id = @target_cohort_id AND (POWER(cast(2 as bigint),RuleTotal.total_rules) - POWER(cast(2 as bigint),ir.rule_sequence) - 1) = SR.inclusion_rule_mask -- POWER(2,rule count) - POWER(2,rule sequence) - 1 is the mask for 'all except this rule' 
-WHERE ir.cohort_definition_id = @target_cohort_id
-;
+-- modes of generation: (the same tables store the results for the different modes, identified by the mode_id column)
+-- 0: all events
+-- 1: best event
 
--- calculate totals
-delete from @results_database_schema.cohort_summary_stats where cohort_definition_id = @target_cohort_id;
-insert into @results_database_schema.cohort_summary_stats (cohort_definition_id, base_count, final_count)
-select @target_cohort_id as cohort_definition_id, PC.total as person_count, coalesce(FC.total, 0) as final_count
-FROM
-(select count(event_id) as total from #qualified_events) PC,
-(select sum(sr.person_count) as total
-  from @results_database_schema.cohort_inclusion_result sr
-  CROSS JOIN (select count(*) as total_rules from @results_database_schema.cohort_inclusion where cohort_definition_id = @target_cohort_id) RuleTotal
-  where cohort_definition_id = @target_cohort_id and sr.inclusion_rule_mask = POWER(cast(2 as bigint),RuleTotal.total_rules)-1
-) FC
-;
+
+-- BEGIN: Inclusion Impact Analysis - event
+@inclusionImpactAnalysisByEventQuery
+-- END: Inclusion Impact Analysis - event
+
+-- BEGIN: Inclusion Impact Analysis - person
+@inclusionImpactAnalysisByPersonQuery
+-- END: Inclusion Impact Analysis - person
+
+-- BEGIN: Censored Stats
+@cohortCensoredStatsQuery
+-- END: Censored Stats
+
+TRUNCATE TABLE #best_events;
+DROP TABLE #best_events;
+
 }
 
 @strategy_ends_cleanup

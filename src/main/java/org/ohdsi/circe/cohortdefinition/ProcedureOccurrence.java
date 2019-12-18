@@ -38,6 +38,9 @@ public class ProcedureOccurrence extends Criteria {
 
   @JsonProperty("ProcedureType")
   public Concept[] procedureType;
+	
+  @JsonProperty("ProcedureTypeExclude")
+  public boolean procedureTypeExclude = false;
 
   @JsonProperty("Modifier")
   public Concept[] modifier;

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  *
@@ -29,6 +30,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonInclude(Include.ALWAYS)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({
+        "CONCEPT_ID", "CONCEPT_NAME", "STANDARD_CONCEPT",
+        "STANDARD_CONCEPT_CAPTION", "INVALID_REASON", "INVALID_REASON_CAPTION",
+        "CONCEPT_CODE", "DOMAIN_ID", "VOCABULARY_ID", "CONCEPT_CLASS_ID"
+})
 public class Concept {
     @JsonProperty("CONCEPT_ID")
     public Long conceptId;

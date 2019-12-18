@@ -38,6 +38,9 @@ public class Observation extends Criteria {
 
   @JsonProperty("ObservationType")
   public Concept[] observationType;
+	
+  @JsonProperty("ObservationTypeExclude")
+  public boolean observationTypeExclude = false;
 
   @JsonProperty("ValueAsNumber")
   public NumericRange valueAsNumber;

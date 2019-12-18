@@ -24,19 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author cknoll1
  */
-public class CorelatedCriteria {
-  @JsonProperty("Criteria")
-  public Criteria criteria;  
-  
-  @JsonProperty("StartWindow")
-  public Window startWindow;  
-
-  @JsonProperty("EndWindow")
-  public Window endWindow;  
+public class CorelatedCriteria extends WindowedCriteria {
   
   @JsonProperty("Occurrence")
   public Occurrence occurrence;
-  
-  @JsonProperty("RestrictVisit")
-  public boolean restrictVisit = false;
 }
