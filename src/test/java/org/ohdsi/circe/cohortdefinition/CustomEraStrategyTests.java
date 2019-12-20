@@ -1,8 +1,8 @@
-package org.ohdsi.circe;
+package org.ohdsi.circe.cohortdefinition;
 
 import java.util.regex.Pattern;
 import org.junit.Test;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
+import org.ohdsi.circe.BaseTest;
 
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;

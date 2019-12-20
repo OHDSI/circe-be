@@ -1,13 +1,10 @@
-package org.ohdsi.circe;
+package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.ohdsi.analysis.Utils;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
+import org.ohdsi.circe.BaseTest;
+
 
 import java.io.IOException;
 

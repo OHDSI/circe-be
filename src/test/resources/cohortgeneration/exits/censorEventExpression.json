@@ -25,23 +25,39 @@
     }
   ],
   "PrimaryCriteria": {
-    "CriteriaList": [],
+    "CriteriaList": [
+      {
+        "DrugExposure": {
+          "CodesetId": 0
+        }
+      }
+    ],
     "ObservationWindow": {
-      "PriorDays": 90,
+      "PriorDays": 0,
       "PostDays": 0
     },
     "PrimaryCriteriaLimit": {
-      "Type": "First"
+      "Type": "All"
     }
   },
   "QualifiedLimit": {
-    "Type": "First"
+    "Type": "All"
   },
   "ExpressionLimit": {
-    "Type": "First"
+    "Type": "All"
   },
   "InclusionRules": [],
-  "CensoringCriteria": [],
+  "EndStrategy": {
+    "DateOffset": {
+      "DateField": "StartDate",
+      "Offset": 31
+    }
+  },
+  "CensoringCriteria": [
+    {
+      "ProcedureOccurrence": {}
+    }
+  ],
   "CollapseSettings": {
     "CollapseType": "ERA",
     "EraPad": 0
