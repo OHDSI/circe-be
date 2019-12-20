@@ -14,6 +14,7 @@ import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -29,8 +30,8 @@ import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.zonky.test.db.postgres.junit.EmbeddedPostgresRules;
-import io.zonky.test.db.postgres.junit.SingleInstancePostgresRule;
+import com.opentable.db.postgres.junit.EmbeddedPostgresRules;
+import com.opentable.db.postgres.junit.SingleInstancePostgresRule;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -606,7 +607,49 @@ public class CohortGeneration_5_0_0_Test {
   }
   
   /**
-   * Test collapse windows
+   * Test censor windows
    */
+  @Test
+  public void testCensorWindow() throws Exception {
+    final String RESULTS_SCHEMA = "censorWindow";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/censorWindow/censorWindow_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // condition occurrence persistend for 180 days, censor window between 2000-04-01 to 2000-09-01
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/censorWindow/censorWindowExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable cohortTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    final ITable censorStatsTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort_censor_stats", String.format("SELECT * from %s ORDER BY cohort_definition_id", RESULTS_SCHEMA + ".cohort_censor_stats"));
+    final IDataSet actualDataSet = new CompositeDataSet(new ITable[] {cohortTable, censorStatsTable});
+
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/censorWindow/censorWindow_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedDataSet, actualDataSet);     
+  }
   
 }
