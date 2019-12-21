@@ -1,17 +1,21 @@
-package org.ohdsi.circe;
+package org.ohdsi.circe.cohortdefinition;
 
 import java.util.regex.Pattern;
+
 import org.junit.Test;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
+import org.ohdsi.circe.BaseTest;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static java.lang.String.format;
 import org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
 import org.ohdsi.circe.cohortdefinition.ObservationFilter;
 import org.ohdsi.circe.cohortdefinition.PrimaryCriteria;
+import org.ohdsi.circe.helper.ResourceHelper;
 
 public class CohortOptionsTest extends BaseTest {
 
@@ -89,4 +93,36 @@ public class CohortOptionsTest extends BaseTest {
     checkCohortFieldSql(customFieldSql, "custom_id");
 
   }
+
+  /**
+   * Check serialization
+   * 
+   */
+  @Test
+  public void checkSerialization() {
+    // load a json file and check the value of the options.
+
+    final String TEST_EXPRESSION_JSON = ResourceHelper.GetResourceAsString("/cohortdefinition/buildOptionsTest.json");
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions testOptions = CohortExpressionQueryBuilder.BuildExpressionQueryOptions.fromJson(TEST_EXPRESSION_JSON);
+    assertEquals(testOptions.cdmSchema, "testCdmSchema");
+    assertEquals(testOptions.cohortId, Integer.valueOf(999));
+    assertEquals(testOptions.cohortIdFieldName, "test_cohort_field");
+    assertEquals(testOptions.generateStats, Boolean.valueOf(true));
+    assertEquals(testOptions.resultSchema, "testResultSchema");
+    assertEquals(testOptions.targetTable, "test_target_table");
+    assertEquals(testOptions.vocabularySchema, "testVocabSchema");
+
+    // test an invalid json file.
+    boolean exceptionThrown = false;
+    try {
+      String invalidJson = "badJSON...." + TEST_EXPRESSION_JSON;
+      CohortExpressionQueryBuilder.BuildExpressionQueryOptions.fromJson(invalidJson);
+    }
+    catch (RuntimeException re)
+    {
+      exceptionThrown = true;
+    }
+    assertTrue("Invalid Json did not throw an exception", exceptionThrown);
+  }
+
 }
