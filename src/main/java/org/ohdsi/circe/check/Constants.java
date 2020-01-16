@@ -12,7 +12,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  *
- *   Authors: Vitaly Koulakov
+ *   Authors: Vitaly Koulakov, Sergey Suvorov
  *
  */
 
@@ -36,6 +36,8 @@ public interface Constants {
         String VISIT_OCCURRENCE = "visit occurrence";
         String PAYER_PLAN_PERIOD = "payer plan period";
         String OBSERVATION_PERIOD = "observation period";
+        String LOCATION_REGION = "location region";
+        String DEMOGRAPHIC = "inclusion criteria";
     }
 
     interface Attributes {
@@ -68,5 +70,31 @@ public interface Constants {
         String USER_DEFINED_PERIOD_ATTR = "user defined period";
         String VISIT_LENGTH_ATTR = "visit length";
         String CENSOR_WINDOW_ATTR = "censor window";
+        String GENDER_ATTR = "gender";
+        String RACE_ATTR = "race";
+        String ETHNICITY_ATTR = "ethnicity";
+        String VISIT_TYPE_ATTR = "visit";
+        String PROVIDER_SPECIALITY_ATTR = "provider speciality";
+        String CONDITION_TYPE_ATTR = "condition type";
+        String DEATH_TYPE_ATTR = "death type";
+        String DEVICE_TYPE_ATTR = "device type";
+        String UNIT_ATTR = "unit";
+        String DRUG_TYPE_ATTR = "drug type";
+        String ROUTE_CONCEPT_ATTR = "route concept";
+        String DOSE_UNIT_ATTR = "dose unit";
+        String MEASUREMENT_TYPE_ATTR = "measurement type";
+        String OPERATOR_ATTR = "operator";
+        String VALUE_AS_CONCEPT_ATTR = "value as concept";
+        String OBSERVATION_TYPE_ATTR = "observation type";
+        String QUALIFIER_ATTR = "qualifier";
+        String PERIOD_TYPE_ATTR = "period type";
+        String PROCEDURE_TYPE_ATTR = "procedure type";
+        String MODIFIER_ATTR = "modifier";
+        String SPECIMEN_TYPE_ATTR = "specimen type";
+        String ANATOMIC_SITE_ATTR = "anatomic site";
+        String DISEASE_STATUS_ATTR = "disease status";
+        String PLACE_OF_SERVICE_ATTR = "place of service";
+        String LOCATION_REGION_START_DATE_ATTR = "location region start date";
+        String LOCATION_REGION_END_DATE_ATTR = "location region end date";
     }
 }

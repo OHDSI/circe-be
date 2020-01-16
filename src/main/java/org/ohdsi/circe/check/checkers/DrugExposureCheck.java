@@ -18,12 +18,13 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import static org.ohdsi.circe.check.operations.Operations.match;
-
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.DrugExposure;
+
+import java.util.Objects;
+
+import static org.ohdsi.circe.check.operations.Operations.match;
 
 public class DrugExposureCheck extends BaseCriteriaCheck {
 
@@ -36,10 +37,6 @@ public class DrugExposureCheck extends BaseCriteriaCheck {
         match(criteria)
                 .isA(DrugExposure.class)
                 .then(c -> match((DrugExposure)c)
-                        .when(drugExposure -> Objects.nonNull(drugExposure.routeConcept) && drugExposure.routeConcept.length == 0)
-                        .then(helper.addWarning("route"))
-                        .when(drugExposure -> Objects.nonNull(drugExposure.doseUnit) && drugExposure.doseUnit.length == 0)
-                        .then(helper.addWarning("dose unit"))
                         .when(drugExposure -> Objects.nonNull(drugExposure.lotNumber) && StringUtils.isBlank(drugExposure.lotNumber.text))
                         .then(helper.addWarning("lot number")));
     }
