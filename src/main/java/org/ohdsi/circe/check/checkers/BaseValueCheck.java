@@ -36,38 +36,59 @@ public abstract class BaseValueCheck extends BaseCheck {
     protected static final String CENSORING_CRITERIA = "Censoring events";
 
     protected void checkPrimaryCriteria(PrimaryCriteria primaryCriteria, WarningReporter reporter) {
-        Arrays.stream(primaryCriteria.criteriaList)
-                .forEach(criteria -> checkCriteria(criteria, reporter, PRIMARY_CRITERIA));
+        if (Objects.nonNull(primaryCriteria) && Objects.nonNull(primaryCriteria.criteriaList)) {
+            Arrays.stream(primaryCriteria.criteriaList)
+                    .forEach(criteria -> checkCriteria(criteria, reporter, PRIMARY_CRITERIA));
+        }
     }
 
     protected void checkAdditionalCriteria(CriteriaGroup criteriaGroup, WarningReporter reporter) {
-        Arrays.stream(criteriaGroup.criteriaList)
-                .forEach(criteria -> checkCriteria(criteria, reporter, ADDITIONAL_CRITERIA));
-        Arrays.stream(criteriaGroup.demographicCriteriaList)
-                .forEach(criteria -> checkCriteria(criteria, reporter, ADDITIONAL_CRITERIA));
-        Arrays.stream(criteriaGroup.groups)
-                .forEach(criteria -> checkAdditionalCriteria(criteria, reporter));
+        if (Objects.nonNull(criteriaGroup)) {
+            if (Objects.nonNull(criteriaGroup.criteriaList)) {
+                Arrays.stream(criteriaGroup.criteriaList)
+                        .forEach(criteria -> checkCriteria(criteria, reporter, ADDITIONAL_CRITERIA));
+            }
+            if (Objects.nonNull(criteriaGroup.demographicCriteriaList)) {
+                Arrays.stream(criteriaGroup.demographicCriteriaList)
+                        .forEach(criteria -> checkCriteria(criteria, reporter, ADDITIONAL_CRITERIA));
+            }
+            if (Objects.nonNull(criteriaGroup.groups)) {
+                Arrays.stream(criteriaGroup.groups)
+                        .forEach(criteria -> checkAdditionalCriteria(criteria, reporter));
+            }
+        }
     }
 
     protected void checkCensoringCriteria(final CohortExpression expression, WarningReporter reporter) {
-        Arrays.stream(expression.censoringCriteria)
-                .forEach(criteria -> checkCriteria(criteria, reporter, CENSORING_CRITERIA));
+        if (Objects.nonNull(expression) && Objects.nonNull(expression.censoringCriteria)) {
+            Arrays.stream(expression.censoringCriteria)
+                    .forEach(criteria -> checkCriteria(criteria, reporter, CENSORING_CRITERIA));
+        }
     }
 
     protected void checkInclusionRules(final CohortExpression expression, WarningReporter reporter) {
-
-        for(final InclusionRule rule : expression.inclusionRules) {
-            for(CorelatedCriteria criteria : rule.expression.criteriaList) {
-                checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
-            }
-            for(DemographicCriteria criteria: rule.expression.demographicCriteriaList) {
-                checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
+        if (Objects.nonNull(expression) && Objects.nonNull(expression.inclusionRules)) {
+            for (final InclusionRule rule : expression.inclusionRules) {
+                if (Objects.nonNull(rule.expression)) {
+                    if (Objects.nonNull(rule.expression.criteriaList)) {
+                        for (CorelatedCriteria criteria : rule.expression.criteriaList) {
+                            checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
+                        }
+                    }
+                    if (Objects.nonNull(rule.expression.demographicCriteriaList)) {
+                        for (DemographicCriteria criteria : rule.expression.demographicCriteriaList) {
+                            checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
+                        }
+                    }
+                }
             }
         }
     }
 
     protected void checkCriteria(CorelatedCriteria criteria, WarningReporter reporter, String name) {
-        checkCriteria(criteria.criteria, reporter, name);
+        if (Objects.nonNull(criteria) && Objects.nonNull(criteria.criteria)) {
+            checkCriteria(criteria.criteria, reporter, name);
+        }
     }
 
     protected void checkCriteria(CriteriaGroup criteriaGroup, WarningReporter reporter, String name) {
