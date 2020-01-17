@@ -177,6 +177,60 @@
                                   "Type": 2,
                                   "Count": 1
                                 }
+                              },
+                              {
+                                "Criteria": {
+                                  "DoseEra": {
+                                    "EraStartDate": {
+                                      "Value": "2019-12-31",
+                                      "Op": "lt"
+                                    },
+                                    "EraEndDate": {
+                                      "Value": "2020-01-01",
+                                      "Op": "lt"
+                                    },
+                                    "DoseValue": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "EraLength": {
+                                      "Value": 3,
+                                      "Op": "gt"
+                                    },
+                                    "AgeAtStart": {
+                                      "Value": 4,
+                                      "Op": "gt"
+                                    },
+                                    "AgeAtEnd": {
+                                      "Value": 5,
+                                      "Op": "gt"
+                                    },
+                                    "Gender": [
+                                      {
+                                        "CONCEPT_CODE": "407378000",
+                                        "CONCEPT_ID": 4251434,
+                                        "CONCEPT_NAME": "Surgically transgendered transsexual, male-to-female",
+                                        "DOMAIN_ID": "Gender",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
                               }
                             ],
                             "DemographicCriteriaList": [

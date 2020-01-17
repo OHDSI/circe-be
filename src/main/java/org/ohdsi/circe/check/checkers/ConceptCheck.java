@@ -18,27 +18,9 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
-
 public class ConceptCheck extends BaseValueCheck {
     @Override
-    protected void check(final CohortExpression expression, WarningReporter reporter) {
-        checkPrimaryCriteria(expression.primaryCriteria, reporter);
-        checkAdditionalCriteria(expression.additionalCriteria, reporter);
-        checkInclusionRules(expression, reporter);
-        checkCensoringCriteria(expression, reporter);
-    }
-
-    @Override
-    protected void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name) {
-        ConceptCheckerFactory.getFactory(reporter, name).check(criteria);
-    }
-
-    @Override
-    protected void checkCriteria(Criteria criteria, WarningReporter reporter, String name) {
-        ConceptCheckerFactory.getFactory(reporter, name).check(criteria);
-        checkCriteria(criteria.CorrelatedCriteria, reporter, name);
+    protected BaseCheckerFactory getFactory(WarningReporter reporter, String name) {
+        return ConceptCheckerFactory.getFactory(reporter, name);
     }
 }

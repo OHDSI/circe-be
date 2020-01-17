@@ -7,16 +7,16 @@
         "items": [
           {
             "concept": {
-              "CONCEPT_CLASS_ID": "Ingredient",
-              "CONCEPT_CODE": "1191",
               "CONCEPT_ID": 1112807,
               "CONCEPT_NAME": "Aspirin",
-              "DOMAIN_ID": "Drug",
-              "INVALID_REASON": "V",
-              "INVALID_REASON_CAPTION": "Valid",
               "STANDARD_CONCEPT": "S",
               "STANDARD_CONCEPT_CAPTION": "Standard",
-              "VOCABULARY_ID": "RxNorm"
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "1191",
+              "DOMAIN_ID": "Drug",
+              "VOCABULARY_ID": "RxNorm",
+              "CONCEPT_CLASS_ID": "Ingredient"
             },
             "includeDescendants": true
           }
@@ -27,11 +27,11 @@
   "PrimaryCriteria": {
     "CriteriaList": [],
     "ObservationWindow": {
-      "PriorDays": 0,
-      "PostDays": 0
+      "PriorDays": -3,
+      "PostDays": -2
     },
     "PrimaryCriteriaLimit": {
-      "Type": "First"
+      "Type": "All"
     }
   },
   "AdditionalCriteria": {
@@ -148,6 +148,45 @@
                         "Type": 2,
                         "Count": 1
                       }
+                    },
+                    {
+                      "Criteria": {
+                        "DoseEra": {
+                          "EraStartDate": {
+                            "Op": "lt"
+                          },
+                          "EraEndDate": {
+                            "Op": "lt"
+                          },
+                          "Unit": [],
+                          "DoseValue": {
+                            "Op": "gt"
+                          },
+                          "EraLength": {
+                            "Op": "gt"
+                          },
+                          "AgeAtStart": {
+                            "Op": "gt"
+                          },
+                          "AgeAtEnd": {
+                            "Op": "gt"
+                          },
+                          "Gender": []
+                        }
+                      },
+                      "StartWindow": {
+                        "Start": {
+                          "Coeff": -1
+                        },
+                        "End": {
+                          "Coeff": 1
+                        },
+                        "UseEventEnd": false
+                      },
+                      "Occurrence": {
+                        "Type": 2,
+                        "Count": 1
+                      }
                     }
                   ],
                   "DemographicCriteriaList": [
@@ -175,6 +214,7 @@
                   "Op": "lt"
                 },
                 "OccurrenceCount": {
+                  "Value": -5,
                   "Op": "lt"
                 },
                 "EraLength": {
@@ -191,9 +231,11 @@
             },
             "StartWindow": {
               "Start": {
+                "Days": -3,
                 "Coeff": -1
               },
               "End": {
+                "Days": -2,
                 "Coeff": 1
               },
               "UseEventEnd": false
@@ -207,13 +249,17 @@
         "DemographicCriteriaList": [
           {
             "Age": {
-              "Op": "gt"
+              "Value": 5,
+              "Extent": 1,
+              "Op": "bt"
             },
             "Gender": [],
             "Race": [],
             "Ethnicity": [],
             "OccurrenceStartDate": {
-              "Op": "lt"
+              "Value": "2020-01-03",
+              "Extent": "2019-12-31",
+              "Op": "bt"
             },
             "OccurrenceEndDate": {
               "Op": "lt"

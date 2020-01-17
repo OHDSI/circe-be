@@ -39,8 +39,8 @@ public class CriteriaCheckValueTest {
     private static final int RANGE_PRIMARY_WARNING_COUNT = 138;
     private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
 
-    private static final int RANGE_ADDITIONAL_WARNING_COUNT = 25;
-    private static final int CONCEPT_ADDITIONAL_WARNING_COUNT = 21;
+    private static final int RANGE_ADDITIONAL_WARNING_COUNT = 35;
+    private static final int CONCEPT_ADDITIONAL_WARNING_COUNT = 23;
 
     private static final int RANGE_INCLUSION_WARNING_COUNT = 28;
     private static final int CONCEPT_INCLUSION_WARNING_COUNT = 18;

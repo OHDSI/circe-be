@@ -119,7 +119,20 @@ public abstract class BaseValueCheck extends BaseCheck {
         }
     }
 
-    protected abstract void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name);
+    protected void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name) {
+        if (Objects.nonNull(criteria)) {
+            getFactory(reporter, name).check(criteria);
+        }
+    }
 
-    protected abstract void checkCriteria(Criteria criteria, WarningReporter reporter, String name);
+    protected void checkCriteria(Criteria criteria, WarningReporter reporter, String name) {
+        if (Objects.nonNull(criteria)) {
+            if (Objects.nonNull(criteria.CorrelatedCriteria)) {
+                checkCriteria(criteria.CorrelatedCriteria, reporter, name);
+            }
+            getFactory(reporter, name).check(criteria);
+        }
+    }
+
+    protected abstract BaseCheckerFactory getFactory(WarningReporter reporter, String name);
 }

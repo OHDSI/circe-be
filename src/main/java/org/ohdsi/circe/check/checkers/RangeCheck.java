@@ -20,8 +20,6 @@ package org.ohdsi.circe.check.checkers;
 
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
 import org.ohdsi.circe.cohortdefinition.InclusionRule;
 import org.ohdsi.circe.cohortdefinition.ObservationFilter;
 import org.ohdsi.circe.cohortdefinition.Window;
@@ -73,20 +71,14 @@ public class RangeCheck extends BaseValueCheck {
         }
     }
 
-    @Override
-    protected void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name) {
-        RangeCheckerFactory.getFactory(reporter, name).check(criteria);
-    }
-
     protected void checkCriteria(CorelatedCriteria criteria, WarningReporter reporter, String name) {
+        super.checkCriteria(criteria, reporter, name);
         checkWindow(criteria.startWindow, reporter, name);
         checkWindow(criteria.endWindow, reporter, name);
-        checkCriteria(criteria.criteria, reporter, name);
     }
 
     @Override
-    protected void checkCriteria(Criteria criteria, WarningReporter reporter, String name) {
-        RangeCheckerFactory.getFactory(reporter, name).check(criteria);
-        checkCriteria(criteria.CorrelatedCriteria, reporter, name);
+    protected BaseCheckerFactory getFactory(WarningReporter reporter, String name) {
+        return RangeCheckerFactory.getFactory(reporter, name);
     }
 }

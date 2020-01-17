@@ -18,7 +18,6 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
 
@@ -44,9 +43,5 @@ public abstract class BaseCheckerFactory {
 
     public void check(DemographicCriteria criteria) {
         getCheck(criteria).accept(criteria);
-    }
-
-    public void check(CorelatedCriteria criteria) {
-        getCheck(criteria.criteria).accept(criteria.criteria);
     }
 }

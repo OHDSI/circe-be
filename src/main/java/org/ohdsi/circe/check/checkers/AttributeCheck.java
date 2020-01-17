@@ -19,11 +19,6 @@
 package org.ohdsi.circe.check.checkers;
 
 import org.ohdsi.circe.check.WarningSeverity;
-import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
-
-import java.util.Objects;
 
 public class AttributeCheck extends BaseValueCheck {
     @Override
@@ -32,19 +27,7 @@ public class AttributeCheck extends BaseValueCheck {
     }
 
     @Override
-    protected void checkCriteria(CorelatedCriteria criteria, WarningReporter reporter, String name) {
-        if (Objects.nonNull(criteria) && Objects.nonNull(criteria.criteria)) {
-            checkCriteria(criteria.criteria, reporter, name);
-        }
-    }
-
-    @Override
-    protected void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name) {
-        AttributeCheckerFactory.getFactory(reporter, name).check(criteria);
-    }
-
-    @Override
-    protected void checkCriteria(Criteria criteria, WarningReporter reporter, String name) {
-        checkCriteria(criteria.CorrelatedCriteria, reporter, name);
+    protected BaseCheckerFactory getFactory(WarningReporter reporter, String name) {
+        return AttributeCheckerFactory.getFactory(reporter, name);
     }
 }
