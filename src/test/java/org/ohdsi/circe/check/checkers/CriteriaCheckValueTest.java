@@ -31,6 +31,11 @@ public class CriteriaCheckValueTest {
     private static final CohortExpression CORRECT_CENSORING_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/censoringEventCheckValueCorrect.json"));
 
+    private static final CohortExpression WRONG_EMPTY_CRITERIA_EXPRESSION =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckIncorrect.json"));
+    private static final CohortExpression CORRECT_EMPTY_CRITERIA_EXPRESSION =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckCorrect.json"));
+
     private static final int RANGE_PRIMARY_WARNING_COUNT = 138;
     private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
 
@@ -43,8 +48,11 @@ public class CriteriaCheckValueTest {
     private static final int RANGE_CENSORING_WARNING_COUNT = 23;
     private static final int CONCEPT_CENSORING_WARNING_COUNT = 9;
 
-    private RangeCheck rangeCheck = new RangeCheck();
-    private ConceptCheck conceptCheck = new ConceptCheck();
+    private static final int EMPTY_CRITERIA_WARNING_COUNT = 1;
+
+    private BaseCheck rangeCheck = new RangeCheck();
+    private BaseCheck conceptCheck = new ConceptCheck();
+    private BaseCheck attributeCheck = new AttributeCheck();
 
     @Test
     public void checkPrimaryRangeIncorrect() {
@@ -139,6 +147,18 @@ public class CriteriaCheckValueTest {
     @Test
     public void checkCensoringConceptCorrect() {
         List<Warning> warnings = conceptCheck.check(CORRECT_CENSORING_EXPRESSION);
+        assertEquals(Collections.emptyList(), warnings);
+    }
+
+    @Test
+    public void checkAttributeIncorrect() {
+        List<Warning> warnings = attributeCheck.check(WRONG_EMPTY_CRITERIA_EXPRESSION);
+        assertEquals(EMPTY_CRITERIA_WARNING_COUNT, warnings.size());
+    }
+
+    @Test
+    public void checkAttributeCorrect() {
+        List<Warning> warnings = attributeCheck.check(CORRECT_EMPTY_CRITERIA_EXPRESSION);
         assertEquals(Collections.emptyList(), warnings);
     }
 }

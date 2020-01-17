@@ -37,7 +37,7 @@ public interface Constants {
         String PAYER_PLAN_PERIOD = "payer plan period";
         String OBSERVATION_PERIOD = "observation period";
         String LOCATION_REGION = "location region";
-        String DEMOGRAPHIC = "inclusion criteria";
+        String DEMOGRAPHIC = "demographic";
     }
 
     interface Attributes {

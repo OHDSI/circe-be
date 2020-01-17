@@ -33,11 +33,7 @@ public class RangeCheck extends BaseValueCheck {
 
     @Override
     protected void check(final CohortExpression expression, WarningReporter reporter) {
-
-        checkPrimaryCriteria(expression.primaryCriteria, reporter);
-        checkAdditionalCriteria(expression.additionalCriteria, reporter);
-        checkInclusionRules(expression, reporter);
-        checkCensoringCriteria(expression, reporter);
+        super.check(expression, reporter);
         RangeCheckerFactory.getFactory(reporter, PRIMARY_CRITERIA).check(expression);
         checkObservationFilter(expression.primaryCriteria.observationWindow, reporter, "observation window");
         RangeCheckerFactory.getFactory(reporter, PRIMARY_CRITERIA).checkRange(expression.censorWindow, "cohort", "censor window");

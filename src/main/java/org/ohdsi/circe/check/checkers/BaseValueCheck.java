@@ -35,6 +35,14 @@ public abstract class BaseValueCheck extends BaseCheck {
     protected static final String ADDITIONAL_CRITERIA = "Additional criteria";
     protected static final String CENSORING_CRITERIA = "Censoring events";
 
+    @Override
+    protected void check(final CohortExpression expression, WarningReporter reporter) {
+        checkPrimaryCriteria(expression.primaryCriteria, reporter);
+        checkAdditionalCriteria(expression.additionalCriteria, reporter);
+        checkInclusionRules(expression, reporter);
+        checkCensoringCriteria(expression, reporter);
+    }
+
     protected void checkPrimaryCriteria(PrimaryCriteria primaryCriteria, WarningReporter reporter) {
         if (Objects.nonNull(primaryCriteria) && Objects.nonNull(primaryCriteria.criteriaList)) {
             Arrays.stream(primaryCriteria.criteriaList)
