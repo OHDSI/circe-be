@@ -111,6 +111,119 @@
                 "Type": 2,
                 "Count": 1
               }
+            },
+            {
+              "Criteria": {
+                "ConditionOccurrence": {
+                  "StopReason": {
+                    "Op": "contains"
+                  }
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            },
+            {
+              "Criteria": {
+                "DeviceExposure": {
+                  "UniqueDeviceId": {
+                    "Op": "contains"
+                  }
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            },
+            {
+              "Criteria": {
+                "DrugExposure": {
+                  "StopReason": {
+                    "Op": "contains"
+                  },
+                  "LotNumber": {
+                    "Op": "contains"
+                  }
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            },
+            {
+              "Criteria": {
+                "Observation": {
+                  "ValueAsString": {
+                    "Op": "contains"
+                  }
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            },
+            {
+              "Criteria": {
+                "Specimen": {
+                  "SourceId": {
+                    "Op": "contains"
+                  }
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
             }
           ],
           "DemographicCriteriaList": [

@@ -7,16 +7,16 @@
         "items": [
           {
             "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "1191",
               "CONCEPT_ID": 1112807,
               "CONCEPT_NAME": "Aspirin",
-              "STANDARD_CONCEPT": "S",
-              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "DOMAIN_ID": "Drug",
               "INVALID_REASON": "V",
               "INVALID_REASON_CAPTION": "Valid",
-              "CONCEPT_CODE": "1191",
-              "DOMAIN_ID": "Drug",
-              "VOCABULARY_ID": "RxNorm",
-              "CONCEPT_CLASS_ID": "Ingredient"
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
             },
             "includeDescendants": true
           }
@@ -100,6 +100,28 @@
                                   "Type": 2,
                                   "Count": 1
                                 }
+                              },
+                              {
+                                "Criteria": {
+                                  "DeviceExposure": {
+                                    "UniqueDeviceId": {
+                                      "Op": "contains"
+                                    }
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
                               }
                             ],
                             "DemographicCriteriaList": [
@@ -127,6 +149,9 @@
                             "Op": "lt"
                           },
                           "ConditionType": [],
+                          "StopReason": {
+                            "Op": "contains"
+                          },
                           "Age": {
                             "Op": "lt"
                           },
@@ -208,7 +233,9 @@
                   "Groups": []
                 },
                 "EraStartDate": {
-                  "Op": "lt"
+                  "Value": "2020-01-16",
+                  "Extent": "2020-01-16",
+                  "Op": "bt"
                 },
                 "EraEndDate": {
                   "Op": "lt"
@@ -258,7 +285,7 @@
             "Ethnicity": [],
             "OccurrenceStartDate": {
               "Value": "2020-01-03",
-              "Extent": "2019-12-31",
+              "Extent": "2020-01-32",
               "Op": "bt"
             },
             "OccurrenceEndDate": {

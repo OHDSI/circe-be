@@ -163,6 +163,7 @@
                       }
                     ],
                     "StopReason": {
+                      "Text": "12",
                       "Op": "contains"
                     },
                     "Age": {
@@ -283,6 +284,10 @@
                         "VOCABULARY_ID": "SNOMED"
                       }
                     ],
+                    "UniqueDeviceId": {
+                      "Text": "12",
+                      "Op": "contains"
+                    },
                     "Quantity": {
                       "Value": 1,
                       "Extent": 2,
@@ -427,6 +432,7 @@
                       }
                     ],
                     "StopReason": {
+                      "Text": "12",
                       "Op": "contains"
                     },
                     "Refills": {
@@ -524,25 +530,6 @@
                   },
                   "UseEventEnd": false
                 },
-                "Occurrence": {
-                  "Type": 2,
-                  "Count": 1
-                }
-              },
-              {
-                "Criteria": {
-                  "LocationRegion": {}
-                },
-                "StartWindow": {
-                  "Start": {
-                    "Coeff": -1
-                  },
-                  "End": {
-                    "Coeff": 1
-                  },
-                  "UseEventEnd": false
-                },
-                "IgnoreObservationPeriod": true,
                 "Occurrence": {
                   "Type": 2,
                   "Count": 1
@@ -704,6 +691,7 @@
                       "Op": "bt"
                     },
                     "ValueAsString": {
+                      "Text": "33",
                       "Op": "contains"
                     },
                     "Age": {
@@ -991,6 +979,10 @@
                       "Extent": 2,
                       "Op": "!bt"
                     },
+                    "SourceId": {
+                      "Text": "1",
+                      "Op": "contains"
+                    },
                     "Age": {
                       "Value": 1,
                       "Extent": 2,
@@ -1090,6 +1082,34 @@
                   },
                   "UseEventEnd": false
                 },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
+                  "LocationRegion": {
+                    "StartDate": {
+                      "Value": "2019-12-31",
+                      "Op": "lt"
+                    },
+                    "EndDate": {
+                      "Value": "2020-01-01",
+                      "Op": "lt"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "IgnoreObservationPeriod": true,
                 "Occurrence": {
                   "Type": 2,
                   "Count": 1

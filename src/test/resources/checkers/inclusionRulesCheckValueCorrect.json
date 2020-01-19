@@ -117,6 +117,33 @@
                                   "Type": 2,
                                   "Count": 1
                                 }
+                              },
+                              {
+                                "Criteria": {
+                                  "DrugExposure": {
+                                    "StopReason": {
+                                      "Text": "13",
+                                      "Op": "contains"
+                                    },
+                                    "LotNumber": {
+                                      "Text": "14",
+                                      "Op": "contains"
+                                    }
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
                               }
                             ],
                             "DemographicCriteriaList": [

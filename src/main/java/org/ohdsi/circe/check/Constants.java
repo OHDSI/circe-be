@@ -96,5 +96,10 @@ public interface Constants {
         String PLACE_OF_SERVICE_ATTR = "place of service";
         String LOCATION_REGION_START_DATE_ATTR = "location region start date";
         String LOCATION_REGION_END_DATE_ATTR = "location region end date";
+        String STOP_REASON_ATTR = "stop reason";
+        String UNIQUE_DEVICE_ID_ATTR = "unique device id";
+        String LOT_NUMBER_ATTR = "lot number";
+        String VALUE_AS_STRING_ATTR = "value as string";
+        String SOURCE_ID_ATTR = "source id";
     }
 }

@@ -1,0 +1,56 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "ibuprofen ",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 1177480,
+              "CONCEPT_NAME": "Ibuprofen",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "5640",
+              "DOMAIN_ID": "Drug",
+              "VOCABULARY_ID": "RxNorm",
+              "CONCEPT_CLASS_ID": "Ingredient"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "All"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [],
+    "DemographicCriteriaList": [],
+    "Groups": []
+  },
+  "QualifiedLimit": {
+    "Type": "All"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}

@@ -273,7 +273,14 @@
               },
               {
                 "Criteria": {
-                  "LocationRegion": {}
+                  "LocationRegion": {
+                    "StartDate": {
+                      "Op": "lt"
+                    },
+                    "EndDate": {
+                      "Op": "lt"
+                    }
+                  }
                 },
                 "StartWindow": {
                   "Start": {
@@ -493,6 +500,9 @@
                     "Unit": [],
                     "AnatomicSite": [],
                     "DiseaseStatus": [],
+                    "SourceId": {
+                      "Op": "contains"
+                    },
                     "Age": {
                       "Op": "bt"
                     },
@@ -543,6 +553,25 @@
                   },
                   "UseEventEnd": false
                 },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
+                  "LocationRegion": {}
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "IgnoreObservationPeriod": true,
                 "Occurrence": {
                   "Type": 2,
                   "Count": 1

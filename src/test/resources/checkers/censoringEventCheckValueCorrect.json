@@ -58,7 +58,127 @@
                 "ConditionEra": {
                   "CorrelatedCriteria": {
                     "Type": "ALL",
-                    "CriteriaList": [],
+                    "CriteriaList": [
+                      {
+                        "Criteria": {
+                          "ConditionOccurrence": {
+                            "StopReason": {
+                              "Text": "123",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "DeviceExposure": {
+                            "UniqueDeviceId": {
+                              "Text": "123",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "DrugExposure": {
+                            "StopReason": {
+                              "Text": "23",
+                              "Op": "contains"
+                            },
+                            "LotNumber": {
+                              "Text": "34",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "Observation": {
+                            "ValueAsString": {
+                              "Text": "55",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "Specimen": {
+                            "SourceId": {
+                              "Text": "66",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      }
+                    ],
                     "DemographicCriteriaList": [
                       {
                         "Age": {
