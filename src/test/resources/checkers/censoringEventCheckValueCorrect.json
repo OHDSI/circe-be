@@ -1,0 +1,415 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Aspirin",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "1191",
+              "CONCEPT_ID": 1112807,
+              "CONCEPT_NAME": "Aspirin",
+              "DOMAIN_ID": "Drug",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [],
+    "DemographicCriteriaList": [],
+    "Groups": []
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [
+    {
+      "ConditionEra": {
+        "CorrelatedCriteria": {
+          "Type": "ALL",
+          "CriteriaList": [
+            {
+              "Criteria": {
+                "ConditionEra": {
+                  "CorrelatedCriteria": {
+                    "Type": "ALL",
+                    "CriteriaList": [
+                      {
+                        "Criteria": {
+                          "ConditionOccurrence": {
+                            "StopReason": {
+                              "Text": "123",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "DeviceExposure": {
+                            "UniqueDeviceId": {
+                              "Text": "123",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "DrugExposure": {
+                            "StopReason": {
+                              "Text": "23",
+                              "Op": "contains"
+                            },
+                            "LotNumber": {
+                              "Text": "34",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "Observation": {
+                            "ValueAsString": {
+                              "Text": "55",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      },
+                      {
+                        "Criteria": {
+                          "Specimen": {
+                            "SourceId": {
+                              "Text": "66",
+                              "Op": "contains"
+                            }
+                          }
+                        },
+                        "StartWindow": {
+                          "Start": {
+                            "Coeff": -1
+                          },
+                          "End": {
+                            "Coeff": 1
+                          },
+                          "UseEventEnd": false
+                        },
+                        "Occurrence": {
+                          "Type": 2,
+                          "Count": 1
+                        }
+                      }
+                    ],
+                    "DemographicCriteriaList": [
+                      {
+                        "Age": {
+                          "Value": 2,
+                          "Op": "gt"
+                        },
+                        "Gender": [
+                          {
+                            "CONCEPT_CODE": "407378000",
+                            "CONCEPT_ID": 4251434,
+                            "CONCEPT_NAME": "Surgically transgendered transsexual, male-to-female",
+                            "DOMAIN_ID": "Gender",
+                            "INVALID_REASON_CAPTION": "Unknown",
+                            "STANDARD_CONCEPT_CAPTION": "Unknown",
+                            "VOCABULARY_ID": "SNOMED"
+                          }
+                        ],
+                        "Race": [
+                          {
+                            "CONCEPT_CODE": "2.03",
+                            "CONCEPT_ID": 38003576,
+                            "CONCEPT_NAME": "Bhutanese",
+                            "DOMAIN_ID": "Race",
+                            "INVALID_REASON_CAPTION": "Unknown",
+                            "STANDARD_CONCEPT_CAPTION": "Unknown",
+                            "VOCABULARY_ID": "Race"
+                          }
+                        ],
+                        "Ethnicity": [
+                          {
+                            "CONCEPT_CODE": "Not Hispanic",
+                            "CONCEPT_ID": 38003564,
+                            "CONCEPT_NAME": "Not Hispanic or Latino",
+                            "DOMAIN_ID": "Ethnicity",
+                            "INVALID_REASON_CAPTION": "Unknown",
+                            "STANDARD_CONCEPT_CAPTION": "Unknown",
+                            "VOCABULARY_ID": "Ethnicity"
+                          }
+                        ],
+                        "OccurrenceStartDate": {
+                          "Value": "2020-01-05",
+                          "Op": "lt"
+                        },
+                        "OccurrenceEndDate": {
+                          "Value": "2020-01-05",
+                          "Op": "lt"
+                        }
+                      }
+                    ],
+                    "Groups": []
+                  },
+                  "EraStartDate": {
+                    "Value": "2019-12-31",
+                    "Op": "lt"
+                  },
+                  "EraEndDate": {
+                    "Value": "2019-12-31",
+                    "Op": "lt"
+                  },
+                  "OccurrenceCount": {
+                    "Value": 2,
+                    "Op": "gt"
+                  },
+                  "EraLength": {
+                    "Value": 2,
+                    "Op": "gt"
+                  },
+                  "AgeAtStart": {
+                    "Value": 2,
+                    "Op": "gt"
+                  },
+                  "AgeAtEnd": {
+                    "Value": 2,
+                    "Op": "gt"
+                  },
+                  "Gender": [
+                    {
+                      "CONCEPT_CODE": "703117000",
+                      "CONCEPT_ID": 45766034,
+                      "CONCEPT_NAME": "Masculine gender",
+                      "DOMAIN_ID": "Gender",
+                      "INVALID_REASON_CAPTION": "Unknown",
+                      "STANDARD_CONCEPT_CAPTION": "Unknown",
+                      "VOCABULARY_ID": "SNOMED"
+                    }
+                  ]
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1
+                },
+                "End": {
+                  "Coeff": 1
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            }
+          ],
+          "DemographicCriteriaList": [
+            {
+              "Age": {
+                "Value": 2,
+                "Op": "gt"
+              },
+              "Gender": [
+                {
+                  "CONCEPT_CODE": "703118005",
+                  "CONCEPT_ID": 45766035,
+                  "CONCEPT_NAME": "Feminine gender",
+                  "DOMAIN_ID": "Gender",
+                  "INVALID_REASON_CAPTION": "Unknown",
+                  "STANDARD_CONCEPT_CAPTION": "Unknown",
+                  "VOCABULARY_ID": "SNOMED"
+                }
+              ],
+              "Race": [
+                {
+                  "CONCEPT_CODE": "2.01",
+                  "CONCEPT_ID": 38003574,
+                  "CONCEPT_NAME": "Asian Indian",
+                  "DOMAIN_ID": "Race",
+                  "INVALID_REASON_CAPTION": "Unknown",
+                  "STANDARD_CONCEPT_CAPTION": "Unknown",
+                  "VOCABULARY_ID": "Race"
+                }
+              ],
+              "Ethnicity": [
+                {
+                  "CONCEPT_CODE": "Not Hispanic",
+                  "CONCEPT_ID": 38003564,
+                  "CONCEPT_NAME": "Not Hispanic or Latino",
+                  "DOMAIN_ID": "Ethnicity",
+                  "INVALID_REASON_CAPTION": "Unknown",
+                  "STANDARD_CONCEPT_CAPTION": "Unknown",
+                  "VOCABULARY_ID": "Ethnicity"
+                }
+              ],
+              "OccurrenceStartDate": {
+                "Value": "2019-12-31",
+                "Op": "lt"
+              },
+              "OccurrenceEndDate": {
+                "Value": "2020-01-01",
+                "Op": "lt"
+              }
+            }
+          ],
+          "Groups": []
+        },
+        "EraStartDate": {
+          "Value": "2019-12-31",
+          "Op": "lt"
+        },
+        "EraEndDate": {
+          "Value": "2019-12-31",
+          "Op": "lt"
+        },
+        "EraLength": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "AgeAtStart": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "AgeAtEnd": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "Gender": [
+          {
+            "CONCEPT_CODE": "407379008",
+            "CONCEPT_ID": 4231242,
+            "CONCEPT_NAME": "Surgically transgendered transsexual, female-to-male",
+            "DOMAIN_ID": "Gender",
+            "INVALID_REASON_CAPTION": "Unknown",
+            "STANDARD_CONCEPT_CAPTION": "Unknown",
+            "VOCABULARY_ID": "SNOMED"
+          }
+        ]
+      }
+    },
+    {
+      "DrugEra": {
+        "EraStartDate": {
+          "Value": "2020-01-01",
+          "Op": "lt"
+        },
+        "EraEndDate": {
+          "Value": "2020-01-01",
+          "Op": "lt"
+        },
+        "OccurrenceCount": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "EraLength": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "AgeAtStart": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "AgeAtEnd": {
+          "Value": 2,
+          "Op": "gt"
+        },
+        "Gender": [
+          {
+            "CONCEPT_CODE": "394744001",
+            "CONCEPT_ID": 4215271,
+            "CONCEPT_NAME": "Gender unspecified",
+            "DOMAIN_ID": "Gender",
+            "INVALID_REASON_CAPTION": "Unknown",
+            "STANDARD_CONCEPT_CAPTION": "Unknown",
+            "VOCABULARY_ID": "SNOMED"
+          }
+        ]
+      }
+    }
+  ],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=6.1.0"
+}
