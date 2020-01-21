@@ -39,6 +39,15 @@ public class CriteriaCheckValueTest {
     private static final CohortExpression EMPTY_CENSORING_CRITERIA_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCensoringCriteriaList.json"));
 
+    private static final CohortExpression EMPTY_PRIMARY_CRITERIA_EXPRESSION =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyPrimaryCriteriaList.json"));
+
+    private static final CohortExpression EMPTY_INCLUSION_RULES_EXPRESSION =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyInclusionRules.json"));
+
+    private static final CohortExpression EMPTY_CORRELATED_CRITERIA_EXPRESSION =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCorrelatedCriteria.json"));
+
     private static final int RANGE_PRIMARY_WARNING_COUNT = 140;
     private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
     private static final int TEXT_PRIMARY_WARNING_COUNT = 5;
@@ -219,8 +228,26 @@ public class CriteriaCheckValueTest {
     }
 
     @Test
-    public void checkCensoringEmptyCriteriaList() {
+    public void checkEmptyCensoringCriteria() {
         List<Warning> warnings = attributeCheck.check(EMPTY_CENSORING_CRITERIA_EXPRESSION);
+        assertEquals(Collections.emptyList(), warnings);
+    }
+
+    @Test
+    public void checkEmptyPrimaryCriteria() {
+        List<Warning> warnings = rangeCheck.check(EMPTY_PRIMARY_CRITERIA_EXPRESSION);
+        assertEquals(Collections.emptyList(), warnings);
+    }
+
+    @Test
+    public void checkEmptyInclusionRules() {
+        List<Warning> warnings = rangeCheck.check(EMPTY_INCLUSION_RULES_EXPRESSION);
+        assertEquals(Collections.emptyList(), warnings);
+    }
+
+    @Test
+    public void checkEmptyCorrelatedCriteria() {
+        List<Warning> warnings = rangeCheck.check(EMPTY_CORRELATED_CRITERIA_EXPRESSION);
         assertEquals(Collections.emptyList(), warnings);
     }
 }

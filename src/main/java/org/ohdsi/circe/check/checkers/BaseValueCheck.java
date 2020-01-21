@@ -62,60 +62,52 @@ public abstract class BaseValueCheck extends BaseCheck {
     }
 
     protected void checkCensoringCriteria(final CohortExpression expression, WarningReporter reporter) {
-        if (Objects.nonNull(expression) && Objects.nonNull(expression.censoringCriteria)) {
+        if (Objects.nonNull(expression.censoringCriteria)) {
             Arrays.stream(expression.censoringCriteria)
                     .forEach(criteria -> checkCriteria(criteria, reporter, CENSORING_CRITERIA));
         }
     }
 
     protected void checkInclusionRules(final CohortExpression expression, WarningReporter reporter) {
-        if (Objects.nonNull(expression)) {
-            for (final InclusionRule rule : expression.inclusionRules) {
-                if (Objects.nonNull(rule.expression)) {
-                    for (CorelatedCriteria criteria : rule.expression.criteriaList) {
-                        checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
-                    }
-                    for (DemographicCriteria criteria : rule.expression.demographicCriteriaList) {
-                        checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
-                    }
+        for (final InclusionRule rule : expression.inclusionRules) {
+            if (Objects.nonNull(rule.expression)) {
+                for (CorelatedCriteria criteria : rule.expression.criteriaList) {
+                    checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
+                }
+                for (DemographicCriteria criteria : rule.expression.demographicCriteriaList) {
+                    checkCriteria(criteria, reporter, INCLUSION_CRITERIA + "\"" + rule.name + "\"");
                 }
             }
         }
     }
 
     protected void checkCriteria(CorelatedCriteria criteria, WarningReporter reporter, String name) {
-        if (Objects.nonNull(criteria) && Objects.nonNull(criteria.criteria)) {
+        if (Objects.nonNull(criteria.criteria)) {
             checkCriteria(criteria.criteria, reporter, name);
         }
     }
 
     protected void checkCriteria(CriteriaGroup criteriaGroup, WarningReporter reporter, String name) {
-        if (Objects.nonNull(criteriaGroup)) {
-            for (DemographicCriteria criteria : criteriaGroup.demographicCriteriaList) {
-                checkCriteria(criteria, reporter, name);
-            }
-            for (CorelatedCriteria criteria : criteriaGroup.criteriaList) {
-                checkCriteria(criteria, reporter, name);
-            }
-            for (CriteriaGroup group : criteriaGroup.groups) {
-                checkCriteria(group, reporter, name);
-            }
+        for (DemographicCriteria criteria : criteriaGroup.demographicCriteriaList) {
+            checkCriteria(criteria, reporter, name);
+        }
+        for (CorelatedCriteria criteria : criteriaGroup.criteriaList) {
+            checkCriteria(criteria, reporter, name);
+        }
+        for (CriteriaGroup group : criteriaGroup.groups) {
+            checkCriteria(group, reporter, name);
         }
     }
 
     protected void checkCriteria(DemographicCriteria criteria, WarningReporter reporter, String name) {
-        if (Objects.nonNull(criteria)) {
-            getFactory(reporter, name).check(criteria);
-        }
+        getFactory(reporter, name).check(criteria);
     }
 
     protected void checkCriteria(Criteria criteria, WarningReporter reporter, String name) {
-        if (Objects.nonNull(criteria)) {
-            if (Objects.nonNull(criteria.CorrelatedCriteria)) {
-                checkCriteria(criteria.CorrelatedCriteria, reporter, name);
-            }
-            getFactory(reporter, name).check(criteria);
+        if (Objects.nonNull(criteria.CorrelatedCriteria)) {
+            checkCriteria(criteria.CorrelatedCriteria, reporter, name);
         }
+        getFactory(reporter, name).check(criteria);
     }
 
     protected abstract BaseCheckerFactory getFactory(WarningReporter reporter, String name);

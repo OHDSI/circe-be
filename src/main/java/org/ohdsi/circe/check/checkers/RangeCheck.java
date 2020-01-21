@@ -33,16 +33,20 @@ public class RangeCheck extends BaseValueCheck {
     protected void check(final CohortExpression expression, WarningReporter reporter) {
         super.check(expression, reporter);
         RangeCheckerFactory.getFactory(reporter, PRIMARY_CRITERIA).check(expression);
-        checkObservationFilter(expression.primaryCriteria.observationWindow, reporter, "observation window");
+        if (Objects.nonNull(expression.primaryCriteria)) {
+            checkObservationFilter(expression.primaryCriteria.observationWindow, reporter, "observation window");
+        }
         RangeCheckerFactory.getFactory(reporter, PRIMARY_CRITERIA).checkRange(expression.censorWindow, "cohort", "censor window");
     }
 
     protected void checkInclusionRules(final CohortExpression expression, WarningReporter reporter) {
         super.checkInclusionRules(expression, reporter);
         for(final InclusionRule rule : expression.inclusionRules) {
-            for(CorelatedCriteria criteria : rule.expression.criteriaList) {
-                checkWindow(criteria.startWindow, reporter, rule.name);
-                checkWindow(criteria.endWindow, reporter, rule.name);
+            if (Objects.nonNull(rule.expression)) {
+                for (CorelatedCriteria criteria : rule.expression.criteriaList) {
+                    checkWindow(criteria.startWindow, reporter, rule.name);
+                    checkWindow(criteria.endWindow, reporter, rule.name);
+                }
             }
         }
     }
