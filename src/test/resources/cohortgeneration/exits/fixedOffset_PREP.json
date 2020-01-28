@@ -6,12 +6,26 @@
       "year_of_birth":0,
       "race_concept_id":0,
       "ethnicity_concept_id":0
+    },
+    {
+      "person_id":2,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
     }
   ],
   "cdm.observation_period" : [
     {
       "observation_period_id": 1,
       "person_id":1,
+      "observation_period_start_date":"2000-01-01",
+      "observation_period_end_date":"2001-01-01",
+      "period_type_concept_id": 0
+    },
+    {
+      "observation_period_id": 2,
+      "person_id":2,
       "observation_period_start_date":"2000-01-01",
       "observation_period_end_date":"2001-01-01",
       "period_type_concept_id": 0
@@ -66,6 +80,14 @@
       "drug_concept_id":2,
       "drug_exposure_start_date":"2000-10-01",
       "drug_type_concept_id":0
-    }   
+    },
+    {
+      "drug_exposure_id": 8,
+      "person_id":2,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-10-01",
+      "days_supply": 7,
+      "drug_type_concept_id":0
+    }    
   ]
 }
