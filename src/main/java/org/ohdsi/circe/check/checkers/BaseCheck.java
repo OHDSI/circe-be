@@ -18,13 +18,14 @@
 
 package org.ohdsi.circe.check.checkers;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.ohdsi.circe.check.Check;
 import org.ohdsi.circe.check.Warning;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.warnings.DefaultWarning;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseCheck implements Check {
     protected static final String INCLUSION_RULE = "inclusion rule ";
@@ -50,10 +51,6 @@ public abstract class BaseCheck implements Check {
     }
 
     protected abstract void check(CohortExpression expression, WarningReporter reporter);
-
-    protected WarningReporter getReporter(List<Warning> warnings) {
-        return getReporter(WarningSeverity.CRITICAL, warnings);
-    }
 
     protected WarningReporter getReporter(WarningSeverity severity, List<Warning> warnings) {
 

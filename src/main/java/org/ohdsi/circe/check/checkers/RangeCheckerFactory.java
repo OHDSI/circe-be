@@ -12,17 +12,12 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  *
- *   Authors: Vitaly Koulakov
+ *   Authors: Vitaly Koulakov, Sergey Suvorov
  *
  */
 
 package org.ohdsi.circe.check.checkers;
 
-import static org.ohdsi.circe.check.checkers.Comparisons.isDateValid;
-import static org.ohdsi.circe.check.operations.Operations.match;
-
-import java.util.Objects;
-import java.util.function.Consumer;
 import org.ohdsi.circe.check.Constants;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConditionEra;
@@ -30,10 +25,12 @@ import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.DateRange;
 import org.ohdsi.circe.cohortdefinition.Death;
+import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
 import org.ohdsi.circe.cohortdefinition.DeviceExposure;
 import org.ohdsi.circe.cohortdefinition.DoseEra;
 import org.ohdsi.circe.cohortdefinition.DrugEra;
 import org.ohdsi.circe.cohortdefinition.DrugExposure;
+import org.ohdsi.circe.cohortdefinition.LocationRegion;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.cohortdefinition.NumericRange;
 import org.ohdsi.circe.cohortdefinition.Observation;
@@ -44,7 +41,13 @@ import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
 import org.ohdsi.circe.cohortdefinition.Specimen;
 import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
 
-public class RangeCheckerFactory {
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import static org.ohdsi.circe.check.checkers.Comparisons.isDateValid;
+import static org.ohdsi.circe.check.operations.Operations.match;
+
+public class RangeCheckerFactory extends BaseCheckerFactory {
 
     private static final String WARNING_EMPTY_START_VALUE = "%s in the %s has empty %s start value";
     private static final String WARNING_EMPTY_END_VALUE = "%s in the %s has empty %s end value";
@@ -53,24 +56,16 @@ public class RangeCheckerFactory {
     private static final String WARNING_DATE_IS_INVALID = "%s in the %s has invalid date value at %s";
     private static final String ROOT_OBJECT = "root object";
 
-    private String groupName;
-
-    private WarningReporter reporter;
-
-
     private RangeCheckerFactory(WarningReporter reporter, String groupName) {
-
-        this.groupName = groupName;
-        this.reporter = reporter;
-        //this.reporter = (t, params) -> warnings.add(new DefaultWarning(WarningSeverity.CRITICAL, String.format(t, params)));
+        super(reporter, groupName);
     }
 
     public static RangeCheckerFactory getFactory(WarningReporter reporter, String groupName) {
-
         return new RangeCheckerFactory(reporter, groupName);
     }
 
-    private Consumer<Criteria> getRangeCheck(Criteria criteria) {
+    @Override
+    protected Consumer<Criteria> getCheck(Criteria criteria) {
 
         Consumer<Criteria> result = c -> { };
         if (criteria instanceof ConditionEra) {
@@ -196,7 +191,23 @@ public class RangeCheckerFactory {
                 checkRange(planPeriod.ageAtEnd, Constants.Criteria.PAYER_PLAN_PERIOD, Constants.Attributes.AGE_AT_END_ATTR);
                 checkRange(planPeriod.userDefinedPeriod, Constants.Criteria.PAYER_PLAN_PERIOD, Constants.Attributes.USER_DEFINED_PERIOD_ATTR);
             };
+        } else if (criteria instanceof LocationRegion) {
+            result = c -> {
+                LocationRegion region = (LocationRegion) c;
+                checkRange(region.endDate, Constants.Criteria.LOCATION_REGION, Constants.Attributes.LOCATION_REGION_START_DATE_ATTR);
+                checkRange(region.startDate, Constants.Criteria.LOCATION_REGION, Constants.Attributes.LOCATION_REGION_END_DATE_ATTR);
+            };
         }
+        return result;
+    }
+
+    @Override
+    protected  Consumer<DemographicCriteria> getCheck(DemographicCriteria criteria) {
+        Consumer<DemographicCriteria> result = c -> {
+            checkRange(criteria.occurrenceEndDate, Constants.Criteria.DEMOGRAPHIC, Constants.Attributes.OCCURRENCE_END_DATE_ATTR);
+            checkRange(criteria.occurrenceStartDate, Constants.Criteria.DEMOGRAPHIC, Constants.Attributes.OCCURRENCE_START_DATE_ATTR);
+            checkRange(criteria.age, Constants.Criteria.DEMOGRAPHIC, Constants.Attributes.AGE_ATTR);
+        };
         return result;
     }
 
@@ -234,7 +245,7 @@ public class RangeCheckerFactory {
                             .then(() -> warning.accept(WARNING_EMPTY_START_VALUE))
                             .when(x -> Objects.isNull(x.extent))
                             .then(() -> warning.accept(WARNING_EMPTY_END_VALUE))
-                            .when(x -> !isDateValid(x.extent))
+                            .when(x -> Objects.nonNull(x.extent) && !isDateValid(x.extent))
                             .then(() -> warning.accept(WARNING_DATE_IS_INVALID))
                             .when(Comparisons::startIsGreaterThanEnd)
                             .then(() -> warning.accept(WARNING_START_GREATER_THAN_END));
@@ -256,14 +267,8 @@ public class RangeCheckerFactory {
                 .then(x -> warning.accept(WARNING_START_GREATER_THAN_END));
     }
 
-    public void check(Criteria criteria) {
-
-        getRangeCheck(criteria).accept(criteria);
-    }
-
     public void check(CohortExpression expression) {
 
         checkRange(expression.censorWindow, ROOT_OBJECT, Constants.Attributes.CENSOR_WINDOW_ATTR);
     }
-
 }

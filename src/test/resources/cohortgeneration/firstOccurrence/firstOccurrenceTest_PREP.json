@@ -1,0 +1,281 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    },
+    {
+      "person_id":2,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.condition_era": [
+    {
+      "condition_era_id": 1,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_era_start_date":"2000-06-01",
+      "condition_era_end_date":"2000-06-02"    
+    },
+    {
+      "condition_era_id": 2,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_era_start_date":"2000-09-01",
+      "condition_era_end_date":"2000-09-02"    
+    },
+    {
+      "condition_era_id": 3,
+      "person_id":2,
+      "condition_concept_id":2,
+      "condition_era_start_date":"2000-01-01",
+      "condition_era_end_date":"2000-01-02"
+    }
+  ],
+  "cdm.condition_occurrence": [
+    {
+      "condition_occurrence_id": 1,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_start_date":"2000-06-07",
+      "condition_type_concept_id":0
+    },
+    {
+      "condition_occurrence_id": 2,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_start_date":"2000-09-01",
+      "condition_type_concept_id":0
+    },
+    {
+      "condition_occurrence_id": 3,
+      "person_id":2,
+      "condition_concept_id":2,
+      "condition_start_date":"2000-01-01",
+      "condition_type_concept_id":0
+    }
+  ],
+  "cdm.death": [
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_date":"2000-06-21",
+      "death_type_concept_id":0
+    },
+    {
+      "person_id":2,
+      "cause_concept_id":2,
+      "death_date":"2000-01-01",
+      "death_type_concept_id":0
+    }
+  ],
+  "cdm.device_exposure": [
+    {
+      "device_exposure_id": 1,
+      "person_id":1,
+      "device_concept_id":2,
+      "device_exposure_start_date":"2000-06-28",
+      "device_type_concept_id":0
+    },
+    {
+      "device_exposure_id": 2,
+      "person_id":1,
+      "device_concept_id":2,
+      "device_exposure_start_date":"2000-09-01",
+      "device_type_concept_id":0
+    },
+    {
+      "device_exposure_id": 3,
+      "person_id":2,
+      "device_concept_id":2,
+      "device_exposure_start_date":"2000-01-01",
+      "device_type_concept_id":0
+    }
+  ],
+  "cdm.drug_era": [
+    {
+      "drug_era_id": 1,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_era_start_date":"2000-07-01",
+      "drug_era_end_date":"2000-08-01"   
+    },
+    {
+      "drug_era_id": 2,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_era_start_date":"2000-09-01",
+      "drug_era_end_date":"2000-09-02"   
+    },
+    {
+      "drug_era_id": 3,
+      "person_id":2,
+      "drug_concept_id":2,
+      "drug_era_start_date":"2000-01-01",
+      "drug_era_end_date":"2000-01-02"
+    }
+  ],
+  "cdm.drug_exposure": [
+    {
+      "drug_exposure_id": 1,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-07-01",
+      "drug_type_concept_id":0
+    },
+    {
+      "drug_exposure_id": 2,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-09-01",
+      "drug_type_concept_id":0
+    },
+    {
+      "drug_exposure_id": 3,
+      "person_id":2,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-01-01",
+      "drug_type_concept_id":0
+    }
+  ],
+  "cdm.measurement": [
+    {
+      "measurement_id": 1,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_date":"2000-07-07",
+      "measurement_type_concept_id":0
+    },
+    {
+      "measurement_id": 2,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_date":"2000-09-01",
+      "measurement_type_concept_id":0
+    },
+    {
+      "measurement_id": 3,
+      "person_id":2,
+      "measurement_concept_id":2,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0
+    }
+  ],
+  "cdm.observation": [
+    {
+      "observation_id": 1,
+      "person_id":1,
+      "observation_concept_id":2,
+      "observation_date":"2000-07-14",
+      "observation_type_concept_id":0
+    },
+    {
+      "observation_id": 2,
+      "person_id":1,
+      "observation_concept_id":2,
+      "observation_date":"2000-09-01",
+      "observation_type_concept_id":0
+    },
+    {
+      "observation_id": 3,
+      "person_id":2,
+      "observation_concept_id":2,
+      "observation_date":"2000-01-01",
+      "observation_type_concept_id":0
+    }
+  ],
+  "cdm.observation_period" : [
+    {
+      "observation_period_id": 1,
+      "person_id":1,
+      "observation_period_start_date":"2000-01-01",
+      "observation_period_end_date":"2001-01-01",
+      "period_type_concept_id": 0
+    },
+    {
+      "observation_period_id": 2,
+      "person_id":2,
+      "observation_period_start_date":"2000-01-01",
+      "observation_period_end_date":"2001-01-01",
+      "period_type_concept_id": 0
+    }
+  ],
+  "cdm.procedure_occurrence": [
+    {
+      "procedure_occurrence_id": 1,
+      "person_id":1,
+      "procedure_concept_id":2,
+      "procedure_date":"2000-07-21",
+      "procedure_type_concept_id":0
+    },
+    {
+      "procedure_occurrence_id": 2,
+      "person_id":1,
+      "procedure_concept_id":2,
+      "procedure_date":"2000-09-01",
+      "procedure_type_concept_id":0
+    },
+    {
+      "procedure_occurrence_id": 3,
+      "person_id":2,
+      "procedure_concept_id":2,
+      "procedure_date":"2000-01-01",
+      "procedure_type_concept_id":0
+    }
+  ],
+  "cdm.specimen": [
+    {
+      "specimen_id": 1,
+      "person_id":1,
+      "specimen_concept_id":2,
+      "specimen_date":"2000-07-28",
+      "specimen_type_concept_id":0
+    },
+    {
+      "specimen_id": 2,
+      "person_id":1,
+      "specimen_concept_id":2,
+      "specimen_date":"2000-09-01",
+      "specimen_type_concept_id":0
+    },
+    {
+      "specimen_id": 3,
+      "person_id":2,
+      "specimen_concept_id":2,
+      "specimen_date":"2000-01-01",
+      "specimen_type_concept_id":0
+    }
+  ],
+  "cdm.visit_occurrence": [
+    {
+      "visit_occurrence_id": 1,
+      "person_id":1,
+      "visit_concept_id":2,
+      "visit_start_date":"2000-07-05",
+      "visit_end_date":"2000-07-12",
+      "visit_type_concept_id":0   
+    },
+    {
+      "visit_occurrence_id": 2,
+      "person_id":1,
+      "visit_concept_id":2,
+      "visit_start_date":"2000-09-01",
+      "visit_end_date":"2000-09-02",
+      "visit_type_concept_id":0   
+    },
+    {
+      "visit_occurrence_id": 3,
+      "person_id":2,
+      "visit_concept_id":2,
+      "visit_start_date":"2000-01-01",
+      "visit_end_date":"2000-01-02",
+      "visit_type_concept_id":0
+    }
+  ]
+}

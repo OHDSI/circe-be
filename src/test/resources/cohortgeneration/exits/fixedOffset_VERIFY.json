@@ -1,0 +1,22 @@
+{
+  "fixedOffset.cohort": [
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2000-01-01",
+      "cohort_end_date":"2000-05-03"
+    },
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2000-08-01",
+      "cohort_end_date":"2000-11-02"
+    },
+    {
+      "cohort_definition_id":1,
+      "subject_id":2,
+      "cohort_start_date":"2000-10-01",
+      "cohort_end_date":"2000-11-08"
+    }
+  ]
+}

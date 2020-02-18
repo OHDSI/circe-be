@@ -1,0 +1,314 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Aspirin",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "1191",
+              "CONCEPT_ID": 1112807,
+              "CONCEPT_NAME": "Aspirin",
+              "DOMAIN_ID": "Drug",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [],
+    "ObservationWindow": {
+      "PriorDays": -3,
+      "PostDays": -2
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "All"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [],
+    "DemographicCriteriaList": [],
+    "Groups": [
+      {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "ConditionEra": {
+                "CorrelatedCriteria": {
+                  "Type": "ALL",
+                  "CriteriaList": [
+                    {
+                      "Criteria": {
+                        "ConditionOccurrence": {
+                          "CorrelatedCriteria": {
+                            "Type": "ALL",
+                            "CriteriaList": [
+                              {
+                                "Criteria": {
+                                  "Measurement": {
+                                    "OccurrenceStartDate": {
+                                      "Op": "lt"
+                                    },
+                                    "MeasurementType": [],
+                                    "Operator": [],
+                                    "ValueAsNumber": {
+                                      "Op": "gt"
+                                    },
+                                    "ValueAsConcept": [],
+                                    "Unit": [],
+                                    "RangeLow": {
+                                      "Op": "gt"
+                                    },
+                                    "RangeHigh": {
+                                      "Op": "gt"
+                                    },
+                                    "RangeLowRatio": {
+                                      "Op": "gt"
+                                    },
+                                    "RangeHighRatio": {
+                                      "Op": "gt"
+                                    },
+                                    "Age": {
+                                      "Op": "gt"
+                                    },
+                                    "Gender": [],
+                                    "ProviderSpecialty": [],
+                                    "VisitType": []
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
+                              },
+                              {
+                                "Criteria": {
+                                  "DeviceExposure": {
+                                    "UniqueDeviceId": {
+                                      "Op": "contains"
+                                    }
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
+                              }
+                            ],
+                            "DemographicCriteriaList": [
+                              {
+                                "Age": {
+                                  "Op": "gt"
+                                },
+                                "Gender": [],
+                                "Race": [],
+                                "Ethnicity": [],
+                                "OccurrenceStartDate": {
+                                  "Op": "lt"
+                                },
+                                "OccurrenceEndDate": {
+                                  "Op": "lt"
+                                }
+                              }
+                            ],
+                            "Groups": []
+                          },
+                          "OccurrenceStartDate": {
+                            "Op": "lt"
+                          },
+                          "OccurrenceEndDate": {
+                            "Op": "lt"
+                          },
+                          "ConditionType": [],
+                          "StopReason": {
+                            "Op": "contains"
+                          },
+                          "Age": {
+                            "Op": "lt"
+                          },
+                          "Gender": [],
+                          "ProviderSpecialty": [],
+                          "VisitType": []
+                        }
+                      },
+                      "StartWindow": {
+                        "Start": {
+                          "Coeff": -1
+                        },
+                        "End": {
+                          "Coeff": 1
+                        },
+                        "UseEventEnd": false
+                      },
+                      "Occurrence": {
+                        "Type": 2,
+                        "Count": 1
+                      }
+                    },
+                    {
+                      "Criteria": {
+                        "DoseEra": {
+                          "EraStartDate": {
+                            "Op": "lt"
+                          },
+                          "EraEndDate": {
+                            "Op": "lt"
+                          },
+                          "Unit": [],
+                          "DoseValue": {
+                            "Op": "gt"
+                          },
+                          "EraLength": {
+                            "Op": "gt"
+                          },
+                          "AgeAtStart": {
+                            "Op": "gt"
+                          },
+                          "AgeAtEnd": {
+                            "Op": "gt"
+                          },
+                          "Gender": []
+                        }
+                      },
+                      "StartWindow": {
+                        "Start": {
+                          "Coeff": -1
+                        },
+                        "End": {
+                          "Coeff": 1
+                        },
+                        "UseEventEnd": false
+                      },
+                      "Occurrence": {
+                        "Type": 2,
+                        "Count": 1
+                      }
+                    }
+                  ],
+                  "DemographicCriteriaList": [
+                    {
+                      "Age": {
+                        "Op": "lt"
+                      },
+                      "Gender": [],
+                      "Race": [],
+                      "Ethnicity": [],
+                      "OccurrenceStartDate": {
+                        "Op": "lt"
+                      },
+                      "OccurrenceEndDate": {
+                        "Op": "lt"
+                      }
+                    }
+                  ],
+                  "Groups": []
+                },
+                "EraStartDate": {
+                  "Value": "2020-01-16",
+                  "Extent": "2020-01-16",
+                  "Op": "bt"
+                },
+                "EraEndDate": {
+                  "Op": "lt"
+                },
+                "OccurrenceCount": {
+                  "Value": -5,
+                  "Op": "lt"
+                },
+                "EraLength": {
+                  "Op": "lt"
+                },
+                "AgeAtStart": {
+                  "Op": "lt"
+                },
+                "AgeAtEnd": {
+                  "Op": "lt"
+                },
+                "Gender": []
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Days": -3,
+                "Coeff": -1
+              },
+              "End": {
+                "Days": -2,
+                "Coeff": 1
+              },
+              "UseEventEnd": false
+            },
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1
+            }
+          }
+        ],
+        "DemographicCriteriaList": [
+          {
+            "Age": {
+              "Value": 5,
+              "Extent": 1,
+              "Op": "bt"
+            },
+            "Gender": [],
+            "Race": [],
+            "Ethnicity": [],
+            "OccurrenceStartDate": {
+              "Value": "2020-01-03",
+              "Extent": "2020-01-32",
+              "Op": "bt"
+            },
+            "OccurrenceEndDate": {
+              "Op": "lt"
+            }
+          }
+        ],
+        "Groups": []
+      }
+    ]
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=6.1.0"
+}

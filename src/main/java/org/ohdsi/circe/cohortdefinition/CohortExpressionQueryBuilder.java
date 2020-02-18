@@ -79,8 +79,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DATE_OFFSET_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateOffsetStrategy.sql");
   private final static String CUSTOM_ERA_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/customEraStrategy.sql");
 
-  private final static String ERA_CONSTRUCTOR_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eraConstructor.sql");
-
   private final static String DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION = "COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE))";
   
   // Builders
@@ -149,8 +147,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         return ">=";
     }
 
-    // recieved an unknown operator value
-    return "??";
+    throw new RuntimeException(String.format("Invalid occurrene operator recieved: type=%d.",type));
+
   }
 
   private String wrapCriteriaQuery(String query, CriteriaGroup group) {
@@ -215,15 +213,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     query = StringUtils.replace(query, "@EventSort", (primaryCriteria.primaryLimit.type != null && primaryCriteria.primaryLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
     query = StringUtils.replace(query, "@primaryEventLimit", (!primaryCriteria.primaryLimit.type.equalsIgnoreCase("ALL") ? "WHERE P.ordinal = 1" : ""));
 
-    return query;
-  }
-
-  public String getCollapseConstructorQuery(CollapseSettings collapseSettings) {
-    // default constructor is era constructor. as more collapse strategies are introduced, the query template and parameters need to be changed to match.
-    String query = ERA_CONSTRUCTOR_TEMPLATE;
-
-    query = StringUtils.replace(query, "@eraGroup", "person_id");
-    query = StringUtils.replace(query, "@eraconstructorpad", Integer.toString(collapseSettings.eraPad));
     return query;
   }
 
@@ -419,7 +408,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       indexId++;
     }
 
-    if (indexId > 0) // this group is not empty
+    if (!group.isEmpty())
     {
       query = StringUtils.replace(query, "@criteriaQueries", StringUtils.join(additionalCriteriaQueries, "\nUNION ALL\n"));
 

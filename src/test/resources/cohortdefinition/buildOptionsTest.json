@@ -1,0 +1,9 @@
+{
+  "cohortIdFieldName": "test_cohort_field",
+  "cohortId": 999,
+  "cdmSchema": "testCdmSchema",
+  "targetTable": "test_target_table",
+  "resultSchema": "testResultSchema",
+  "vocabularySchema": "testVocabSchema",
+  "generateStats": true
+}
