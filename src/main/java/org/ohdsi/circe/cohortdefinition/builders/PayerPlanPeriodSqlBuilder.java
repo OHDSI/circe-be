@@ -65,12 +65,12 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
             Period userDefinedPeriod = criteria.userDefinedPeriod;
 
             if (userDefinedPeriod.startDate != null) {
-                startDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.startDate);
+                startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
                 whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
             }
 
             if (userDefinedPeriod.endDate != null) {
-                endDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.endDate);
+                endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
                 whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
             }
         }
