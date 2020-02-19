@@ -136,9 +136,17 @@ public abstract class BuilderUtils {
 
         String negation = filter.op.startsWith("!") ? "not" : "";
         String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
-        String value = filter.text;
         String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
 
+        String value = escapeSqlParam(filter.text);
+
         return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
+    }
+
+    private static String escapeSqlParam(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+        return value.replaceAll("\\\\*\\'", "''");
     }
 }
