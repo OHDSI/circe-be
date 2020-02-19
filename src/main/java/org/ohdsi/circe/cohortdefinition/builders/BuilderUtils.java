@@ -147,6 +147,6 @@ public abstract class BuilderUtils {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
-        return value.replaceAll("'", "''");
+        return value.replaceAll("\\\\*\\'", "''");
     }
 }
