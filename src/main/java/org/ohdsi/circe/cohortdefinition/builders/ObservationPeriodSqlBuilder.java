@@ -64,12 +64,12 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
             Period userDefinedPeriod = criteria.userDefinedPeriod;
 
             if (userDefinedPeriod.startDate != null) {
-                startDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.startDate);
+                startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
                 whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
             }
 
             if (userDefinedPeriod.endDate != null) {
-                endDateExpression = String.format("CAST('%s' as Date)", userDefinedPeriod.endDate);
+                endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
                 whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
             }
         }

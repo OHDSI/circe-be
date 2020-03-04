@@ -68,7 +68,7 @@ public abstract class BuilderUtils {
     public static String dateStringToSql(String date) {
 
         String[] dateParts = StringUtils.split(date, '-');
-        return String.format("DATEFROMPARTS(%s, %s, %s)", dateParts[0], dateParts[1], dateParts[2]);
+        return String.format("DATEFROMPARTS(%s, %s, %s)", Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
     }
 
     public static String buildDateRangeClause(String sqlExpression, DateRange range) {
@@ -136,9 +136,17 @@ public abstract class BuilderUtils {
 
         String negation = filter.op.startsWith("!") ? "not" : "";
         String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
-        String value = filter.text;
         String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
 
+        String value = escapeSqlParam(filter.text);
+
         return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
+    }
+
+    private static String escapeSqlParam(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+        return value.replaceAll("\\\\*\\'", "''");
     }
 }
