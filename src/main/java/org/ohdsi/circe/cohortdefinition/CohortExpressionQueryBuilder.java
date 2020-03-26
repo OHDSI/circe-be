@@ -171,10 +171,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         String conceptSetInsert = String.format("SELECT %d as codeset_id, c.concept_id FROM (%s) C", cs.id, conceptExpressionQuery);
         codesetInserts.add(conceptSetInsert);
       }
+        codesetQuery = StringUtils.replace(codesetQuery, "@codesetInserts", "INSERT INTO #Codesets (codeset_id, concept_id)\n"
+                + StringUtils.join(codesetInserts, " UNION ALL \n")) + ";";
+    } else {
+        codesetQuery = StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codesetInserts", StringUtils.EMPTY);
     }
-
-    codesetQuery = StringUtils.replace(codesetQuery, "@codesetInserts", "INSERT INTO #Codesets (codeset_id, concept_id)\n"
-            + StringUtils.join(codesetInserts, " UNION ALL \n")) + ";";
     return codesetQuery;
   }
 
