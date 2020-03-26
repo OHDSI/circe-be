@@ -160,7 +160,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getCodesetQuery(ConceptSet[] conceptSets) {
-    String codesetQuery = CODESET_QUERY_TEMPLATE;
+
     ArrayList<String> codesetInserts = new ArrayList<>();
 
     if (conceptSets.length > 0) {
@@ -171,11 +171,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         String conceptSetInsert = String.format("SELECT %d as codeset_id, c.concept_id FROM (%s) C", cs.id, conceptExpressionQuery);
         codesetInserts.add(conceptSetInsert);
       }
+      return StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codesetInserts", "INSERT INTO #Codesets (codeset_id, concept_id)\n"
+              + StringUtils.join(codesetInserts, " UNION ALL \n")) + ";";
     }
 
-    codesetQuery = StringUtils.replace(codesetQuery, "@codesetInserts", "INSERT INTO #Codesets (codeset_id, concept_id)\n"
-            + StringUtils.join(codesetInserts, " UNION ALL \n")) + ";";
-    return codesetQuery;
+    return StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codesetInserts", StringUtils.EMPTY);
+
   }
 
   private String getCensoringEventsQuery(Criteria[] censoringCriteria)
