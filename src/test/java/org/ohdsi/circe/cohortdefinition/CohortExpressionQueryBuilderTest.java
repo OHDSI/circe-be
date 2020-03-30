@@ -1,0 +1,73 @@
+package org.ohdsi.circe.cohortdefinition;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.ohdsi.circe.vocabulary.ConceptSetExpression;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CohortExpressionQueryBuilderTest {
+
+    private CohortExpressionQueryBuilder cohortExpressionQueryBuilder = new CohortExpressionQueryBuilder();
+
+    @Test
+    public void getCodesetQuery() {
+
+        ConceptSet conceptSets[] = {
+                createConceptSet(1, "name1"),
+                createConceptSet(2, "name2")
+        };
+
+        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+        assertThat(codesetQuery, containsString("CREATE TABLE #Codesets (\n" +
+                "  codeset_id int NOT NULL,\n" +
+                "  concept_id bigint NOT NULL\n" +
+                ")\n;"));
+        assertThat(codesetQuery, containsString("INSERT INTO"));
+        assertThat(codesetQuery, containsString("SELECT 1"));
+        assertThat(codesetQuery, containsString("UNION ALL"));
+        assertThat(codesetQuery, containsString("SELECT 2"));
+    }
+
+    @Test
+    public void getCodesetQueryEmptyConceptSets() {
+
+        ConceptSet conceptSets[] = {};
+
+        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+
+        assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
+                "  codeset_id int NOT NULL,\n" +
+                "  concept_id bigint NOT NULL\n" +
+                ")\n;\n\n\n"));
+    }
+
+    @Test
+    public void getCodesetQueryNullConceptSets() {
+
+        ConceptSet conceptSets[] = {};
+
+        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+
+        assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
+                "  codeset_id int NOT NULL,\n" +
+                "  concept_id bigint NOT NULL\n" +
+                ")\n;\n\n\n"));
+    }
+
+    private ConceptSet createConceptSet(int id, String name) {
+
+        ConceptSet conceptSet1 = new ConceptSet();
+        conceptSet1.id = id;
+        conceptSet1.name = name;
+        conceptSet1.expression = new ConceptSetExpression();
+        conceptSet1.expression.items = new ConceptSetExpression.ConceptSetItem[0];
+
+        return conceptSet1;
+    }
+
+}

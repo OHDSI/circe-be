@@ -21,6 +21,7 @@ package org.ohdsi.circe.cohortdefinition;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -162,23 +163,26 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getCodesetQuery(ConceptSet[] conceptSets) {
-    String codesetQuery = CODESET_QUERY_TEMPLATE;
-    ArrayList<String> codesetInserts = new ArrayList<>();
 
-    if (conceptSets.length > 0) {
-      for (ConceptSet cs : conceptSets) {
-        // construct main target codeset query
-        String conceptExpressionQuery = conceptSetQueryBuilder.buildExpressionQuery(cs.expression);
-        // attach the conceptSetId to the result query from the expession query builder
-        String conceptSetInsert = String.format("SELECT %d as codeset_id, c.concept_id FROM (%s) C", cs.id, conceptExpressionQuery);
-        codesetInserts.add(conceptSetInsert);
-      }
-        codesetQuery = StringUtils.replace(codesetQuery, "@codesetInserts", "INSERT INTO #Codesets (codeset_id, concept_id)\n"
-                + StringUtils.join(codesetInserts, " UNION ALL \n")) + ";";
-    } else {
-        codesetQuery = StringUtils.replace(CODESET_QUERY_TEMPLATE, "@codesetInserts", StringUtils.EMPTY);
+    if (conceptSets == null || conceptSets.length <= 0) {
+      return StringUtils.replace(
+              CODESET_QUERY_TEMPLATE,
+              "@codesetInserts",
+              StringUtils.EMPTY
+      );
     }
-    return codesetQuery;
+
+    String unionSelectsQuery = Arrays.stream(conceptSets)
+            .map(cs -> String.format("SELECT %d as codeset_id, c.concept_id FROM (%s) C", cs.id, conceptSetQueryBuilder.buildExpressionQuery(cs.expression)))
+            .collect(Collectors.joining(" UNION ALL \n"));
+
+    String queryWithInsert = StringUtils.replace(
+            CODESET_QUERY_TEMPLATE,
+            "@codesetInserts",
+            "INSERT INTO #Codesets (codeset_id, concept_id)\n" + unionSelectsQuery
+    );
+    return queryWithInsert + ";";
+
   }
 
   private String getCensoringEventsQuery(Criteria[] censoringCriteria) {
