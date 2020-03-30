@@ -36,9 +36,7 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryEmptyConceptSets() {
 
-        ConceptSet conceptSets[] = {};
-
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(new ConceptSet[]{});
 
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
@@ -49,9 +47,7 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryNullConceptSets() {
 
-        ConceptSet conceptSets[] = {};
-
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(null);
 
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
