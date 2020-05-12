@@ -1,7 +1,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -37,9 +37,9 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryEmptyConceptSets() {
 
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(new ConceptSet[]{});
+        String codesetQuery = Utils.normalizeLineEnds(cohortExpressionQueryBuilder.getCodesetQuery(new ConceptSet[]{}));
 
-        assertThat(codesetQuery, equalToIgnoringWhiteSpace("CREATE TABLE #Codesets (\n" +
+        assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
                 "  concept_id bigint NOT NULL\n" +
                 ")\n;\n\n\n"));
@@ -48,9 +48,9 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryNullConceptSets() {
 
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(null);
+        String codesetQuery = Utils.normalizeLineEnds(cohortExpressionQueryBuilder.getCodesetQuery(null));
 
-        assertThat(codesetQuery, equalToIgnoringWhiteSpace("CREATE TABLE #Codesets (\n" +
+        assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
                 "  concept_id bigint NOT NULL\n" +
                 ")\n;\n\n\n"));
