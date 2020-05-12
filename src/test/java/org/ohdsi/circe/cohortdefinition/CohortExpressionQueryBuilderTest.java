@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.ohdsi.circe.Utils;
 import org.ohdsi.circe.vocabulary.ConceptSetExpression;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -22,7 +23,7 @@ public class CohortExpressionQueryBuilderTest {
                 createConceptSet(2, "name2")
         };
 
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(conceptSets);
+        String codesetQuery = Utils.normalizeLineEnds(cohortExpressionQueryBuilder.getCodesetQuery(conceptSets));
         assertThat(codesetQuery, containsString("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
                 "  concept_id bigint NOT NULL\n" +
@@ -36,7 +37,7 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryEmptyConceptSets() {
 
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(new ConceptSet[]{});
+        String codesetQuery = Utils.normalizeLineEnds(cohortExpressionQueryBuilder.getCodesetQuery(new ConceptSet[]{}));
 
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
@@ -47,7 +48,7 @@ public class CohortExpressionQueryBuilderTest {
     @Test
     public void getCodesetQueryNullConceptSets() {
 
-        String codesetQuery = cohortExpressionQueryBuilder.getCodesetQuery(null);
+        String codesetQuery = Utils.normalizeLineEnds(cohortExpressionQueryBuilder.getCodesetQuery(null));
 
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
