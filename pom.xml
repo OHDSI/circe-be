@@ -138,7 +138,7 @@
       <groupId>org.ohdsi.sql</groupId>
       <artifactId>SqlRender</artifactId>
       <version>1.6.3</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>    
     <dependency>
         <groupId>com.opentable.components</groupId>
