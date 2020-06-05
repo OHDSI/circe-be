@@ -1,20 +1,20 @@
 -- era constructor
-WITH cteSource AS
+WITH cteSource (@eraGroup, start_date, end_date, groupid) AS
 (
 	SELECT
 		@eraGroup  
 		, start_date
 		, end_date
 		, dense_rank() over(order by @eraGroup) as groupid
-	FROM collapse_input so
+	FROM #collapse_input so
 )
 ,
 --------------------------------------------------------------------------------------------------------------
-cteEndDates AS -- the magic
+cteEndDates (groupid, end_date) AS -- the magic
 (	
 	SELECT
 		groupid
-		, date_add(event_date, -1 * @eraconstructorpad)  as end_date
+		, DATEADD(day,-1 * @eraconstructorpad, event_date)  as end_date
 	FROM
 	(
 		SELECT
@@ -38,7 +38,7 @@ cteEndDates AS -- the magic
 
 			SELECT
 				groupid
-				, date_add(end_date, @eraconstructorpad) as end_date
+				, DATEADD(day,@eraconstructorpad,end_date) as end_date
 				, 1 AS event_type
 				, NULL
 			FROM cteSource
@@ -47,7 +47,7 @@ cteEndDates AS -- the magic
 	WHERE (2 * e.start_ordinal) - e.overall_ord = 0
 ),
 --------------------------------------------------------------------------------------------------------------
-cteEnds AS
+cteEnds (groupid, start_date, end_date) AS
 (
 	SELECT
 		 c.groupid
@@ -58,17 +58,16 @@ cteEnds AS
 	GROUP BY
 		 c.groupid
 		, c.start_date
-), 
-collapse_output AS
+)
+select @eraGroup, start_date, end_date
+into #collapse_output
+from
 (
-	select @eraGroup, start_date, end_date
-	from
-	(
-		select @eraGroup , min(b.start_date) as start_date, b.end_date
-		from (
-			select distinct @eraGroup, groupid from cteSource
-		) a
-		inner join cteEnds b on a.groupid = b.groupid
-		group by @eraGroup, end_date
-	) q
-),
+	select @eraGroup , min(b.start_date) as start_date, b.end_date
+	from (
+		select distinct @eraGroup, groupid from cteSource
+	) a
+	inner join cteEnds b on a.groupid = b.groupid
+	group by @eraGroup, end_date
+) q
+;

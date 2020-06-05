@@ -1,4 +1,4 @@
-SELECT @indexId as index_id, P.person_id, P.event_id
+SELECT @indexId as index_id, p.person_id, p.event_id
 FROM @eventTable P
 @joinType JOIN
 (

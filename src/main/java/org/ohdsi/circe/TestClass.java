@@ -16,12 +16,12 @@ public class TestClass {
     private static CohortExpressionQueryBuilder.BuildExpressionQueryOptions buildExpressionQueryOptions(
         final int cohortId, final String resultsSchema) {
       final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = new CohortExpressionQueryBuilder.BuildExpressionQueryOptions();
-      options.cdmSchema = "cdm";
+      options.cdmSchema = "/UNITE/Safe Harbor - TUFTS/transform";
       options.cohortId = cohortId;
-      options.generateStats = true;
+      options.generateStats = false;
       options.resultSchema = resultsSchema;
-      options.targetTable = resultsSchema + ".cohort";
-  
+      options.targetTable = "/UNITE/Palantir/OMOP FeatureExtraction/covid_serious_outcomes_plp/cohort";
+      options.codelistDataset = "`/UNITE/Palantir/OMOP FeatureExtraction/code_lists/serious_covid_outcomes/mappedConcepts`";
       return options;
     }
     
@@ -32,7 +32,7 @@ public class TestClass {
       String cohortSql = builder.buildExpressionQuery(expression, options);
 
       // translate to PG
-      cohortSql = SqlRender.renderSql(SqlTranslate.translateSql(cohortSql, "postgresql"), null, null);
+      //cohortSql = SqlRender.renderSql(SqlTranslate.translateSql(cohortSql, "postgresql"), null, null);
       return cohortSql;
     }
 
@@ -46,12 +46,12 @@ public class TestClass {
     
         // load 'all' criteria json
         final CohortExpression expression = CohortExpression
-            .fromJson(readFile("/Volumes/git/repositories/circe-be/src/test/resources/cohortgeneration/allCriteria/allCriteriaExpression.json"));
+            .fromJson(readFile("/Users/bamor/Documents/active_projects/circe-be/cohort_O.json"));
     
         // build Sql
-        final String cohortSql = buildExpressionSql(expression, options);
-    
-        System.out.println(cohortSql);
+        String cohortSql = buildExpressionSql(expression, options);
+        cohortSql = SqlRender.renderSql(cohortSql, null, null);
+        FileUtils.writeStringToFile(new File("/Users/bamor/Documents/active_projects/circe-be/cohort_O.sql"), cohortSql, StandardCharsets.UTF_8);
     }
 
 }

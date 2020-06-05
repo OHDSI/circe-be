@@ -5,7 +5,7 @@ select C.person_id, C.visit_occurrence_id as event_id, C.visit_start_date as sta
 from 
 (
   select vo.* @ordinalExpression
-  FROM `@cdm_database_schema/visit_occurrence` vo
+  FROM @cdm_database_schema.VISIT_OCCURRENCE vo
 @codesetClause
 ) C
 @joinClause

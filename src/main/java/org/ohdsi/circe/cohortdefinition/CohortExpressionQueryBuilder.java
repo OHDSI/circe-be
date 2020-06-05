@@ -80,7 +80,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String DATE_OFFSET_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateOffsetStrategy.sql");
   private final static String CUSTOM_ERA_STRATEGY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/customEraStrategy.sql");
 
-  private final static String DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION = "COALESCE(DRUG_EXPOSURE_END_DATE, DATEADD(day,DAYS_SUPPLY,DRUG_EXPOSURE_START_DATE), DATEADD(day,1,DRUG_EXPOSURE_START_DATE))";
+  private final static String DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION = "COALESCE(drug_exposure_end_date, date_add(drug_exposure_start_date, days_supply), date_add(drug_exposure_start_date, 1))";
   
   // Builders
   private final static ConditionOccurrenceSqlBuilder<ConditionOccurrence> conditionOccurrenceSqlBuilder = new ConditionOccurrenceSqlBuilder<>();
@@ -124,6 +124,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     @JsonProperty("generateStats")
     public boolean generateStats;
+
+    @JsonProperty("codelistDataset")
+    public String codelistDataset;
 
     public static CohortExpressionQueryBuilder.BuildExpressionQueryOptions fromJson(String json) {
       try {
@@ -208,7 +211,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     ArrayList<String> primaryEventsFilters = new ArrayList<>();
     primaryEventsFilters.add(String.format(
-            "DATEADD(day,%d,OP.OBSERVATION_PERIOD_START_DATE) <= E.START_DATE AND DATEADD(day,%d,E.START_DATE) <= OP.OBSERVATION_PERIOD_END_DATE",
+            "date_add(op.observation_period_start_date, %d) <= E.start_date AND date_add(E.start_date, %d) <= op.observation_period_end_date",
             primaryCriteria.observationWindow.priorDays,
             primaryCriteria.observationWindow.postDays
     )
@@ -225,7 +228,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   public String getFinalCohortQuery(Period censorWindow) {
 
     String query = "select @target_cohort_id as @cohort_id_field_name, person_id, @start_date, @end_date \n"
-            + "FROM #final_cohort CO";
+            + "FROM final_cohort";
 
     String startDate = "start_date";
     String endDate = "end_date";
@@ -291,19 +294,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         String inclusionRuleInsert = getInclusionRuleQuery(cg);
         inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@inclusion_rule_id", "" + i);
         inclusionRuleInserts.add(inclusionRuleInsert);
-        inclusionRuleTempTables.add(String.format("#Inclusion_%d", i));
+        inclusionRuleTempTables.add(String.format("Inclusion_%d", i));
       }
-
       String irTempUnion = inclusionRuleTempTables.stream()
               .map(d -> String.format("select inclusion_rule_id, person_id, event_id from %s", d))
               .collect(Collectors.joining("\nUNION ALL\n"));
 
-      inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusion_events\nFROM (%s) I;", irTempUnion));
-
-      inclusionRuleInserts.addAll(inclusionRuleTempTables.stream()
-              .map(d -> String.format("TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
-              .collect(Collectors.toList())
-      );
+      inclusionRuleInserts.add(String.format("inclusion_events AS (\nSELECT inclusion_rule_id, person_id, event_id\nFROM (%s) ), \n", irTempUnion));
+      System.out.println(StringUtils.join(inclusionRuleInserts, "\n"));
       resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts, "\n"));
     } else {
       resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", "create table #inclusion_events (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
@@ -322,14 +320,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     ArrayList<String> endDateSelects = new ArrayList<>();
 
     if (!(expression.endStrategy instanceof DateOffsetStrategy)) {
-      endDateSelects.add("-- By default, cohort exit at the event's op end date\nselect event_id, person_id, op_end_date as end_date from #included_events");
+      endDateSelects.add("-- By default, cohort exit at the event's op end date\nselect event_id, person_id, op_end_date as end_date from included_events");
     }
 
     if (expression.endStrategy != null) {
       // replace @strategy_ends placeholders with temp table creation and cleanup scripts.
-      resultSql = StringUtils.replace(resultSql, "@strategy_ends_temp_tables", expression.endStrategy.accept(this, "#included_events"));
-      resultSql = StringUtils.replace(resultSql, "@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
-      endDateSelects.add(String.format("-- End Date Strategy\n%s\n", "SELECT event_id, person_id, end_date from #strategy_ends"));
+      resultSql = StringUtils.replace(resultSql, "@strategy_ends_temp_tables", expression.endStrategy.accept(this, "included_events"));
+      endDateSelects.add(String.format("-- End Date Strategy\n%s\n", "SELECT event_id, person_id, end_date from strategy_ends"));
     } else {
       // replace @trategy_ends placeholders with empty string
       resultSql = StringUtils.replace(resultSql, "@strategy_ends_temp_tables", "");
@@ -346,8 +343,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
 
-    resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
-    resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
+    resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("qualified_events", 0));
+    resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("best_events", 1));
 
     resultSql = StringUtils.replace(resultSql, "@cohortCensoredStatsQuery",
             (expression.censorWindow != null && (!StringUtils.isEmpty(expression.censorWindow.startDate) || !StringUtils.isEmpty(expression.censorWindow.endDate)))
@@ -372,6 +369,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       }
       if (options.cohortId != null) {
         resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
+      }
+      if (options.codelistDataset != null) {
+        resultSql = StringUtils.replace(resultSql, "#Codesets", options.codelistDataset.toString());
       }
 
       resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1" : "0");
@@ -456,7 +456,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private String getInclusionRuleQuery(CriteriaGroup inclusionRule) {
     String resultSql = INCLUSION_RULE_QUERY_TEMPLATE;
-    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
+    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
     additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery, "@indexId", "" + 0);
     resultSql = StringUtils.replace(resultSql, "@additionalCriteriaQuery", additionalCriteriaQuery);
     return resultSql;
@@ -526,17 +526,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String endExpression;
     List<String> clauses = new ArrayList<>();
     if (checkObservationPeriod) {
-      clauses.add("A.START_DATE >= P.OP_START_DATE AND A.START_DATE <= P.OP_END_DATE");
+      clauses.add("A.start_date >= P.op_start_date AND A.start_date <= P.op_end_date");
     }
 
     // StartWindow
     Window startWindow = criteria.startWindow;
-    String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
-    String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
+    String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.end_date" : "P.start_date";
+    String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.end_date" : "A.start_date";
     if (startWindow.start.days != null) {
-      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+      startExpression = String.format("date_add(%s, %d)", startIndexDateExpression, startWindow.start.coeff * startWindow.start.days);
     } else {
-      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.op_start_date" : "P.op_end_date") : null;
     }
 
     if (startExpression != null) {
@@ -544,9 +544,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     if (startWindow.end.days != null) {
-      endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
+      endExpression = String.format("date_add(%s, %d)", startIndexDateExpression, startWindow.end.coeff * startWindow.end.days);
     } else {
-      endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.op_start_date" : "P.op_end_date") : null;
     }
 
     if (endExpression != null) {
@@ -557,13 +557,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     Window endWindow = criteria.endWindow;
 
     if (endWindow != null) {
-      String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
+      String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.end_date" : "P.start_date";
       // for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
-      String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
+      String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.end_date" : "A.start_date";
       if (endWindow.start.days != null) {
-        startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression);
+        startExpression = String.format("date_add(%s, %d)", endIndexDateExpression, endWindow.start.coeff * endWindow.start.days);
       } else {
-        startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+        startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.op_start_date" : "P.op_end_date") : null;
       }
 
       if (startExpression != null) {
@@ -571,9 +571,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       }
 
       if (endWindow.end.days != null) {
-        endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
+        endExpression = String.format("date_add(%s, %d)", endIndexDateExpression, endWindow.end.coeff * endWindow.end.days);
       } else {
-        endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+        endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.op_start_date" : "P.op_end_date") : null;
       }
 
       if (endExpression != null) {
@@ -739,7 +739,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     String drugExposureEndDateExpression = DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION;
     if (strat.daysSupplyOverride != null) {
-      drugExposureEndDateExpression = String.format("DATEADD(day,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
+      drugExposureEndDateExpression = String.format("date_add(drug_exposure_start_date, %d)", strat.daysSupplyOverride);
     }
     String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
     strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
