@@ -160,7 +160,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String groupQuery = this.getCriteriaGroupQuery(group, String.format("(%s)", eventQuery));
     groupQuery = StringUtils.replace(groupQuery, "@indexId", "" + 0);
     String wrappedQuery = String.format(
-            "select PE.person_id, PE.event_id, PE.start_date, PE.end_date, PE.target_concept_id, PE.visit_occurrence_id, PE.sort_date FROM (\n%s\n) PE\nJOIN (\n%s) AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n",
+            "select pe.person_id, pe.event_id, pe.start_date, pe.end_date, pe.TARGET_CONCEPT_ID, pe.visit_occurrence_id, pe.sort_date FROM (\n%s\n) pe\nJOIN (\n%s) AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n",
             query, groupQuery);
     return wrappedQuery;
   }
@@ -227,7 +227,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   public String getFinalCohortQuery(Period censorWindow) {
 
-    String query = "select @target_cohort_id as @cohort_id_field_name, person_id, @start_date, @end_date \n"
+    String query = "select @target_cohort_id as @cohort_id_field_name, person_id as subject_id, @start_date, @end_date \n"
             + "FROM final_cohort";
 
     String startDate = "start_date";
@@ -304,7 +304,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       System.out.println(StringUtils.join(inclusionRuleInserts, "\n"));
       resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts, "\n"));
     } else {
-      resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", "create table #inclusion_events (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
+      //resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", "create table #inclusion_events (inclusion_rule_id bigint,\n\tperson_id bigint,\n\tevent_id bigint\n);");
+      resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", "inclusion_events AS (\nSELECT null as inclusion_rule_id, null as person_id, null as event_id\n),");
     }
 
     resultSql = StringUtils.replace(resultSql, "@IncludedEventSort", (expression.expressionLimit.type != null && expression.expressionLimit.type.equalsIgnoreCase("LAST")) ? "DESC" : "ASC");
