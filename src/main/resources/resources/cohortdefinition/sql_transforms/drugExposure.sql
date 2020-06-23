@@ -6,7 +6,7 @@ select C.person_id, C.drug_exposure_id as event_id, C.drug_exposure_start_date a
 from 
 (
   select de.* @ordinalExpression
-  FROM global_temp.drug_exposure de
+  FROM `@cdm_database_schema/drug_exposure` de
 @codesetClause
 ) C
 @joinClause

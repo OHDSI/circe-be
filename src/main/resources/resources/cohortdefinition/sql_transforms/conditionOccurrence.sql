@@ -5,7 +5,7 @@ SELECT C.person_id, C.condition_occurrence_id as event_id, C.condition_start_dat
 FROM 
 (
   SELECT co.* @ordinalExpression
-  FROM global_temp.condition_occurrence co
+  FROM `@cdm_database_schema/condition_occurrence` co
   @codesetClause
 ) C
 @joinClause

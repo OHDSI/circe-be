@@ -6,7 +6,7 @@ select C.person_id, C.observation_period_id as event_id, @startDateExpression as
 from 
 (
         select op.*, row_number() over (PARTITION BY op.person_id ORDER BY op.observation_period_start_date) as ordinal
-        FROM global_temp.observation_period op
+        FROM `@cdm_database_schema/observation_period` op
 ) C
 @joinClause
 @whereClause

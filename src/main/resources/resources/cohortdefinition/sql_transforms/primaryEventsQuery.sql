@@ -9,7 +9,7 @@ FROM
   (
   @criteriaQueries
   ) E
-	JOIN global_temp.observation_period op on E.person_id = op.person_id and E.start_date >=  op.observation_period_start_date and E.start_date <= op.observation_period_end_date
+	JOIN `@cdm_database_schema/observation_period` op on E.person_id = op.person_id and E.start_date >=  op.observation_period_start_date and E.start_date <= op.observation_period_end_date
   WHERE @primaryEventsFilter
 ) P
 @primaryEventLimit

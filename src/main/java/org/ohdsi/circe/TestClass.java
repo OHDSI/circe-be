@@ -35,8 +35,31 @@ public class TestClass {
         File file = new File(path);
         return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
-    public static void main(String[] args) throws IOException {
-        System.out.println("Hello");
+
+    public static String createSql(
+        int cohortId, String cdmSchema, String resultSchema, 
+        String targetTable, String codelistDataset, String jsonString
+    ) throws IOException {
+
+        System.out.println("Parsing Json to SQL");
+
+        final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(
+            cohortId,
+            cdmSchema,
+            resultSchema,
+            targetTable,
+            codelistDataset
+        );
+    
+        final CohortExpression expression = CohortExpression.fromJson(jsonString);
+    
+        String cohortSql = buildExpressionSql(expression, options);
+        cohortSql = SqlRender.renderSql(cohortSql, null, null);
+
+        return(cohortSql);
+    }
+
+    public static void main(String [] args) throws IOException {
 
         final int cohortId = 1;
         final String cdmSchema = "/UNITE/Safe Harbor - TUFTS/transform";
@@ -47,24 +70,9 @@ public class TestClass {
         final String jsonFilePath = "/Users/bamor/Documents/active_projects/circe-be/N3C_phenotype.json";
         final String outputSqlFilePath = "/Users/bamor/Documents/active_projects/circe-be/N3C_phenotype.sql";
 
-        final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(
-            cohortId,
-            cdmSchema,
-            resultSchema,
-            targetTable,
-            codelistDataset
-        );
+        final String jsonString = readFile(jsonFilePath);
     
-
-        // load cohort json
-        final CohortExpression expression = CohortExpression
-            .fromJson(readFile(jsonFilePath));
-    
-        // build Sql
-        String cohortSql = buildExpressionSql(expression, options);
-        cohortSql = SqlRender.renderSql(cohortSql, null, null);
-
-        // Write to sql file
+        final String cohortSql = createSql(cohortId, cdmSchema, resultSchema, targetTable, codelistDataset, jsonString);
         FileUtils.writeStringToFile(new File(outputSqlFilePath), cohortSql, StandardCharsets.UTF_8);
     }
 

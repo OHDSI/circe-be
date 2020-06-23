@@ -5,7 +5,7 @@ select C.person_id, C.person_id as event_id, C.death_date as start_date, date_ad
 from 
 (
   select d.*
-  FROM global_temp.death d
+  FROM `@cdm_database_schema/death` d
 @codesetClause
 ) C
 @joinClause

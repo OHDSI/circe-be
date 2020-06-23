@@ -1,3 +1,5 @@
+CREATE TABLE `@target_database_schema.@target_cohort_table` AS
+
 with primary_events as
 (
 @primaryEventsQuery

@@ -5,7 +5,7 @@ select C.person_id, C.procedure_occurrence_id as event_id, C.procedure_date as s
 from 
 (
   select po.* @ordinalExpression
-  FROM global_temp.procedure_occurrence po
+  FROM `@cdm_database_schema/procedure_occurrence` po
 @codesetClause
 ) C
 @joinClause

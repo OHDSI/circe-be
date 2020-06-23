@@ -5,7 +5,7 @@ select C.person_id, C.condition_era_id as event_id, C.condition_era_start_date a
 from 
 (
   select ce.* @ordinalExpression
-  FROM global_temp.condition_era ce
+  FROM `@cdm_database_schema/condition_era` ce
 @codesetClause
 ) C
 @joinClause

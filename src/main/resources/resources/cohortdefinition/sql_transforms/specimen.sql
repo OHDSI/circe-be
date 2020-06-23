@@ -5,7 +5,7 @@ select C.person_id, C.specimen_id as event_id, C.specimen_date as start_date, da
 from 
 (
   select s.* @ordinalExpression
-  FROM global_temp.specimen s
+  FROM `@cdm_database_schema/specimen` s
 @codesetClause
 ) C
 @joinClause

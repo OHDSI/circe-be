@@ -10,8 +10,8 @@ select
 from 
 (
   select l.*, lh.*
-  FROM global_temp.location l
-    JOIN global_temp.location_history lh ON l.location_id = lh.location_id
+  FROM `@cdm_database_schema/location` l
+    JOIN `@cdm_database_schema.location_history` lh ON l.location_id = lh.location_id
 @codesetClause
   WHERE lh.domain_id = 'PERSON'
 ) C

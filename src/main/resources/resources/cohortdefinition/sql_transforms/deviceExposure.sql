@@ -5,7 +5,7 @@ select C.person_id, C.device_exposure_id as event_id, C.device_exposure_start_da
 from 
 (
   select de.* @ordinalExpression
-  FROM global_temp.device_exposure de
+  FROM `@cdm_database_schema/device_exposure` de
 @codesetClause
 ) C
 @joinClause

@@ -5,7 +5,7 @@ select C.person_id, C.measurement_id as event_id, C.measurement_date as start_da
 from 
 (
   select m.* @ordinalExpression
-  FROM global_temp.measurement m
+  FROM `@cdm_database_schema/measurement` m
 @codesetClause
 ) C
 @joinClause
