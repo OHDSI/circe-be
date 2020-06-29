@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Objects;
 
 /**
  *
@@ -93,4 +94,24 @@ public class Concept {
     
     @JsonProperty("CONCEPT_CLASS_ID")
     public String conceptClassId;
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Concept)) {
+            return false;
+        }
+        Concept other = (Concept) o;
+        return Objects.equals(conceptId, other.conceptId) && Objects.equals(conceptName, other.conceptName) &&
+                Objects.equals(standardConcept, other.standardConcept) && Objects.equals(invalidReason, other.invalidReason) &&
+                Objects.equals(conceptCode, other.conceptCode) && Objects.equals(domainId, other.domainId) &&
+                Objects.equals(vocabularyId, other.vocabularyId) && Objects.equals(conceptClassId, other.conceptClassId);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(conceptId, conceptName, standardConcept, invalidReason, conceptCode, domainId, vocabularyId, conceptClassId);
+    }    
 }
