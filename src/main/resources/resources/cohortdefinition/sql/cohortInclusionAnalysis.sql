@@ -21,7 +21,7 @@ left join
 (
   select i.inclusion_rule_id, count_big(i.event_id) as person_count
   from @eventTable Q
-  JOIN #inclusion_events i on Q.person_id = I.person_id and Q.event_id = i.event_id
+  JOIN #inclusion_events i on Q.person_id = i.person_id and Q.event_id = i.event_id
   group by i.inclusion_rule_id
 ) T on ir.rule_sequence = T.inclusion_rule_id
 CROSS JOIN (select count(*) as total_rules from @results_database_schema.cohort_inclusion where @cohort_id_field_name = @target_cohort_id) RuleTotal
