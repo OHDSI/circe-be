@@ -227,7 +227,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   public String getFinalCohortQuery(Period censorWindow) {
 
-    String query = "select @target_cohort_id as @cohort_id_field_name, person_id as subject_id, @start_date, @end_date \n"
+    String query = "select @target_cohort_id as @cohort_id_field_name, person_id as subject_id, @start_date as cohort_start_date, @end_date as cohort_end_date\n"
             + "FROM final_cohort";
 
     String startDate = "start_date";
