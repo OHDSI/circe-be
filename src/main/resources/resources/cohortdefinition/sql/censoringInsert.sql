@@ -1,4 +1,4 @@
-select i.event_id, i.person_id, MIN(C.start_date) as end_date
+select i.event_id as event_id1, i.person_id, MIN(C.start_date) as end_date
 FROM included_events i
 JOIN
 (
