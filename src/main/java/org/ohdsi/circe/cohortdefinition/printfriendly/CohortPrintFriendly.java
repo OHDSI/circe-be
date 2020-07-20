@@ -21,9 +21,8 @@ public class CohortPrintFriendly
       cfg.setClassForTemplateLoading(CohortPrintFriendly.class, "/resources/cohortDefinition/printfriendly");
       cfg.setAPIBuiltinEnabled(true);
       cfg.setBooleanFormat("true, false");
-      cfg.setSharedVariable("CohortExpression", CohortExpression.class);
       DefaultObjectWrapperBuilder builder = new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_27);
-//      builder.setExposeFields(true);
+      builder.setExposeFields(true);
       objectWrapper = builder.build();  
     } catch (Exception e) {
       throw new RuntimeException(e);

@@ -1,83 +1,83 @@
 <#import "./inputTypes.ftl" as inputTypes>
-This is the template!
-Root class is ${.dataModel.class.simpleName} 
-isInstance test: ${.dataModel.class.simpleName == "CohortExpression"}
-
+<#import "./utils.ftl" as utils>
 <style>
-  circe-printfriendly.div span.title {
+  div.circe-printfriendly {
+    font-family:monospace;
+    font-size:11pt;
+  }
+  div.circe-printfriendly p.title {
     font-weight: bold;
+    margin-bottom:5px;
+  }
+  div.circe-printfriendly p.title {
+    margin-bottom:2px;
+  }
+  div.circe-printfriendly p {
+    margin-top:0px;
+    margin-bottom:0px;
+  }
+
+  div.circe-printfriendly p.attr {
+    text-indent:-1em;
   }
 </style>
+
+<#-- main template: begin -->
 <div class="circe-printfriendly">
-<span style="title">Cohort Entry Criteria</span>
-
-<#list primaryCriteria.criteriaList as pc>
-<@criteria c=pc/>
+<p class="title">Cohort Entry Events</p>
+<#list primaryCriteria.criteriaList><p class="heading">Patients <#if inclusionRules?size gt 0 || additionalCriteria??>may </#if>enter the cohort having:</p>
+<#items as pc><@p><#if pc?counter gt 1>or </#if><@Criteria c=pc/></@p>
+</#items>
 </#list>
-
 </div>
+<#-- main template: end -->
 
-<#macro criteria c level=0>
-<p style="margin-left: ${indent(level)}">
-<#if c.class.simpleName == "ConditionOccurrence">
-<@ConditionOccurrence co = c/>
-<#else>
-Unknown criteria type: ${c.class.simpleName}
-</#if>
-</p>
+<#macro p level=0><p class="attr" style="margin-left: ${utils.indent(level)}"><#nested></p></#macro>
+
+<#-- Criteria macros  -->
+
+<#macro Criteria c level=0 isPlural=true>
+<#if c.class.simpleName == "ConditionEra"><@ConditionEra c=c level=level isPlural=isPlural/>
+<#elseif c.class.simpleName == "ConditionOccurrence"><@ConditionOccurrence c=c level=level isPlural=isPlural/>
+<#else>Unknown criteria type: ${c.class.simpleName}</#if></#macro>
+
+<#macro ConditionEra c level isPlural=true>condition era<#if isPlural>s</#if> of: ${utils.codesetName(c.codesetId, "any condition")}<#if c.first!false>
+<@p level=level+1>- only using the first record of ${utils.codesetName(c.codesetId, "any condition")}</@p></#if></#macro>
+
+<#macro ConditionOccurrence c level isPlural=true>condition occurrence<#if isPlural>s</#if> of: ${utils.codesetName(c.codesetId, "any condition")}<#if c.first!false>
+<@p level=level+1>- only using the first record of ${utils.codesetName(c.codesetId, "any condition")}</@p></#if><#if c.occurrenceStartDate?? && c.occurrenceEndDate??>
+<@p level=level+1>- starting <@inputTypes.DateRange range=c.occurrenceStartDate /> and ending <@inputTypes.DateRange range=c.occurrenceEndDate /></@p><#else><#if c.occurrenceStartDate??> 
+<@p level=level+1>- starting <@inputTypes.DateRange range=c.occurrenceStartDate /></@p></#if><#if c.occurrenceEndDate?? > 
+<@p level=level+1>- ending <@inputTypes.DateRange range=c.occurrenceEndDate /></@p></#if></#if><#if c.conditionType??>
+<@p level=level+1>- condition type <#if c.conditionTypeExclude!false>is any of<#else>is not any of</#if> <@inputTypes.ConceptList list=c.conditionType/></@p></#if><#if c.stopReason?? > 
+<@p level=level+1>- with a Stop Reason <@inputTypes.TextFilter filter=c.stopReason /></@p></#if><#if c.conditionSourceConcept?? >
+<@p level=level+1>- condition source concept is: ${utils.codesetName(c.conditionSourceConcept, "any condition")}</@p></#if><#if c.age??>
+<@p level=level+1>- with age <@inputTypes.NumericRange range=c.age /></@p></#if><#if c.gender??>
+<@p level=level+1>- gender is any of: <@inputTypes.ConceptList list=c.gender/></@p></#if><#if c.providerSpecialty??>
+<@p level=level+1>- provider specialty is any of: <@inputTypes.ConceptList list=c.providerSpecialty/></@p></#if><#if c.visitType??>
+<@p level=level+1>- visit occurrence is any of: <@inputTypes.ConceptList list=c.visitType/></@p></#if><#if c.CorrelatedCriteria??>
+<@p level=level+1>- <@Group group=c.CorrelatedCriteria level=level+1 indexMessage="a condition occurrence of " + utils.codesetName(c.codesetId, "any condition") /></@p></#if></#macro>
+
+<#-- Group macros -->
+
+<#macro Group group parentGroup = utils._nullArg isFirst=true indexMessage="Cohort Entry Event" level=0><#if !isFirst && (parentGroup?has_content)>${inputTypes.getGroupConjunction(parentGroup)} </#if><@inputTypes.GroupHeader group=group /><br>
+<#list group.criteriaList as countCriteria>
+<@p level=level+1>- <#if countCriteria?counter gt 1 && true && true
+&& true>${inputTypes.getGroupConjunction(group)} </#if><@CountCriteria countCriteria=countCriteria level=level+1/></@p></#list>
+<#list group.groups as subgroup><@p level=level+1>- <@Group group=subgroup 
+  parentGroup=group 
+  isFirst = !(subgroup?counter gt 1 || group.criteriaList?size gt 0 || group.demographicCriteriaList?size gt 0) indexMessage=indexMessage
+  level=level+1/></@p></#list>
 </#macro>
 
-<#macro ConditionOccurrence co>
-<#list co?keys as key>
-  ${key}
-</#list>
-${co.occurrenceStartDate!'wtf'}
-${co["occurrenceStartDate"]}
-${co.occurrenceStartDate.value}
-A condition occurrence of: ${codesetName(co.codesetId, "any condition")}
-<#if co.first!false>- for the first time in the person's history</#if>
-<#if co.occurrenceStartDate?? > <@inputTypes.DateRange range = co.occurrenceStartDate /> <#else> is null</#if>
-</#macro>
+<#-- CountCriteria macros -->
 
 
-<#function indent level=0>
-  <#return (level * 3) + "px">
-</#function>
-
-<#function codesetName codesetId defaultName>
-  <#if !codesetId??>
-    <#return defaultName>
-  <#else>
-    <#return (conceptSets?filter(cs -> cs.id == codesetId))?first.name>
-   </#if>
-</#function>
-
-<#macro dump_object object debug=false>
-    <#compress>
-        <#if object??>
-            <#attempt>
-                <#if object?isNode>
-                    <#if object?nodeType == "text">${object?html}
-                    <#else>&lt;${object?nodeName}<#if object?nodeType=="element" && object.@@?hasContent><#list object.@@ as attr>
-                        ${attr?nodeName}="${attr?html}"</#list></#if>&gt;
-                        <#if object?children?hasContent><#list object?children as item>
-                            <@dump_object object=item/></#list><#else>${object}</#if> &lt;/${object?nodeName}&gt;</#if>
-                <#elseIf object?isMethod>
-                    #method
-                <#elseIf object?isSequence>
-                        [<#list object as item><@dump_object object=item/><#if !item?isLast>, </#if></#list>]
-                <#elseIf object?isHashEx>
-                        {<#list object as key, item>${key?html}=<@dump_object object=item/><#if !item?isLast>, </#if></#list>}
-                <#else>
-                    "${object?string?html}"
-                </#if>
-            <#recover>
-                <#if !debug><!-- </#if>LOG: Could not parse object <#if debug><pre>${.error}</pre><#else>--></#if>
-            </#attempt>
-        <#else>
-            null
-        </#if>
-    </#compress>
+<#macro CountCriteria countCriteria level=0>having ${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}<#if
+countCriteria.occurrence.isDistinct> distinct</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1)/>
+<@p level=level><#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>where <@inputTypes.Window countCriteria.startWindow /></#if>
+<#if countCriteria.endWindow?? && (countCriteria.endWindow.start.days?? || countCriteria.endWindow.end.days??)><br>
+<#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>and </#if><@inputTypes.Window countCriteria.endWindow /></#if></@p>
 </#macro>
 
 

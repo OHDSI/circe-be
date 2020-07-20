@@ -35,6 +35,158 @@
     "CriteriaList": [
       {
         "ConditionOccurrence": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CodesetId": 1,
+                    "Age": {
+                      "Value": 30,
+                      "Op": "gt"
+                    },
+                    "Gender": [
+                      {
+                        "CONCEPT_CODE": "F",
+                        "CONCEPT_ID": 8532,
+                        "CONCEPT_NAME": "FEMALE",
+                        "DOMAIN_ID": "Gender",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "Gender"
+                      },
+                      {
+                        "CONCEPT_CODE": "M",
+                        "CONCEPT_ID": 8507,
+                        "CONCEPT_NAME": "MALE",
+                        "DOMAIN_ID": "Gender",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "Gender"
+                      }
+                    ]
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Days": 90,
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 30,
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "EndWindow": {
+                  "Start": {
+                    "Coeff": 1
+                  },
+                  "End": {
+                    "Days": 90,
+                    "Coeff": 1
+                  },
+                  "UseIndexEnd": true,
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CodesetId": 0,
+                    "OccurrenceStartDate": {
+                      "Value": "2015-10-31",
+                      "Op": "gt"
+                    },
+                    "First": true
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": [
+              {
+                "Type": "ANY",
+                "CriteriaList": [
+                  {
+                    "Criteria": {
+                      "ConditionOccurrence": {
+                        "CodesetId": 1,
+                        "Age": {
+                          "Value": 65,
+                          "Op": "gt"
+                        }
+                      }
+                    },
+                    "StartWindow": {
+                      "Start": {
+                        "Coeff": -1
+                      },
+                      "End": {
+                        "Days": 0,
+                        "Coeff": 1
+                      },
+                      "UseEventEnd": false
+                    },
+                    "Occurrence": {
+                      "Type": 0,
+                      "Count": 0
+                    }
+                  },
+                  {
+                    "Criteria": {
+                      "ConditionOccurrence": {
+                        "CodesetId": 1,
+                        "Gender": [
+                          {
+                            "CONCEPT_CODE": "F",
+                            "CONCEPT_ID": 8532,
+                            "CONCEPT_NAME": "FEMALE",
+                            "DOMAIN_ID": "Gender",
+                            "VOCABULARY_ID": "Gender"
+                          }
+                        ]
+                      }
+                    },
+                    "StartWindow": {
+                      "Start": {
+                        "Coeff": -1
+                      },
+                      "End": {
+                        "Days": 1,
+                        "Coeff": -1
+                      },
+                      "UseEventEnd": false
+                    },
+                    "Occurrence": {
+                      "Type": 0,
+                      "Count": 0
+                    }
+                  }
+                ],
+                "DemographicCriteriaList": [],
+                "Groups": []
+              }
+            ]
+          },
           "CodesetId": 0,
           "OccurrenceStartDate": {
             "Value": "2010-01-01",
@@ -74,6 +226,7 @@
             }
           ],
           "StopReason": {
+            "Text": "some Text",
             "Op": "contains"
           },
           "ConditionSourceConcept": 0,
@@ -134,6 +287,16 @@
               "VOCABULARY_ID": "Visit"
             }
           ]
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 1,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "gte"
+          },
+          "First": true
         }
       }
     ],
