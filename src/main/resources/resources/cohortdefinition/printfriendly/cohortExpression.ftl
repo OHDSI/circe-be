@@ -26,7 +26,7 @@
 <div class="circe-printfriendly">
 <p class="title">Cohort Entry Events</p>
 <#list primaryCriteria.criteriaList><p class="heading">Patients <#if inclusionRules?size gt 0 || additionalCriteria??>may </#if>enter the cohort having:</p>
-<#items as pc><@p><#if pc?counter gt 1>or </#if><@Criteria c=pc/></@p>
+<#items as pc><@p>${pc?counter}. <@Criteria c=pc/></@p>
 </#items>
 </#list>
 </div>
@@ -60,14 +60,13 @@
 
 <#-- Group macros -->
 
-<#macro Group group parentGroup = utils._nullArg isFirst=true indexMessage="Cohort Entry Event" level=0><#if !isFirst && (parentGroup?has_content)>${inputTypes.getGroupConjunction(parentGroup)} </#if><@inputTypes.GroupHeader group=group /><br>
+<#macro Group group parentGroup = utils._nullArg isFirst=true indexMessage="Cohort Entry Event" level=0 ref=""><@inputTypes.GroupHeader group=group /><br>
 <#list group.criteriaList as countCriteria>
-<@p level=level+1>- <#if countCriteria?counter gt 1 && true && true
-&& true>${inputTypes.getGroupConjunction(group)} </#if><@CountCriteria countCriteria=countCriteria level=level+1/></@p></#list>
-<#list group.groups as subgroup><@p level=level+1>- <@Group group=subgroup 
+<@p level=level+1><@utils.ref ref=ref idx=countCriteria?counter/> <@CountCriteria countCriteria=countCriteria level=level+1/></@p></#list>
+<#list group.groups as subgroup><@p level=level+1><@utils.ref ref=ref idx=(group.criteriaList?size + subgroup?counter)/> <@Group group=subgroup 
   parentGroup=group 
   isFirst = !(subgroup?counter gt 1 || group.criteriaList?size gt 0 || group.demographicCriteriaList?size gt 0) indexMessage=indexMessage
-  level=level+1/></@p></#list>
+  level=level+1 ref=(ref + (group.criteriaList?size + subgroup?counter) + ".")/></@p></#list>
 </#macro>
 
 <#-- CountCriteria macros -->
@@ -75,7 +74,7 @@
 
 <#macro CountCriteria countCriteria level=0>having ${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}<#if
 countCriteria.occurrence.isDistinct> distinct</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1)/>
-<@p level=level><#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>where <@inputTypes.Window countCriteria.startWindow /></#if>
+<@p level=level+1><#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>where <@inputTypes.Window countCriteria.startWindow /></#if>
 <#if countCriteria.endWindow?? && (countCriteria.endWindow.start.days?? || countCriteria.endWindow.end.days??)><br>
 <#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>and </#if><@inputTypes.Window countCriteria.endWindow /></#if></@p>
 </#macro>

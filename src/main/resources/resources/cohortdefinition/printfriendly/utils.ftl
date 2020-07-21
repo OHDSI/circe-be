@@ -20,3 +20,5 @@
   ${key}
 </#list>
 </#macro>
+
+<#macro ref ref idx>${ref}${idx}.</#macro>

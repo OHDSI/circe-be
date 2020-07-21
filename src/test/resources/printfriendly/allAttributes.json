@@ -161,6 +161,8 @@
                             "CONCEPT_ID": 8532,
                             "CONCEPT_NAME": "FEMALE",
                             "DOMAIN_ID": "Gender",
+                            "INVALID_REASON_CAPTION": "Unknown",
+                            "STANDARD_CONCEPT_CAPTION": "Unknown",
                             "VOCABULARY_ID": "Gender"
                           }
                         ]
