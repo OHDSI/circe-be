@@ -22,3 +22,5 @@
 </#macro>
 
 <#macro ref ref idx>${ref}${idx}.</#macro>
+
+<#macro p level=0><p class="attr" style="margin-left: ${indent(level)}"><#nested></p></#macro>

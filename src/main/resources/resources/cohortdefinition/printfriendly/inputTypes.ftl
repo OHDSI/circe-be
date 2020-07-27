@@ -13,7 +13,8 @@
 <#macro DateRange range>${utils.optionName(dateRangeOptions, range.op)} ${range.value!""}<#if range.op?ends_with("bt")> and ${range.extent!""}</#if></#macro>
 
 <#-- ConceptList -->
-<#macro ConceptList list>${list?map(item->item.conceptName)?join(", ")}</#macro>
+<#macro ConceptList list quote="\""><#list list?map(item->(quote + item.conceptName + quote)) as item><#if item?counter gt 1><#if 
+  item?counter == list?size> or <#else>, </#if></#if>${item}</#list></#macro>
 
 <#-- NumericRange -->
 <#assign numericRangeOptions = [
