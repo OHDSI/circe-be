@@ -55,13 +55,13 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
         // join to PERSON
         if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         }
         if (criteria.visitType != null && criteria.visitType.length > 0) {
-            joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.visit_occurrence V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
         }
         if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-            joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
+            joinClauses.add("LEFT JOIN @cdm_database_schema.provider PR on C.provider_id = PR.provider_id");
         }
 
         return joinClauses;

@@ -53,7 +53,7 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
 
         // join to PERSON
         if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0)) {
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         }
 
         return joinClauses;
@@ -86,7 +86,7 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
 
         // eraLength
         if (criteria.eraLength != null) {
-            whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.dose_era_start_date, C.dose_era_end_date)", criteria.eraLength));
+            whereClauses.add(buildNumericRangeClause("DATEDIFF(C.dose_era_end_date, C.dose_era_start_date)", criteria.eraLength));
         }
 
         // ageAtStart

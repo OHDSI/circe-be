@@ -47,7 +47,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
 
         // join to PERSON
         if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         }
 
         return joinClauses;
