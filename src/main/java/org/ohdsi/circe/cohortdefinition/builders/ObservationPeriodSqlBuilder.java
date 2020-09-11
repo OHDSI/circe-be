@@ -42,7 +42,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
         // join to PERSON
         if (criteria.ageAtStart != null || criteria.ageAtEnd != null) {
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         }
 
         return joinClauses;
@@ -65,12 +65,12 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
             if (userDefinedPeriod.startDate != null) {
                 startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
-                whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
+                whereClauses.add(String.format("C.observation_period_start_date <= %s and C.observation_period_end_date >= %s", startDateExpression, startDateExpression));
             }
 
             if (userDefinedPeriod.endDate != null) {
                 endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
-                whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
+                whereClauses.add(String.format("C.observation_period_start_date <= %s and C.observation_period_end_date >= %s", endDateExpression, endDateExpression));
             }
         }
 
@@ -95,7 +95,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
         // periodLength
         if (criteria.periodLength != null) {
-            whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.observation_period_start_date, C.observation_period_end_date)", criteria.periodLength));
+            whereClauses.add(buildNumericRangeClause("DATEDIFF(C.observation_period_end_date, C.observation_period_start_date)", criteria.periodLength));
         }
 
         // ageAtStart

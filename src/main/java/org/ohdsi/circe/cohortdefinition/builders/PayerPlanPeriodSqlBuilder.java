@@ -41,7 +41,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
         List<String> joinClauses = new ArrayList<>();
 
         if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0)) {
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         }
 
         return joinClauses;
@@ -66,12 +66,12 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
 
             if (userDefinedPeriod.startDate != null) {
                 startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
-                whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
+                whereClauses.add(String.format("C.payer_plan_period_start_date <= %s and C.payer_plan_period_end_date >= %s", startDateExpression, startDateExpression));
             }
 
             if (userDefinedPeriod.endDate != null) {
                 endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
-                whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
+                whereClauses.add(String.format("C.payer_plan_period_start_date <= %s and C.payer_plan_period_end_date >= %s", endDateExpression, endDateExpression));
             }
         }
 
@@ -90,7 +90,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
 
         //periodLength
         if (criteria.periodLength != null) {
-            whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.payer_plan_period_start_date, C.payer_plan_period_end_date)", criteria.periodLength));
+            whereClauses.add(buildNumericRangeClause("DATEDIFF(C.payer_plan_period_end_date, C.payer_plan_period_start_date)", criteria.periodLength));
         }
 
         //ageAtStart

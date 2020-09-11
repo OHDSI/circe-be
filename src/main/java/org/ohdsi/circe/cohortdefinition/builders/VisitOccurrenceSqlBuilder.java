@@ -46,11 +46,11 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
         List<String> joinClauses = new ArrayList<>();
 
         if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-            joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
+            joinClauses.add("JOIN @cdm_database_schema.person P on C.person_id = P.person_id");
         if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) || criteria.placeOfServiceLocation != null)
-            joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
+            joinClauses.add("JOIN @cdm_database_schema.care_site CS on C.care_site_id = CS.care_site_id");
         if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0)
-            joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
+            joinClauses.add("LEFT JOIN @cdm_database_schema.provider PR on C.provider_id = PR.provider_id");
 
         if (criteria.placeOfServiceLocation != null) {
             addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
@@ -82,7 +82,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
         // visitLength
         if (criteria.visitLength != null) {
-            whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitLength));
+            whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(C.visit_end_date, C.visit_start_date)", criteria.visitLength));
         }
 
         // age
@@ -110,8 +110,8 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
     protected void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
 
-        joinClauses.add(getLocationHistoryJoin("LH", "CARE_SITE", "C.care_site_id"));
-        joinClauses.add("JOIN @cdm_database_schema.LOCATION LOC on LOC.location_id = LH.location_id");
+        joinClauses.add(getLocationHistoryJoin("LH", "care_site", "C.care_site_id"));
+        joinClauses.add("JOIN @cdm_database_schema.location LOC on LOC.location_id = LH.location_id");
         joinClauses.add(
                 BuilderUtils.getCodesetJoinExpression(
                         codesetId,
@@ -124,7 +124,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
     protected String getLocationHistoryJoin(String alias, String domain, String entityIdField) {
 
-        return "JOIN @cdm_database_schema.LOCATION_HISTORY " + alias + " " +
+        return "JOIN @cdm_database_schema.location_history " + alias + " " +
                 "on " + alias + ".entity_id = " + entityIdField + " " +
                 "AND " + alias + ".domain_id = '" + domain + "' " +
                 "AND C.visit_start_date >= " + alias + ".start_date " +

@@ -62,13 +62,13 @@ public class TestClass {
     public static void main(String [] args) throws IOException {
 
         final int cohortId = 1;
-        final String cdmSchema = "/UNITE/Safe Harbor - TUFTS/transform";
+        final String cdmSchema = "/UNITE/Safe Harbor/transform";
         final String resultSchema = "";
-        final String targetTable =  "/UNITE/Palantir/OMOP FeatureExtraction/N3C_phenotype/N3C_phenotype_tufts";
-        final String codelistDataset = "`/UNITE/Palantir/Demo/model development/N3C Phenotype/workbook-output/[Safe Harbor] N3C Phenotype/concept_sets`";
+        final String targetTable =  "/UNITE/Palantir/OHDSI/testing";
+        final String codelistDataset = "`/UNITE/Palantir/Applications/Development/Code Set Builder/hubble_base/concept_set_to_concept_id_edited`";
 
-        final String jsonFilePath = "/Users/bamor/Documents/active_projects/circe-be/N3C_phenotype_parsed.json";
-        final String outputSqlFilePath = "/Users/bamor/Documents/active_projects/circe-be/N3C_phenotype_parsed.sql";
+        final String jsonFilePath = "/Users/bamor/Documents/active_projects/circe-be/test.json";
+        final String outputSqlFilePath = "/Users/bamor/Documents/active_projects/circe-be/test.sql";
 
         final String jsonString = readFile(jsonFilePath);
     
