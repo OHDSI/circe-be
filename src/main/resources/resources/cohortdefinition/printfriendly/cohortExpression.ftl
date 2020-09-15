@@ -1,37 +1,70 @@
 <#import "./criteriaTypes.ftl" as ct>
+<#import "./endStrategyTypes.ftl" as st>
 <#import "./utils.ftl" as utils>
-<style>
-  div.circe-printfriendly {
-    font-family:monospace;
-    font-size:11pt;
-  }
-  div.circe-printfriendly p.title {
-    font-weight: bold;
-    margin-bottom:5px;
-  }
-  div.circe-printfriendly p.title {
-    margin-bottom:2px;
-  }
-  div.circe-printfriendly p {
-    margin-top:0px;
-    margin-bottom:0px;
-  }
+<#import "./inputTypes.ftl" as inputTypes>
+<#-- 
 
-  div.circe-printfriendly p.attr {
-    text-indent:-1em;
-  }
-</style>
+Note!!!!!  
+FTL and markdown are both EXTREMLY senstive to white space, leading to awkward formatting of
+if-else statements and other end tags to eliminate CR/LF and other witespace that interferes with proper
+markdown rendering.  Do not try to change the formatting/indentation of these statements or else you risk 
+breaking the markdown formatting rules!
+END Note!!!!
 
+-->
 <#-- main template: begin -->
-<div class="circe-printfriendly">
-<p class="title">Cohort Entry Events</p>
-<#list primaryCriteria.criteriaList><p class="heading">Patients <#if inclusionRules?size gt 0 || additionalCriteria??>may </#if>enter the cohort having:</p>
-<#items as pc><@utils.p>${pc?counter}. <@ct.Criteria c=pc/></@utils.p>
+### Cohort Entry Events
+<#list primaryCriteria.criteriaList>
+
+People<#if primaryCriteria.observationWindow.priorDays gt 0 || primaryCriteria.observationWindow.postDays gt 0><#--
+--> with continuous observation of <#if primaryCriteria.observationWindow.priorDays gt 0>${primaryCriteria.observationWindow.priorDays} days before<#if primaryCriteria.observationWindow.postDays gt 0> and </#if></#if><#if 
+	primaryCriteria.observationWindow.postDays gt 0>${primaryCriteria.observationWindow.postDays} days after</#if> event</#if><#--
+--><#if inclusionRules?size gt 0 || additionalCriteria??> may</#if> enter the cohort when observing:
+<#items as pc>
+
+${pc?counter}. <@ct.Criteria c=pc/>
 </#items>
-</#list><#if primaryCriteria.observationWindow.priorDays gt 0 || primaryCriteria.observationWindow.postDays gt 0> 
-<p> Events must have continuous observation of <#if primaryCriteria.observationWindow.priorDays gt 0> ${primaryCriteria.observationWindow.priorDays} days before<#if primaryCriteria.observationWindow.postDays gt 0> and </#if></#if>
-<#if primaryCriteria.observationWindow.priorDays gt 0>${primaryCriteria.observationWindow.postDays} days after</#if> the event start date.</p></#if><#if additionalCriteria??>
-<@utils.p>Restrict entry events to <@utils.Group group=additionalCriteria /></@utils.p></#if>
-</div>
+</#list>
+<#if primaryCriteria.primaryLimit.type != "All">
+
+Limit cohort entry events to <@inputTypes.Limit limit=primaryCriteria.primaryLimit/> per person.
+</#if>
+<#if additionalCriteria??>
+
+Restrict entry events to <@ct.Group group=additionalCriteria />  
+<#if primaryCriteria.primaryLimit.type == "All" && qualifiedLimit.type != "All">
+
+Limit cohort entry events to <@inputTypes.Limit limit=qualifiedLimit /> per person.
+</#if>
+</#if>
+<#if inclusionRules?size gt 0>
+
+### Inclusion Criteria
+<#list inclusionRules as rule>
+
+#### ${rule?counter}. ${rule.name}<#if rule.description??>: ${rule.description}  </#if>
+
+<@ct.Group group=rule.expression />
+</#list>
+</#if>
+<#if primaryCriteria.primaryLimit.type == "All" && (!additionalCriteria?? || qualifiedLimit.type == "All") && expressionLimit.type != "All">
+
+Limit qualifying entry events to <@inputTypes.Limit limit=qualifiedLimit /> per person.
+</#if>
+
+### Cohort Exit
+
+<@st.Strategy endStrategy!{} />
+<#list censoringCriteria>
+The person exits the cohort when encountering any of the following events:
+<#items as cc>
+${cc?counter}. <@ct.Criteria c=pc/>
+</#items>
+</#list>
+
+### Cohort Eras
+
+Entry events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
+
 <#-- main template: end -->
 

@@ -10,7 +10,7 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateModel;
 
-public class CohortPrintFriendly
+public class MarkdownRender
 {
   private static Configuration cfg;
   private static DefaultObjectWrapper objectWrapper;
@@ -18,7 +18,7 @@ public class CohortPrintFriendly
     try {
 
       cfg = new Configuration(Configuration.VERSION_2_3_30);
-      cfg.setClassForTemplateLoading(CohortPrintFriendly.class, "/resources/cohortDefinition/printfriendly");
+      cfg.setClassForTemplateLoading(MarkdownRender.class, "/resources/cohortDefinition/printfriendly");
       cfg.setAPIBuiltinEnabled(true);
       cfg.setBooleanFormat("true, false");
       DefaultObjectWrapperBuilder builder = new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_27);
@@ -40,4 +40,10 @@ public class CohortPrintFriendly
       throw new RuntimeException(e);
     }
   }
+	
+  public String generate(String expressionJson) {
+		CohortExpression expression = CohortExpression.fromJson(expressionJson);
+		return this.generate(expression);
+  }
+	
 }
