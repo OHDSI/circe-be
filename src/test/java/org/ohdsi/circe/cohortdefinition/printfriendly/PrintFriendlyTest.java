@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -13,6 +14,7 @@ public class PrintFriendlyTest {
 	private final String OUTPUT_PATH = "C:\\Documents\\OHDSI\\Circe\\printFriendly\\";
 	
 	@Test
+  @Ignore
 	public void processExpression() {
 		CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/allAttributes.json"));
 		MarkdownRender pf = new MarkdownRender();
