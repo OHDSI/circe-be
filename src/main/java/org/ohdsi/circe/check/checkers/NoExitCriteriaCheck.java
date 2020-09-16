@@ -37,9 +37,12 @@ public class NoExitCriteriaCheck extends BaseCheck {
 
     @Override
     protected void check(CohortExpression expression, WarningReporter reporter) {
-
         match(expression)
-                .when(e -> Objects.equals("All", e.primaryCriteria.primaryLimit.type) && Objects.isNull(e.endStrategy))
+                .when(e -> Objects.equals("All", e.primaryCriteria.primaryLimit.type)
+                        && Objects.isNull(e.endStrategy)
+                        && Objects.equals("All", e.expressionLimit.type)
+                        && (Objects.isNull(e.additionalCriteria)
+                            || Objects.equals("All", e.qualifiedLimit.type)))
                 .then(() -> reporter.add(NO_EXIT_CRITERIA_WARNING));
     }
 }

@@ -48,6 +48,12 @@ public class CriteriaCheckValueTest {
     private static final CohortExpression EMPTY_CORRELATED_CRITERIA_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCorrelatedCriteria.json"));
 
+    private static final CohortExpression NO_EXIT_CRITERIA_CHECK =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheck.json"));
+
+    private static final CohortExpression NO_EXIT_CRITERIA_CHECK_EARLIEST_EVENT =
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheckEarliestEvent.json"));
+
     private static final int RANGE_PRIMARY_WARNING_COUNT = 140;
     private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
     private static final int TEXT_PRIMARY_WARNING_COUNT = 5;
@@ -70,6 +76,7 @@ public class CriteriaCheckValueTest {
     private BaseCheck conceptCheck = new ConceptCheck();
     private BaseCheck attributeCheck = new AttributeCheck();
     private BaseCheck textCheck = new TextCheck();
+    private BaseCheck noExitCriteriaCheck = new NoExitCriteriaCheck();
 
     @Test
     public void checkPrimaryRangeIncorrect() {
@@ -249,5 +256,17 @@ public class CriteriaCheckValueTest {
     public void checkEmptyCorrelatedCriteria() {
         List<Warning> warnings = rangeCheck.check(EMPTY_CORRELATED_CRITERIA_EXPRESSION);
         assertEquals(Collections.emptyList(), warnings);
+    }
+
+    @Test
+    public void checkNoExitCriteria() {
+        List<Warning> warnings = noExitCriteriaCheck.check(NO_EXIT_CRITERIA_CHECK);
+        assertEquals(0, warnings.size());
+    }
+
+    @Test
+    public void checkNoExitCriteriaEarliestEvent() {
+        List<Warning> warnings = noExitCriteriaCheck.check(NO_EXIT_CRITERIA_CHECK_EARLIEST_EVENT);
+        assertEquals(1, warnings.size());
     }
 }
