@@ -21,11 +21,19 @@ package org.ohdsi.circe.check.checkers;
 import static org.ohdsi.circe.check.operations.Operations.match;
 
 import java.util.Objects;
+
+import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
 public class NoExitCriteriaCheck extends BaseCheck {
 
     private static final String NO_EXIT_CRITERIA_WARNING = " \"all events\" are selected and cohort exit criteria has not been specified";
+
+    @Override
+    protected WarningSeverity defineSeverity() {
+
+        return WarningSeverity.WARNING;
+    }
 
     @Override
     protected void check(CohortExpression expression, WarningReporter reporter) {
