@@ -67,8 +67,9 @@ public abstract class BuilderUtils {
 
     public static String dateStringToSql(String date) {
 
-        String[] dateParts = StringUtils.split(date, '-');
-        return String.format("DATEFROMPARTS(%s, %s, %s)", Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
+        //String[] dateParts = StringUtils.split(date, '-');
+        //return String.format("date(%s, %s, %s)", Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
+        return String.format("date('%s')", date);
     }
 
     public static String buildDateRangeClause(String sqlExpression, DateRange range) {

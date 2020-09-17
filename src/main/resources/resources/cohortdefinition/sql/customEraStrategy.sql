@@ -1,65 +1,63 @@
 -- custom era strategy
 
-with ctePersons(person_id) as (
+ctePersons as (
 	select distinct person_id from @eventTable
-)
+),
 
-select person_id, drug_exposure_start_date, drug_exposure_end_date
-INTO #drugTarget
-FROM (
-	select de.PERSON_ID, DRUG_EXPOSURE_START_DATE, @drugExposureEndDateExpression as DRUG_EXPOSURE_END_DATE 
-	FROM @cdm_database_schema.DRUG_EXPOSURE de
-	JOIN ctePersons p on de.person_id = p.person_id
-	JOIN #Codesets cs on cs.codeset_id = @drugCodesetId AND de.drug_concept_id = cs.concept_id
+drug_target as (
+	select person_id, drug_exposure_start_date, drug_exposure_end_date
+	FROM (
+		select de.person_id, drug_exposure_start_date, @drugExposureEndDateExpression as drug_exposure_end_date 
+		FROM global_temp.drug_exposure de
+		JOIN ctePersons p on de.person_id = p.person_id
+		JOIN global_temp.codesets cs on cs.codeset_id = @drugCodesetId AND de.drug_concept_id = cs.concept_id
 
-	UNION ALL
+		UNION ALL
 
-	select de.PERSON_ID, DRUG_EXPOSURE_START_DATE, @drugExposureEndDateExpression as DRUG_EXPOSURE_END_DATE 
-	FROM @cdm_database_schema.DRUG_EXPOSURE de
-	JOIN ctePersons p on de.person_id = p.person_id
-	JOIN #Codesets cs on cs.codeset_id = @drugCodesetId AND de.drug_source_concept_id = cs.concept_id
-) E
-;
+		select de.person_id, drug_exposure_start_date, @drugExposureEndDateExpression as drug_exposure_end_date 
+		FROM global_temp.drug_exposure de
+		JOIN ctePersons p on de.person_id = p.person_id
+		JOIN global_temp.codesets cs on cs.codeset_id = @drugCodesetId AND de.drug_source_concept_id = cs.concept_id
+	) E
+),
 
-select et.event_id, et.person_id, ERAS.era_end_date as end_date
-INTO #strategy_ends
-from @eventTable et
-JOIN 
-(
-  select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, DATEADD(day,@offset, ENDS.era_end_date) as era_end_date
-  from
-  (
-    select de.person_id, de.drug_exposure_start_date, MIN(e.END_DATE) as era_end_date
-    FROM #drugTarget DE
-    JOIN 
-    (
-      --cteEndDates
-      select PERSON_ID, DATEADD(day,-1 * @gapDays,EVENT_DATE) as END_DATE -- unpad the end date by @gapDays
-      FROM
-      (
-				select PERSON_ID, EVENT_DATE, EVENT_TYPE, 
-				MAX(START_ORDINAL) OVER (PARTITION BY PERSON_ID ORDER BY event_date, event_type ROWS UNBOUNDED PRECEDING) AS start_ordinal,
-				ROW_NUMBER() OVER (PARTITION BY PERSON_ID ORDER BY EVENT_DATE, EVENT_TYPE) AS OVERALL_ORD -- this re-numbers the inner UNION so all rows are numbered ordered by the event date
-				from
-				(
-					-- select the start dates, assigning a row number to each
-					Select PERSON_ID, DRUG_EXPOSURE_START_DATE AS EVENT_DATE, 0 as EVENT_TYPE, ROW_NUMBER() OVER (PARTITION BY PERSON_ID ORDER BY DRUG_EXPOSURE_START_DATE) as START_ORDINAL
-					from #drugTarget D
+strategy_ends as (
+	select et.event_id, et.person_id, ERAS.era_end_date as end_date
+	from @eventTable et
+	JOIN 
+	(
+	select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, date_add(ENDS.era_end_date, @offset) as era_end_date
+	from
+	(
+		select DE.person_id, DE.drug_exposure_start_date, MIN(E.end_date) as era_end_date
+		FROM drug_target DE
+		JOIN 
+		(
+		--cteEndDates
+		select person_id, date_add(event_date, -1 * @gapDays) as end_date -- unpad the end date by @gapDays
+		FROM
+		(
+					select person_id, event_date, event_type, 
+					MAX(start_ordinal) OVER (PARTITION BY person_id ORDER BY event_date, event_type ROWS UNBOUNDED PRECEDING) AS start_ordinal,
+					ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY event_date, event_type) AS overall_ord -- this re-numbers the inner UNION so all rows are numbered ordered by the event date
+					from
+					(
+						-- select the start dates, assigning a row number to each
+						Select person_id, drug_exposure_start_date AS event_date, 0 as event_type, ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY drug_exposure_start_date) as start_ordinal
+						from drug_target D
 
-					UNION ALL
+						UNION ALL
 
-					-- add the end dates with NULL as the row number, padding the end dates by @gapDays to allow a grace period for overlapping ranges.
-					select PERSON_ID, DATEADD(day,@gapDays,DRUG_EXPOSURE_END_DATE), 1 as EVENT_TYPE, NULL
-					FROM #drugTarget D
-				) RAWDATA
-      ) E
-      WHERE 2 * E.START_ORDINAL - E.OVERALL_ORD = 0
-    ) E on DE.PERSON_ID = E.PERSON_ID and E.END_DATE >= DE.DRUG_EXPOSURE_START_DATE
-    GROUP BY de.person_id, de.drug_exposure_start_date
-  ) ENDS
-  GROUP BY ENDS.person_id, ENDS.era_end_date
-) ERAS on ERAS.person_id = et.person_id 
-WHERE et.start_date between ERAS.era_start_date and ERAS.era_end_date;
-
-TRUNCATE TABLE #drugTarget;
-DROP TABLE #drugTarget;
+						-- add the end dates with NULL as the row number, padding the end dates by @gapDays to allow a grace period for overlapping ranges.
+						select person_id, date_add(drug_exposure_end_date, @gapDays), 1 as event_type, NULL
+						FROM drug_target D
+					) RAWDATA
+		) E
+		WHERE 2 * E.start_ordinal - E.overall_ord = 0
+		) E on DE.person_id = E.person_id and E.end_date >= DE.drug_exposure_start_date
+		GROUP BY DE.person_id, DE.drug_exposure_start_date
+	) ENDS
+	GROUP BY ENDS.person_id, ENDS.era_end_date
+	) ERAS on ERAS.person_id = et.person_id 
+	WHERE et.start_date between ERAS.era_start_date and ERAS.era_end_date
+),

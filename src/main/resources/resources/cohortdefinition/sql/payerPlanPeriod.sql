@@ -6,7 +6,7 @@ select C.person_id, C.payer_plan_period_id as event_id, @startDateExpression as 
 from
 (
   select ppp.*, row_number() over (PARTITION BY ppp.person_id ORDER BY ppp.payer_plan_period_start_date) as ordinal
-  FROM @cdm_database_schema.PAYER_PLAN_PERIOD ppp
+  FROM global_temp.payer_plan_period ppp
 ) C
 @joinClause
 @whereClause

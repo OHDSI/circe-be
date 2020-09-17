@@ -1,7 +1,7 @@
 -- Begin Demographic Criteria
-SELECT @indexId as index_id, e.person_id, e.event_id
+SELECT @indexId as index_id, E.person_id, E.event_id
 FROM @eventTable E
-JOIN @cdm_database_schema.PERSON P ON P.PERSON_ID = E.PERSON_ID
+JOIN global_temp.person P ON P.person_id = E.person_id
 @whereClause
-GROUP BY e.person_id, e.event_id
+GROUP BY E.person_id, E.event_id
 -- End Demographic Criteria

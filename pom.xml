@@ -14,6 +14,23 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.5</version>
@@ -138,7 +155,7 @@
       <groupId>org.ohdsi.sql</groupId>
       <artifactId>SqlRender</artifactId>
       <version>1.6.3</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>    
     <dependency>
         <groupId>com.opentable.components</groupId>
