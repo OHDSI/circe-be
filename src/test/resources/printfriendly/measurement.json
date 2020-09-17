@@ -1,0 +1,268 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "Measurement": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "Measurement": {
+                    "CodesetId": 1,
+                    "First": true
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 0,
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
+                  "Measurement": {
+                    "CodesetId": 2
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Days": 0,
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0,
+          "First": true,
+          "OccurrenceStartDate": {
+            "Value": "2016-01-01",
+            "Op": "gte"
+          },
+          "MeasurementType": [
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814638,
+              "CONCEPT_NAME": "Admission note",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            },
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814643,
+              "CONCEPT_NAME": "Ancillary report",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            }
+          ],
+          "Operator": [
+            {
+              "CONCEPT_CODE": "276136004",
+              "CONCEPT_ID": 4172703,
+              "CONCEPT_NAME": "=",
+              "DOMAIN_ID": "Meas Value Operator",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            },
+            {
+              "CONCEPT_CODE": "276137008",
+              "CONCEPT_ID": 4171754,
+              "CONCEPT_NAME": "<=",
+              "DOMAIN_ID": "Meas Value Operator",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ],
+          "ValueAsNumber": {
+            "Value": 5,
+            "Extent": 10,
+            "Op": "bt"
+          },
+          "ValueAsConcept": [
+            {
+              "CONCEPT_CODE": "20572008",
+              "CONCEPT_ID": 4047870,
+              "CONCEPT_NAME": "Good",
+              "DOMAIN_ID": "Meas Value",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            },
+            {
+              "CONCEPT_CODE": "220201000000108",
+              "CONCEPT_ID": 44789871,
+              "CONCEPT_NAME": "Significant change",
+              "DOMAIN_ID": "Meas Value",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ],
+          "Unit": [
+            {
+              "CONCEPT_CODE": "/10*9",
+              "CONCEPT_ID": 9242,
+              "CONCEPT_NAME": "per billion",
+              "DOMAIN_ID": "Unit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "UCUM"
+            }
+          ],
+          "RangeLow": {
+            "Value": 10,
+            "Op": "gt"
+          },
+          "RangeHigh": {
+            "Value": 20,
+            "Op": "gt"
+          },
+          "MeasurementSourceConcept": 1,
+          "RangeLowRatio": {
+            "Value": 1.2,
+            "Op": "gt"
+          },
+          "RangeHighRatio": {
+            "Value": 0.9,
+            "Op": "gt"
+          },
+          "Abnormal": true,
+          "Age": {
+            "Value": 18,
+            "Op": "gt"
+          },
+          "Gender": [
+            {
+              "CONCEPT_CODE": "F",
+              "CONCEPT_ID": 8532,
+              "CONCEPT_NAME": "FEMALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            },
+            {
+              "CONCEPT_CODE": "M",
+              "CONCEPT_ID": 8507,
+              "CONCEPT_NAME": "MALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            }
+          ],
+          "ProviderSpecialty": [
+            {
+              "CONCEPT_CODE": "10",
+              "CONCEPT_ID": 38004455,
+              "CONCEPT_NAME": "Gastroenterology",
+              "DOMAIN_ID": "Provider Specialty",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Specialty"
+            },
+            {
+              "CONCEPT_CODE": "101",
+              "CONCEPT_ID": 44777747,
+              "CONCEPT_NAME": "Urology",
+              "DOMAIN_ID": "Provider Specialty",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "HES Specialty"
+            }
+          ],
+          "VisitType": [
+            {
+              "CONCEPT_CODE": "ER",
+              "CONCEPT_ID": 9203,
+              "CONCEPT_NAME": "Emergency Room Visit",
+              "DOMAIN_ID": "Visit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Visit"
+            },
+            {
+              "CONCEPT_CODE": "IP",
+              "CONCEPT_ID": 9201,
+              "CONCEPT_NAME": "Inpatient Visit",
+              "DOMAIN_ID": "Visit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Visit"
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}

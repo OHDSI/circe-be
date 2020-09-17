@@ -17,9 +17,9 @@ END Note!!!!
 <#elseif c.class.simpleName == "ConditionOccurrence"><@ConditionOccurrence c=c level=level isPlural=isPlural />
 <#elseif c.class.simpleName == "Death"><@Death c=c level=level isPlural=isPlural />
 <#elseif c.class.simpleName == "DeviceExposure"><@DeviceExposure c=c level=level isPlural=isPlural />
-<#elseif c.class.simpleName == "DoseEra"><@DeviceExposure c=c level=level isPlural=isPlural />
-<#elseif c.class.simpleName == "DrugEra"><@DeviceExposure c=c level=level isPlural=isPlural />
-<#elseif c.class.simpleName == "DrugExposure"><@DeviceExposure c=c level=level isPlural=isPlural />
+<#elseif c.class.simpleName == "DoseEra"><@DoseEra c=c level=level isPlural=isPlural />
+<#elseif c.class.simpleName == "DrugEra"><@DrugEra c=c level=level isPlural=isPlural />
+<#elseif c.class.simpleName == "DrugExposure"><@DrugExposure c=c level=level isPlural=isPlural />
 <#elseif c.class.simpleName == "LocationRegion"><@LocationRegion c=c level=level isPlural=isPlural />
 <#elseif c.class.simpleName == "Measurement"><@Measurement c=c level=level isPlural=isPlural />
 <#elseif c.class.simpleName == "Observation"><@Observation c=c level=level isPlural=isPlural />
@@ -32,7 +32,7 @@ END Note!!!!
 <#macro ConditionEra c level isPlural=true><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
-c.eraLength??><#local temp>era length is <@inputTypes.NumericRange range=c.eraLength /></#local><#local attrs+=[temp]></#if><#if 
+c.eraLength??><#local temp>era length is <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if 
 c.occurrenceCount??><#local temp>containing <@inputTypes.NumericRange range=c.occurrenceCount /> occurrences</#local><#local attrs+=[temp]></#if>
 condition era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any condition")}"<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
@@ -75,7 +75,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if c.unit??>
 <#local temp>unit is: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if c.eraLength??>
-<#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /></#local><#local attrs+=[temp]></#if><#if c.doseValue??>
+<#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.doseValue??>
 <#local temp>with dose value <@inputTypes.NumericRange range=c.doseValue /></#local><#local attrs+=[temp]></#if>
 dose era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any drug")}"<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
@@ -84,7 +84,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro DrugEra c level isPlural=true><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if c.eraLength??>
-<#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /></#local><#local attrs+=[temp]></#if><#if c.occurrenceCount??>
+<#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.occurrenceCount??>
 <#local temp>with occurrence count <@inputTypes.NumericRange range=c.occurrenceCount /></#local><#local attrs+=[temp]></#if><#if c.gapDays??>
 <#local temp>with gap days <@inputTypes.NumericRange range=c.gapDays /></#local><#local attrs+=[temp]></#if>
 drug era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any drug")}"<#if 
@@ -97,11 +97,11 @@ temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if 
 c.drugType??><#local temp>a drug type that<#if c.drugTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.drugType/></#local><#local attrs+=[temp]></#if><#if c.refills??>
 <#local temp>with refills <@inputTypes.NumericRange range=c.refills /></#local><#local attrs+=[temp]></#if><#if c.quantity??>
 <#local temp>with quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if c.daysSupply??>
-<#local temp>with days supply <@inputTypes.NumericRange range=c.daysSupply /></#local><#local attrs+=[temp]></#if><#if c.effectiveDrugDose??>
+<#local temp>with days supply <@inputTypes.NumericRange range=c.daysSupply /> days</#local><#local attrs+=[temp]></#if><#if c.effectiveDrugDose??>
 <#local temp>with effective drug dose <@inputTypes.NumericRange range=c.effectiveDrugDose /></#local><#local attrs+=[temp]></#if><#if c.doseUnit??>
 <#local temp>dose unit: <@inputTypes.ConceptList list=c.doseUnit/></#local><#local attrs+=[temp]></#if><#if c.routeConcept??>
 <#local temp>with route: <@inputTypes.ConceptList list=c.routeConcept/></#local><#local attrs+=[temp]></#if><#if c.lotNumber??> 
-<#local temp>with lot: <@inputTypes.TextFilter filter=c.lotNumber /></#local><#local attrs+=[temp]></#if><#if c.stopReason??> 
+<#local temp>lot number <@inputTypes.TextFilter filter=c.lotNumber /></#local><#local attrs+=[temp]></#if><#if c.stopReason??> 
 <#local temp>with a stop reason <@inputTypes.TextFilter filter=c.stopReason /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
 <#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
 <#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
@@ -120,13 +120,13 @@ temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if 
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.measurementType??><#local temp>a measurement type that<#if c.measurementTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.measurementType/></#local><#local attrs+=[temp]></#if><#if 
 c.operator??><#local temp>with operator: <@inputTypes.ConceptList list=c.operator/></#local><#local attrs+=[temp]></#if><#if 
-c.valueAsNumber??><#local temp>numeric value <@inputTypes.NumericRange range=valueAsNumber /></#local><#local attrs+=[temp]></#if><#if 
+c.valueAsNumber??><#local temp>numeric value <@inputTypes.NumericRange range=c.valueAsNumber /></#local><#local attrs+=[temp]></#if><#if 
 c.unit??><#local temp>unit: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if 
 c.valueAsConcept??><#local temp>with value as concept: <@inputTypes.ConceptList list=c.valueAsConcept/></#local><#local attrs+=[temp]></#if><#if 
-c.rangeLow??><#local temp>low range <@inputTypes.NumericRange range=rangeLow /></#local><#local attrs+=[temp]></#if><#if 
-c.rangeHigh??><#local temp>high range <@inputTypes.NumericRange range=rangeHigh /></#local><#local attrs+=[temp]></#if><#if 
-c.rangeLowRatio??><#local temp>low range-to-value ratio <@inputTypes.NumericRange range=rangeLowRatio /></#local><#local attrs+=[temp]></#if><#if 
-c.rangeHighRatio??><#local temp>high range-to-value ratio <@inputTypes.NumericRange range=rangeHighRatio /></#local><#local attrs+=[temp]></#if><#if 
+c.rangeLow??><#local temp>low range <@inputTypes.NumericRange range=c.rangeLow /></#local><#local attrs+=[temp]></#if><#if 
+c.rangeHigh??><#local temp>high range <@inputTypes.NumericRange range=c.rangeHigh /></#local><#local attrs+=[temp]></#if><#if 
+c.rangeLowRatio??><#local temp>low range-to-value ratio <@inputTypes.NumericRange range=c.rangeLowRatio /></#local><#local attrs+=[temp]></#if><#if 
+c.rangeHighRatio??><#local temp>high range-to-value ratio <@inputTypes.NumericRange range=c.rangeHighRatio /></#local><#local attrs+=[temp]></#if><#if 
 c.abnormal!false><#local temp>with an abormal result (measurement value falls outside the low and high range)</#local><#local attrs+=[temp]></#if><#if 
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>

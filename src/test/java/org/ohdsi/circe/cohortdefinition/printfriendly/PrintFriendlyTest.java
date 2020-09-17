@@ -70,7 +70,7 @@ public class PrintFriendlyTest {
             // age at start and age at end
             "starting before January 1, 2010 and ending before December 31, 2014;",
             // era length
-            "era length is &gt; 15",
+            "era length is &gt; 15 days",
             // occurrence count
             "containing between 1 and 5 occurrences",
             // nested criteria
@@ -163,5 +163,159 @@ public class PrintFriendlyTest {
             "having at least 1 device exposure of \"Concept Set 3\" for the first time in the person's history",
             "starting between 30 days before and 30 days after \"cohort entry\" start date"
     ));
-  }  
+  }
+
+  @Test
+  public void doseEraTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/doseEra.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. dose era of \"Concept Set 1\" for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old at era start and &lt; 30 years old at era end;",
+            // age at start and age at end
+            "starting before January 1, 2010 and ending after January 1, 2011;",
+            // unit
+            "unit is: \"per gram\" or \"per deciliter\";",
+            // era length
+            "with era length &gt; 10 days;",
+            // dose value
+            "with dose value between 15 and 45;",
+            // nested criteria
+            "with any of the following criteria:",
+            "1. having at least 1 dose era of \"Concept Set 2\" for the first time in the person's history",
+            "starting between 30 days before and 0 days after \"Concept Set 1\" start date",
+            "2. having at least 1 dose era of \"Concept Set 3\"",
+            "starting in the 30 days prior to \"Concept Set 1\" start date",
+            // inital event restriction
+            "Restrict entry events to with all of the following criteria:",
+            "1. having at least 1 dose era of \"Concept Set 2\" for the first time in the person's history",
+            "starting between 60 days before and 0 days after \"cohort entry\" start date",
+            "2. having at least 1 dose era of \"Concept Set 3\"",
+            "starting in the 60 days prior to \"cohort entry\" start date",
+            // inclusion rules
+            "#### 1. Inclusion Rule 1",
+            "with all of the following criteria:",
+            "1. having at least 1 dose era of \"Concept Set 3\" for the first time in the person's history",
+            "starting anytime on or before \"cohort entry\" start date",
+            "2. having no dose eras of \"Concept Set 2\", who are &gt; 18 years old",
+            "starting anytime prior to \"cohort entry\" start date"
+    ));
+  }
+
+  @Test
+  public void drugEraTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugEra.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. drug era of \"Concept Set 1\" for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old at era start and &lt; 30 years old at era end;",
+            // start date/end date
+            "starting before February 1, 2014 and ending after April 1, 2014;",
+            // era length
+            "with era length &gt; 90 days;",
+            // occurrence count 
+            "with occurrence count between 4 and 6;",
+            // nested criteria
+            "with all of the following criteria:",
+            "1. having at least 1 drug era of \"Concept Set 2\" for the first time in the person's history",
+            "starting anytime prior to \"Concept Set 1\" start date",
+            "2. having at least 1 drug era of \"Concept Set 3\", starting on or after January 1, 2010",
+            // inclusion rules
+            "#### 1. Inclusion Rule 1",
+            "with all of the following criteria:",
+            "having at least 1 drug era of \"Concept Set 3\" for the first time in the person's history",
+            "starting between 0 days before and all days after \"cohort entry\" start date"
+    ));
+  }
+
+  @Test
+  public void drugExposureTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugExposure.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. drug exposure of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old;",
+            // start date/end date
+            "starting after January 1, 2010 and ending before January 1, 2016;",
+            // drug type
+            "a drug type that is: \"admission note\" or \"ancillary report\";",
+            // refills 
+            "with refills = 2;",
+            // quantity 
+            "with quantity &gt;= 15;",
+            // days supply 
+            "with days supply &lt; 30 days;",
+            // effective drug dose 
+            "with effective drug dose &lt; 15;",
+            // dose unit 
+            "dose unit: \"per 24 hours\";",
+            // route 
+            "with route: \"nasal\" or \"oral\";",
+            // lot number
+            "lot number containing \"12345\";",
+            // stop reason
+            "with a stop reason starting with \"some reason\";",
+            // provider specialty
+            "a provider specialty that is: \"general practice\" or \"urology\";",
+            // visit
+            "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
+            // nested criteria
+            "with all of the following criteria:",
+            "1. having at least 1 drug exposure of \"Concept Set 2\"",
+            "starting anytime prior to \"Concept Set 1\" start date",
+            "2. having at least 1 drug exposure of \"Concept Set 3\"",
+            "starting between 14 days before and 0 days before \"Concept Set 1\" start date"
+    ));
+  }
+
+    @Test
+  public void measurementTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/measurement.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. measurement of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old;",
+            // start date/end date
+            "starting on or after January 1, 2016;",
+            // measurement type
+            "a measurement type that is: \"admission note\" or \"ancillary report\";",
+            // operator 
+            "with operator: \"=\" or \"<=\";",
+            // value as number 
+            "numeric value between 5 and 10;",
+            // unit 
+            "unit: \"per billion\";",
+            // value as concept 
+            "with value as concept: \"good\" or \"significant change\";",
+            // low range 
+            "low range &gt; 10;",
+            // high range 
+            "high range &gt; 20;",
+            // low ratio
+            "low range-to-value ratio &gt; 1.2",
+            // high ratio
+            "high range-to-value ratio &gt; 0.9;",
+            // abnormal result
+            "with an abormal result (measurement value falls outside the low and high range)",
+            // provider specialty
+            "a provider specialty that is: \"gastroenterology\" or \"urology\";",
+            // visit
+            "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
+            // nested criteria
+            "with all of the following criteria:",
+            "having at least 1 measurement of \"Concept Set 2\" for the first time in the person's history",
+            "starting anytime on or before \"Concept Set 1\" start date",
+            "2. having at least 1 measurement of \"Concept Set 3\" ",
+            "starting between 0 days before and all days after \"Concept Set 1\" start date"
+    ));
+  }
+
 }

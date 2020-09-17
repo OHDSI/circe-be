@@ -1,0 +1,187 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "DrugEra": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "DrugEra": {
+                    "CodesetId": 1,
+                    "First": true
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 1,
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
+                  "DrugEra": {
+                    "CodesetId": 2,
+                    "EraStartDate": {
+                      "Value": "2010-01-01",
+                      "Op": "gte"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0,
+          "EraStartDate": {
+            "Value": "2014-02-01",
+            "Op": "lt"
+          },
+          "EraEndDate": {
+            "Value": "2014-04-01",
+            "Op": "gt"
+          },
+          "OccurrenceCount": {
+            "Value": 4,
+            "Extent": 6,
+            "Op": "bt"
+          },
+          "EraLength": {
+            "Value": 90,
+            "Op": "gt"
+          },
+          "First": true,
+          "AgeAtStart": {
+            "Value": 18,
+            "Op": "gte"
+          },
+          "AgeAtEnd": {
+            "Value": 64,
+            "Op": "lte"
+          },
+          "Gender": [
+            {
+              "CONCEPT_CODE": "F",
+              "CONCEPT_ID": 8532,
+              "CONCEPT_NAME": "FEMALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            },
+            {
+              "CONCEPT_CODE": "M",
+              "CONCEPT_ID": 8507,
+              "CONCEPT_NAME": "MALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [
+    {
+      "name": "Inclusion Rule 1",
+      "expression": {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "DrugEra": {
+                "CodesetId": 2,
+                "First": true
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Days": 0,
+                "Coeff": -1
+              },
+              "End": {
+                "Coeff": 1
+              },
+              "UseEventEnd": false
+            },
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1
+            }
+          }
+        ],
+        "DemographicCriteriaList": [],
+        "Groups": []
+      }
+    }
+  ],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}
