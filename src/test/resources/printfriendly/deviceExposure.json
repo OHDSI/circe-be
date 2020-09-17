@@ -1,0 +1,245 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "DeviceExposure": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "DeviceExposure": {
+                    "CodesetId": 1,
+                    "First": true,
+                    "Age": {
+                      "Value": 12,
+                      "Extent": 18,
+                      "Op": "bt"
+                    },
+                    "Gender": [
+                      {
+                        "CONCEPT_CODE": "F",
+                        "CONCEPT_ID": 8532,
+                        "CONCEPT_NAME": "FEMALE",
+                        "DOMAIN_ID": "Gender",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "Gender"
+                      },
+                      {
+                        "CONCEPT_CODE": "M",
+                        "CONCEPT_ID": 8507,
+                        "CONCEPT_NAME": "MALE",
+                        "DOMAIN_ID": "Gender",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "Gender"
+                      }
+                    ]
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 1,
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "lt"
+          },
+          "OccurrenceEndDate": {
+            "Value": "2010-12-31",
+            "Op": "gt"
+          },
+          "DeviceType": [
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814638,
+              "CONCEPT_NAME": "Admission note",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            },
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814643,
+              "CONCEPT_NAME": "Ancillary report",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            }
+          ],
+          "Quantity": {
+            "Value": 8,
+            "Op": "lt"
+          },
+          "DeviceSourceConcept": 1,
+          "ProviderSpecialty": [
+            {
+              "CONCEPT_CODE": "410",
+              "CONCEPT_ID": 44777791,
+              "CONCEPT_NAME": "Rheumatology",
+              "DOMAIN_ID": "Provider Specialty",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "HES Specialty"
+            },
+            {
+              "CONCEPT_CODE": "66",
+              "CONCEPT_ID": 38004491,
+              "CONCEPT_NAME": "Rheumatology",
+              "DOMAIN_ID": "Provider Specialty",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Specialty"
+            }
+          ],
+          "VisitType": [
+            {
+              "CONCEPT_CODE": "ER",
+              "CONCEPT_ID": 9203,
+              "CONCEPT_NAME": "Emergency Room Visit",
+              "DOMAIN_ID": "Visit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Visit"
+            },
+            {
+              "CONCEPT_CODE": "IP",
+              "CONCEPT_ID": 9201,
+              "CONCEPT_NAME": "Inpatient Visit",
+              "DOMAIN_ID": "Visit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Visit"
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [
+      {
+        "Criteria": {
+          "DeviceExposure": {
+            "CodesetId": 2,
+            "First": true
+          }
+        },
+        "StartWindow": {
+          "Start": {
+            "Coeff": -1
+          },
+          "End": {
+            "Days": 1,
+            "Coeff": -1
+          },
+          "UseEventEnd": false
+        },
+        "Occurrence": {
+          "Type": 2,
+          "Count": 1
+        }
+      }
+    ],
+    "DemographicCriteriaList": [],
+    "Groups": []
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [
+    {
+      "name": "Inclusion Rule 1",
+      "expression": {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "DeviceExposure": {
+                "CodesetId": 2,
+                "First": true
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Days": 30,
+                "Coeff": -1
+              },
+              "End": {
+                "Days": 30,
+                "Coeff": 1
+              },
+              "UseEventEnd": false
+            },
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1
+            }
+          }
+        ],
+        "DemographicCriteriaList": [],
+        "Groups": []
+      }
+    }
+  ],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}

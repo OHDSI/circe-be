@@ -1,0 +1,182 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "Specimen": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "Specimen": {
+                    "CodesetId": 1
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 1,
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "lt"
+          },
+          "SpecimenType": [
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814638,
+              "CONCEPT_NAME": "Admission note",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            },
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 44814643,
+              "CONCEPT_NAME": "Ancillary report",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Note Type"
+            }
+          ],
+          "Quantity": {
+            "Value": 10,
+            "Op": "lt"
+          },
+          "Unit": [
+            {
+              "CONCEPT_CODE": "/(24.h)",
+              "CONCEPT_ID": 44777556,
+              "CONCEPT_NAME": "per 24 hours",
+              "DOMAIN_ID": "Unit",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "UCUM"
+            }
+          ],
+          "AnatomicSite": [
+            {
+              "CONCEPT_CODE": "10013000",
+              "CONCEPT_ID": 4000804,
+              "CONCEPT_NAME": "Lateral meniscus structure",
+              "DOMAIN_ID": "Spec Anatomic Site",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            },
+            {
+              "CONCEPT_CODE": "10024003",
+              "CONCEPT_ID": 4001771,
+              "CONCEPT_NAME": "Structure of base of lung",
+              "DOMAIN_ID": "Spec Anatomic Site",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ],
+          "DiseaseStatus": [
+            {
+              "CONCEPT_CODE": "263654008",
+              "CONCEPT_ID": 4135493,
+              "CONCEPT_NAME": "Abnormal",
+              "DOMAIN_ID": "Spec Disease Status",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ],
+          "SourceId": {
+            "Text": "source Id Prefix",
+            "Op": "startsWith"
+          },
+          "First": true,
+          "Age": {
+            "Value": 18,
+            "Op": "gt"
+          },
+          "Gender": [
+            {
+              "CONCEPT_CODE": "F",
+              "CONCEPT_ID": 8532,
+              "CONCEPT_NAME": "FEMALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            },
+            {
+              "CONCEPT_CODE": "M",
+              "CONCEPT_ID": 8507,
+              "CONCEPT_NAME": "MALE",
+              "DOMAIN_ID": "Gender",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Gender"
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}

@@ -11,10 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static java.lang.String.format;
-import org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder;
-import org.ohdsi.circe.cohortdefinition.ConceptSet;
-import org.ohdsi.circe.cohortdefinition.ObservationFilter;
-import org.ohdsi.circe.cohortdefinition.PrimaryCriteria;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 public class CohortOptionsTest extends BaseTest {
