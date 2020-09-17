@@ -212,7 +212,7 @@ public class PrintFriendlyTest {
             // concept set name and first in history attribute
             "1. drug era of \"Concept Set 1\" for the first time in the person's history,",
             // age/gender criteria
-            "who are female or male, &gt; 18 years old at era start and &lt; 30 years old at era end;",
+            "who are female or male, &gt;= 18 years old at era start and &lt;= 64 years old at era end;",
             // start date/end date
             "starting before February 1, 2014 and ending after April 1, 2014;",
             // era length
@@ -226,7 +226,6 @@ public class PrintFriendlyTest {
             "2. having at least 1 drug era of \"Concept Set 3\", starting on or after January 1, 2010",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "with all of the following criteria:",
             "having at least 1 drug era of \"Concept Set 3\" for the first time in the person's history",
             "starting between 0 days before and all days after \"cohort entry\" start date"
     ));
@@ -274,7 +273,7 @@ public class PrintFriendlyTest {
     ));
   }
 
-    @Test
+  @Test
   public void measurementTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/measurement.json"));
     String markdown = pf.generate(expression);
@@ -315,6 +314,143 @@ public class PrintFriendlyTest {
             "starting anytime on or before \"Concept Set 1\" start date",
             "2. having at least 1 measurement of \"Concept Set 3\" ",
             "starting between 0 days before and all days after \"Concept Set 1\" start date"
+    ));
+  }
+
+  @Test
+  public void observationTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observation.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. observation of \"Concept Set 1\" for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old;",
+            // start date/end date
+            "starting on or after October 1, 2015;",
+            // observation type
+            "an observation type that is: \"condition procedure\" or \"discharge summary\";",
+            // value as number 
+            "numeric value &lt; 30;",
+            // unit 
+            "unit: \"per hundred\";",
+            // value as concept 
+            "with value as concept: \"positive\" or \"good\";",
+            // value as string 
+            "with value as string ending with \"obs value suffix\";",
+            // qualifier 
+            "with qualifier: \"total charge\";",
+            // provider specialty
+            "a provider specialty that is: \"health profession\" or \"psychologist\";",
+            // visit
+            "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
+            // nested criteria
+            "having no observation of \"Concept Set 2\" for the first time in the person's history",
+            "starting anytime prior to \"Concept Set 1\" start date"
+    ));
+  }
+
+  @Test
+  public void observationPeriodTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observationPeriod_1.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. observation period (first obsrvation period in person's history),",
+            // age/gender criteria
+            "who are &gt; 18 years old at era start and &lt; 32 years old at era end;",
+            // start date/end date
+            "starting before January 1, 2014 and ending after December 31, 2014;",
+            // user-defined start/end
+            "a user defiend start date of January 1, 2014 and end date of December 31, 2014;",
+            // period type 
+            "period type is: \"observation recorded from ehr\" or \"problem list from ehr\";",
+            // era length 
+            "with a length &gt; 400 days;",
+            // nested criteria
+            "having exactly 1 observation period",
+            "starting  1 days after \"observation period\" end date"
+    ));
+  }
+
+  @Test
+  public void procedureOccurrenceTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/procedureOccurrence.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. procedure occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old;",
+            // start date/end date
+            "starting on or Before January 1, 2014;",
+            // procedure type 
+            "a procedure type that is: \"admission note\" or \"ancillary report\";",
+            // modifier 
+            "with modifier: \"lateral meniscus structure\" or \"structure of base of lung\";",
+            //quantity
+            "with quantity &lt; 10;",
+            // provider specialty
+            "a provider specialty that is: \"gastroenterology\" or \"urology\";",
+            // visit
+            "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
+            // nested criteria
+            "having at least 1 procedure occurrence of \"Concept Set 3\"",
+            "starting anytime prior to \"Concept Set 1\" start date"
+    ));
+  }
+
+  @Test
+  public void specimenTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/specimen.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. specimen of \"Concept Set 1\" for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, &gt; 18 years old;",
+            // start date/end date
+            "starting before January 1, 2010;",
+            // specimen type 
+            "a specimen type that is: \"admission note\" or \"ancillary report\";",
+            //quantity
+            "with quantity &lt; 10;",
+            // unit
+            "with unit: \"per 24 hours\";",
+            // anatomic site
+            "with anatomic site: \"lateral meniscus structure\" or \"structure of base of lung\"",
+            // disease status
+            "with disease status: \"abnormal\";",
+            // sourceID
+            "with source ID starting with \"source Id Prefix\";",
+            // nested criteria
+            "having at least 1 specimen of \"Concept Set 2\"",
+            "starting anytime prior to \"Concept Set 1\" start date"
+    ));
+  }
+
+  @Test
+  public void visitTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/visit.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. visit occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            // age/gender criteria
+            "who are female or male, between 18 and 64 years old;",
+            // start date/end date
+            "starting before January 1, 2010 and ending after January 7, 2010;",
+            // visit type 
+            "a visit type that is: \"admission note\" or \"ancillary report\";",
+            //provider specialty
+            "a provider specialty that is: \"general practice\" or \"general surgery\";",
+            // visit type
+            "a visit type that is: \"admission note\" or \"ancillary report\";",
+            // visit length
+            "with length &gt; 12 days",
+            // nested criteria
+            "having at least 1 visit occurrence of \"Concept Set 2\"",
+            "starting anytime on or before \"Concept Set 1\" start date"
     ));
   }
 

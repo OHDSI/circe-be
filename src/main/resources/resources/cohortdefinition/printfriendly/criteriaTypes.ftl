@@ -138,8 +138,8 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro Observation c level isPlural=true><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
-c.observationType??><#local temp>a measurement type that<#if c.observationTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.observationType/></#local><#local attrs+=[temp]></#if><#if 
-c.valueAsNumber??><#local temp>numeric value <@inputTypes.NumericRange range=valueAsNumber /></#local><#local attrs+=[temp]></#if><#if 
+c.observationType??><#local temp>an observation type that<#if c.observationTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.observationType/></#local><#local attrs+=[temp]></#if><#if 
+c.valueAsNumber??><#local temp>numeric value <@inputTypes.NumericRange range=c.valueAsNumber /></#local><#local attrs+=[temp]></#if><#if 
 c.unit??><#local temp>unit: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if 
 c.valueAsConcept??><#local temp>with value as concept: <@inputTypes.ConceptList list=c.valueAsConcept/></#local><#local attrs+=[temp]></#if><#if 
 c.valueAsString??><#local temp>with value as string <@inputTypes.TextFilter filter=c.valueAsString /></#local><#local attrs+=[temp]></#if><#if 
@@ -154,9 +154,9 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro ObservationPeriod c level isPlural=true><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.periodStartDate!{} c.periodEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
-c.userDefinedPeriod??><#local temp><@UserDefinedPeriod c.userDefinedPeriod /></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if><#if 
+c.userDefinedPeriod??><#local temp><@inputTypes.UserDefinedPeriod c.userDefinedPeriod /></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if><#if 
 c.periodType??><#local temp>period type is: <@inputTypes.ConceptList list=c.periodType/></#local><#local attrs+=[temp]></#if><#if 
-c.periodLength??><#local temp>with a length <@inputTypes.NumericRange range=periodLength /> days</#local><#local attrs+=[temp]></#if>
+c.periodLength??><#local temp>with a length <@inputTypes.NumericRange range=c.periodLength /> days</#local><#local attrs+=[temp]></#if>
 observation period<#if isPlural && !(c.first!false)>s</#if><#if 
 c.first!false> (first obsrvation period in person's history)</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel="observation period" /></#if></#macro>
@@ -166,7 +166,7 @@ temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if 
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.procedureType??><#local temp>a procedure type that<#if c.procedureTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.procedureType/></#local><#local attrs+=[temp]></#if><#if 
 c.modifier??><#local temp>with modifier: <@inputTypes.ConceptList list=c.modifier/></#local><#local attrs+=[temp]></#if><#if 
-c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=quantity /></#local><#local attrs+=[temp]></#if><#if 
+c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if 
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
 procedure occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any procedure")}"<#if 
@@ -178,10 +178,10 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.specimenType??><#local temp>a specimen type that<#if c.specimenTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.specimenType/></#local><#local attrs+=[temp]></#if><#if 
-c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=quantity /></#local><#local attrs+=[temp]></#if><#if 
+c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if 
 c.unit??><#local temp>with unit: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if 
-c.anatomicSite??><#local temp>with anatomicSite: <@inputTypes.ConceptList list=c.anatomicSite/></#local><#local attrs+=[temp]></#if><#if 
-c.diseaseStatus??><#local temp>with diseaseStatus: <@inputTypes.ConceptList list=c.diseaseStatus/></#local><#local attrs+=[temp]></#if><#if
+c.anatomicSite??><#local temp>with anatomic site: <@inputTypes.ConceptList list=c.anatomicSite/></#local><#local attrs+=[temp]></#if><#if 
+c.diseaseStatus??><#local temp>with disease status: <@inputTypes.ConceptList list=c.diseaseStatus/></#local><#local attrs+=[temp]></#if><#if
 c.sourceId??><#local temp>with source ID <@inputTypes.TextFilter filter=c.sourceId /></#local><#local attrs+=[temp]></#if>
 specimen<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any specimen")}"<#if 
 c.specimenSourceConcept??> (including "${utils.codesetName(c.specimenSourceConcept, "any specimen")}" source concepts)</#if><#if 
@@ -193,8 +193,8 @@ temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if 
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit type that<#if c.visitTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if
-c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if 
-c.visitLength??><#local temp>with length <@inputTypes.NumericRange range=visitLength /></#local><#local attrs+=[temp]></#if>
+c.visitType??><#local temp>a visit type that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if 
+c.visitLength??><#local temp>with length <@inputTypes.NumericRange range=c.visitLength /> days</#local><#local attrs+=[temp]></#if>
 visit occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any visit")}"<#if 
 c.visitSourceConcept??> (including "${utils.codesetName(c.visitSourceConcept, "any visit")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 

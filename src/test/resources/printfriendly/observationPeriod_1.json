@@ -1,0 +1,126 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ObservationPeriod": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "ObservationPeriod": {}
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Days": 1,
+                    "Coeff": 1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseIndexEnd": true,
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 0,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "First": true,
+          "PeriodStartDate": {
+            "Value": "2014-01-01",
+            "Op": "lt"
+          },
+          "PeriodEndDate": {
+            "Value": "2014-12-31",
+            "Op": "gt"
+          },
+          "PeriodType": [
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 38000280,
+              "CONCEPT_NAME": "Observation recorded from EHR",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Observation Type"
+            },
+            {
+              "CONCEPT_CODE": "OMOP generated",
+              "CONCEPT_ID": 38000276,
+              "CONCEPT_NAME": "Problem list from EHR",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "Observation Type"
+            }
+          ],
+          "UserDefinedPeriod": {
+            "StartDate": "2014-01-01",
+            "EndDate": "2014-12-31"
+          },
+          "AgeAtStart": {
+            "Value": 18,
+            "Op": "gt"
+          },
+          "AgeAtEnd": {
+            "Value": 32,
+            "Op": "lt"
+          },
+          "PeriodLength": {
+            "Value": 400,
+            "Op": "gt"
+          }
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}
