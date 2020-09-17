@@ -40,10 +40,10 @@ public class MarkdownRender
       throw new RuntimeException(e);
     }
   }
-	
+
   public String generate(String expressionJson) {
-		CohortExpression expression = CohortExpression.fromJson(expressionJson);
-		return this.generate(expression);
+    CohortExpression expression = CohortExpression.fromJson(expressionJson);
+    return this.generate(expression);
   }
-	
+
 }
