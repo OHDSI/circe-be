@@ -18,7 +18,7 @@ public class MarkdownRender
     try {
 
       cfg = new Configuration(Configuration.VERSION_2_3_30);
-      cfg.setClassForTemplateLoading(MarkdownRender.class, "/resources/cohortDefinition/printfriendly");
+      cfg.setClassForTemplateLoading(MarkdownRender.class, "/resources/cohortdefinition/printfriendly");
       cfg.setAPIBuiltinEnabled(true);
       cfg.setBooleanFormat("true, false");
       DefaultObjectWrapperBuilder builder = new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_27);
