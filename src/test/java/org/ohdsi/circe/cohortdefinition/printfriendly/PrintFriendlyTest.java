@@ -454,4 +454,25 @@ public class PrintFriendlyTest {
     ));
   }
 
+  @Test
+  public void dateOffsetTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateOffset.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "The cohort end date will be offset from index event's end date plus 7 days."
+    ));
+    
+  }
+
+  @Test
+  public void customEraExitTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExit.json"));
+    String markdown = pf.generate(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "The cohort end date will be based on a continuous exposure to \"Concept Set 1\":",
+            "allowing 14 days between exposures, adding 0 days after exposure ends, and forcing drug exposure days suply to: 7 days."
+    ));
+    
+  }
+
 }
