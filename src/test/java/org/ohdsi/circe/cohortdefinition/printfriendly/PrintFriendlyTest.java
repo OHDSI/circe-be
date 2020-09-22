@@ -2,12 +2,10 @@ package org.ohdsi.circe.cohortdefinition.printfriendly;
 
 import java.io.File;
 import java.io.FileWriter;
-import static java.lang.String.format;
 import java.util.regex.Pattern;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
@@ -29,7 +27,7 @@ public class PrintFriendlyTest {
   @Ignore
   public void processExpression() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/allAttributes.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     System.out.println("Markdown:");
     System.out.println("=====================================");
     System.out.println(markdown);
@@ -61,7 +59,7 @@ public class PrintFriendlyTest {
   @Test
   public void conditionEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conditionEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. condition era of \"Concept Set 1\" for the first time in the person's history,",
@@ -86,7 +84,7 @@ public class PrintFriendlyTest {
   @Test
   public void conditionOccurrenceTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conditionOccurrence.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. condition occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
@@ -117,7 +115,7 @@ public class PrintFriendlyTest {
   @Test
   public void deathTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/death.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. death of \"Concept Set 1\" (including \"Concept Set 2\" source concepts),",
@@ -137,7 +135,7 @@ public class PrintFriendlyTest {
   @Test
   public void deviceExposureTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/deviceExposure.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. device exposures of \"Concept Set 1\" (including \"Concept Set 2\" source concepts),",
@@ -168,7 +166,7 @@ public class PrintFriendlyTest {
   @Test
   public void doseEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/doseEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. dose era of \"Concept Set 1\" for the first time in the person's history,",
@@ -207,7 +205,7 @@ public class PrintFriendlyTest {
   @Test
   public void drugEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. drug era of \"Concept Set 1\" for the first time in the person's history,",
@@ -234,7 +232,7 @@ public class PrintFriendlyTest {
   @Test
   public void drugExposureTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugExposure.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. drug exposure of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
@@ -276,7 +274,7 @@ public class PrintFriendlyTest {
   @Test
   public void measurementTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/measurement.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. measurement of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
@@ -320,7 +318,7 @@ public class PrintFriendlyTest {
   @Test
   public void observationTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observation.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. observation of \"Concept Set 1\" for the first time in the person's history,",
@@ -353,7 +351,7 @@ public class PrintFriendlyTest {
   @Test
   public void observationPeriodTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observationPeriod_1.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. observation period (first obsrvation period in person's history),",
@@ -376,7 +374,7 @@ public class PrintFriendlyTest {
   @Test
   public void procedureOccurrenceTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/procedureOccurrence.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. procedure occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
@@ -403,7 +401,7 @@ public class PrintFriendlyTest {
   @Test
   public void specimenTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/specimen.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. specimen of \"Concept Set 1\" for the first time in the person's history,",
@@ -432,7 +430,7 @@ public class PrintFriendlyTest {
   @Test
   public void visitTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/visit.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. visit occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
@@ -457,7 +455,7 @@ public class PrintFriendlyTest {
   @Test
   public void dateOffsetTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateOffset.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "The cohort end date will be offset from index event's end date plus 7 days."
     ));
@@ -467,12 +465,39 @@ public class PrintFriendlyTest {
   @Test
   public void customEraExitTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExit.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "The cohort end date will be based on a continuous exposure to \"Concept Set 1\":",
             "allowing 14 days between exposures, adding 0 days after exposure ends, and forcing drug exposure days suply to: 7 days."
     ));
     
   }
+  
+  @Test
+  public void conceptSetSimpleTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conceptSet_simple.json"));
+    String markdown = pf.renderConceptSetList(expression.conceptSets);
+    assertThat(markdown, stringContainsInOrder(
+            "### Empty Concept Set",
+            "There are no concept set items in this concept set.",
+            "### Only Descendants",
+            "|Concept ID|Concept Name|Code|Vocabulary|Excluded|Desecndants|Mapped",
+            "|140168|Psoriasis|9014002|SNOMED|NO|YES|NO|",
+            "### Only Excluded",
+            "|140168|Psoriasis|9014002|SNOMED|YES|NO|NO|"
+    ));
+    
+  }  
+  
+  @Test
+  public void anyConditionTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/anyCondition.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of \"any condition\""
+    ));
+    
+  }  
+  
 
 }

@@ -28,7 +28,7 @@ The cohort end date will be offset from index event's ${utils.optionName(dateOff
 </#macro>
 
 <#macro CustomEraStrategy s>
-The cohort end date will be based on a continuous exposure to "${utils.codesetName(s.drugCodesetId, "_invalid drug specified_")}":
+The cohort end date will be based on a continuous exposure to "${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}":
 allowing ${s.gapDays} days between exposures, adding ${s.offset} days after exposure ends, and <#if 
 s.daysSupplyOverride??>forcing drug exposure days suply to: ${s.daysSupplyOverride} days.<#else>using days supply and exposure end date for exposure duration.</#if>
 </#macro>

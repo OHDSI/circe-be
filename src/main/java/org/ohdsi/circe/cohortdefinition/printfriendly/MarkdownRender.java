@@ -9,6 +9,10 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateModel;
+import java.util.HashMap;
+import java.util.Map;
+import org.ohdsi.circe.cohortdefinition.ConceptSet;
+import org.ohdsi.circe.vocabulary.ConceptSetExpression;
 
 public class MarkdownRender
 {
@@ -30,7 +34,7 @@ public class MarkdownRender
  
   }
 
-  public String generate(CohortExpression expression) {
+  public String renderCohort(CohortExpression expression) {
     try {
       TemplateModel dataModel = objectWrapper.wrap(expression);
       Writer out = new StringWriter();
@@ -41,9 +45,22 @@ public class MarkdownRender
     }
   }
 
-  public String generate(String expressionJson) {
+  public String renderCohort(String expressionJson) {
     CohortExpression expression = CohortExpression.fromJson(expressionJson);
-    return this.generate(expression);
+    return this.renderCohort(expression);
+  }
+  
+  public String renderConceptSetList(ConceptSet[] conceptSetList) {
+    try {
+      Map<String, Object> root = new HashMap<>();
+      root.put("conceptSets", conceptSetList);
+      TemplateModel dataModel = objectWrapper.wrap(root);
+      Writer out = new StringWriter();
+      cfg.getTemplate("conceptSet.ftl").process(dataModel, out);
+      return out.toString();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

@@ -34,7 +34,7 @@ temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gende
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.eraLength??><#local temp>era length is <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if 
 c.occurrenceCount??><#local temp>containing <@inputTypes.NumericRange range=c.occurrenceCount /> occurrences</#local><#local attrs+=[temp]></#if>
-condition era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any condition")}"<#if 
+condition era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any condition")}"<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any condition") /></#if></#macro>
 
@@ -45,7 +45,7 @@ c.conditionType??><#local temp>a condition type that<#if c.conditionTypeExclude!
 <#local temp>with a stop reason <@inputTypes.TextFilter filter=c.stopReason /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
 <#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
 <#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-condition occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any condition")}"<#if 
+condition occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any condition")}"<#if 
 c.conditionSourceConcept??> (including "${utils.codesetName(c.conditionSourceConcept, "any condition")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any condition") /></#if></#macro>
@@ -54,7 +54,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.conditionType??><#local temp>a death type that<#if c.deathTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.deathType/></#local><#local attrs+=[temp]></#if>
-death of "${utils.codesetName(c.codesetId, "any condition")}"<#if 
+death of "${utils.codesetName(c.codesetId!"", "any condition")}"<#if 
 c.deathSourceConcept??> (including "${utils.codesetName(c.deathSourceConcept, "any condition")}" source concepts)</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any death") /></#if></#macro>
 
@@ -66,7 +66,7 @@ c.deviceType??><#local temp>a device type that<#if c.deviceTypeExclude!false> is
 <#local temp>quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
 <#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
 <#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-device exposure<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any device")}"<#if 
+device exposure<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any device")}"<#if 
 c.deviceSourceConcept??> (including "${utils.codesetName(c.deviceSourceConcept, "any condition")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any device") /></#if></#macro>
@@ -77,7 +77,7 @@ temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gende
 <#local temp>unit is: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if c.eraLength??>
 <#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.doseValue??>
 <#local temp>with dose value <@inputTypes.NumericRange range=c.doseValue /></#local><#local attrs+=[temp]></#if>
-dose era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any drug")}"<#if 
+dose era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any drug")}"<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /></#if></#macro>
 
@@ -87,7 +87,7 @@ temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gende
 <#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.occurrenceCount??>
 <#local temp>with occurrence count <@inputTypes.NumericRange range=c.occurrenceCount /></#local><#local attrs+=[temp]></#if><#if c.gapDays??>
 <#local temp>with gap days <@inputTypes.NumericRange range=c.gapDays /></#local><#local attrs+=[temp]></#if>
-drug era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any drug")}"<#if 
+drug era<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any drug")}"<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /></#if></#macro>
 
@@ -105,14 +105,14 @@ c.drugType??><#local temp>a drug type that<#if c.drugTypeExclude!false> is not:<
 <#local temp>with a stop reason <@inputTypes.TextFilter filter=c.stopReason /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
 <#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
 <#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-drug exposure<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any drug")}"<#if 
+drug exposure<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any drug")}"<#if 
 c.drugSourceConcept??> (including "${utils.codesetName(c.drugSourceConcept, "any drug")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /></#if></#macro>
 
 <#macro LocationRegion c level isPlural=true><#local attrs = []><#local 
 temp><@EventDateCriteria c.startDate!{} c.endDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
-location of "${utils.codesetName(c.codesetId, "any location")}"<#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
+location of "${utils.codesetName(c.codesetId!"", "any location")}"<#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any location") /></#if></#macro>
 
 <#macro Measurement c level isPlural=true><#local attrs = []><#local 
@@ -130,7 +130,7 @@ c.rangeHighRatio??><#local temp>high range-to-value ratio <@inputTypes.NumericRa
 c.abnormal!false><#local temp>with an abormal result (measurement value falls outside the low and high range)</#local><#local attrs+=[temp]></#if><#if 
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-measurement<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any measurement")}"<#if 
+measurement<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any measurement")}"<#if 
 c.measurementSourceConcept??> (including "${utils.codesetName(c.measurementSourceConcept, "any measurement")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any measurement") /></#if></#macro>
@@ -146,7 +146,7 @@ c.valueAsString??><#local temp>with value as string <@inputTypes.TextFilter filt
 c.qualifier??><#local temp>with qualifier: <@inputTypes.ConceptList list=c.qualifier/></#local><#local attrs+=[temp]></#if><#if 
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-observation<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any observation")}"<#if 
+observation<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any observation")}"<#if 
 c.observationSourceConcept??> (including "${utils.codesetName(c.observationSourceConcept, "any observation")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any observation") /></#if></#macro>
@@ -169,7 +169,7 @@ c.modifier??><#local temp>with modifier: <@inputTypes.ConceptList list=c.modifie
 c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if 
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
-procedure occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any procedure")}"<#if 
+procedure occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any procedure")}"<#if 
 c.procedureSourceConcept??> (including "${utils.codesetName(c.procedureSourceConcept, "any procedure")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any procedure") /></#if></#macro>
@@ -183,7 +183,7 @@ c.unit??><#local temp>with unit: <@inputTypes.ConceptList list=c.unit/></#local>
 c.anatomicSite??><#local temp>with anatomic site: <@inputTypes.ConceptList list=c.anatomicSite/></#local><#local attrs+=[temp]></#if><#if 
 c.diseaseStatus??><#local temp>with disease status: <@inputTypes.ConceptList list=c.diseaseStatus/></#local><#local attrs+=[temp]></#if><#if
 c.sourceId??><#local temp>with source ID <@inputTypes.TextFilter filter=c.sourceId /></#local><#local attrs+=[temp]></#if>
-specimen<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any specimen")}"<#if 
+specimen<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any specimen")}"<#if 
 c.specimenSourceConcept??> (including "${utils.codesetName(c.specimenSourceConcept, "any specimen")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any specimen") /></#if></#macro>
@@ -195,7 +195,7 @@ c.visitType??><#local temp>a visit type that<#if c.visitTypeExclude!false> is no
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if
 c.visitType??><#local temp>a visit type that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if 
 c.visitLength??><#local temp>with length <@inputTypes.NumericRange range=c.visitLength /> days</#local><#local attrs+=[temp]></#if>
-visit occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId, "any visit")}"<#if 
+visit occurrence<#if isPlural && !(c.first!false)>s</#if> of "${utils.codesetName(c.codesetId!"", "any visit")}"<#if 
 c.visitSourceConcept??> (including "${utils.codesetName(c.visitSourceConcept, "any visit")}" source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any visit") /></#if></#macro>

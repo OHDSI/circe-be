@@ -16,7 +16,7 @@ END Note!!!!
 <#macro indent level=0><#list 1..((level*3)) as x> </#list></#macro>
 
 <#function codesetName codesetId defaultName>
-  <#if !codesetId??>
+  <#if !codesetId?has_content>
     <#return defaultName>
   <#else>
     <#return optionName(conceptSets, codesetId)>
@@ -29,6 +29,10 @@ END Note!!!!
   <#else>
     <#return "_invalid date_">
   </#if>
+</#function>
+
+<#function renderCheckbox value>
+  <#if value == true><#return "YES"><#else><#return "NO"></#if>
 </#function>
 
 <#macro showKeys obj>
