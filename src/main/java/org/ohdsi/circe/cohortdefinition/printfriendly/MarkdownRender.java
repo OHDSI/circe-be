@@ -62,5 +62,10 @@ public class MarkdownRender
       throw new RuntimeException(e);
     }
   }
+  
+  public String renderConceptSet(ConceptSet conceptSet) {
+    ConceptSet[] conceptSetList =  new ConceptSet[] {conceptSet};// wrap param in array
+    return renderConceptSetList(conceptSetList);
+  }
 
 }
