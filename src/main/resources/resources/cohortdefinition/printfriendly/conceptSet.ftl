@@ -2,7 +2,7 @@
 <#list conceptSets as conceptSet>
 ### ${conceptSet.name}
 <#list conceptSet.expression.items>
-|Concept ID|Concept Name|Code|Vocabulary|Excluded|Desecndants|Mapped
+|Concept ID|Concept Name|Code|Vocabulary|Excluded|Descendants|Mapped
 |:---|:---------------------------------------|:--|:-----|:--:|:--:|:--:|
 <#items as conceptSetItem>
 |${conceptSetItem.concept.conceptId?c}|<#--

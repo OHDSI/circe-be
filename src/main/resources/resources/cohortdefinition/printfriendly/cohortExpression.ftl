@@ -19,7 +19,7 @@ END Note!!!!
 People<#if primaryCriteria.observationWindow.priorDays gt 0 || primaryCriteria.observationWindow.postDays gt 0><#--
 --> with continuous observation of <#if primaryCriteria.observationWindow.priorDays gt 0>${primaryCriteria.observationWindow.priorDays} days before<#if primaryCriteria.observationWindow.postDays gt 0> and </#if></#if><#if 
 	primaryCriteria.observationWindow.postDays gt 0>${primaryCriteria.observationWindow.postDays} days after</#if> event</#if><#--
---><#if inclusionRules?size gt 0 || additionalCriteria??> may</#if> enter the cohort when observing:
+--><#if inclusionRules?size gt 0 || additionalCriteria??> may</#if> enter the cohort when observing any of the following:
 <#items as pc>
 
 ${pc?counter}. <@ct.Criteria c=pc/>
@@ -44,7 +44,7 @@ Limit cohort entry events to <@inputTypes.Limit limit=qualifiedLimit /> per pers
 
 #### ${rule?counter}. ${rule.name}<#if rule.description??>: ${rule.description}  </#if>
 
-<@ct.Group group=rule.expression />
+Entry events <@ct.Group group=rule.expression />
 </#list>
 </#if>
 <#if primaryCriteria.primaryLimit.type == "All" && (!additionalCriteria?? || qualifiedLimit.type == "All") && expressionLimit.type != "All">
@@ -55,10 +55,10 @@ Limit qualifying entry events to <@inputTypes.Limit limit=qualifiedLimit /> per 
 ### Cohort Exit
 
 <@st.Strategy endStrategy!{} />
-<#list censoringCriteria>
+<#list censoringCriteria![]>
 The person exits the cohort when encountering any of the following events:
 <#items as cc>
-${cc?counter}. <@ct.Criteria c=pc/>
+${cc?counter}. <@ct.Criteria c=cc/>
 </#items>
 </#list>
 

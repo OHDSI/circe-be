@@ -7,6 +7,7 @@ import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -481,7 +482,7 @@ public class PrintFriendlyTest {
             "### Empty Concept Set",
             "There are no concept set items in this concept set.",
             "### Only Descendants",
-            "|Concept ID|Concept Name|Code|Vocabulary|Excluded|Desecndants|Mapped",
+            "|Concept ID|Concept Name|Code|Vocabulary|Excluded|Descendants|Mapped",
             "|140168|Psoriasis|9014002|SNOMED|NO|YES|NO|",
             "### Only Excluded",
             "|140168|Psoriasis|9014002|SNOMED|YES|NO|NO|"
@@ -497,7 +498,99 @@ public class PrintFriendlyTest {
             "1. condition occurrences of \"any condition\""
     ));
     
-  }  
+  }
   
+  @Test
+  public void censorCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/censorCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "The person exits the cohort when encountering any of the following events:",
+            "death of \"any form\""
+    ));
+    
+  }
+  
+  @Test
+  public void noCensorCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/noCensorCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, not(stringContainsInOrder(
+            "The person exits the cohort when encountering any of the following events:"
+    )));
+    
+  }
+  
+  @Test
+  public void continuousObservationNoneTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_none.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPriorTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_prior.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days before event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPostTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_post.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days after event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPriorPostTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_priorpost.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days before and 30 days after event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void countCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/countCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of \"Empty Concept Set\", who are between 18 and 64 years old; having at least 1 condition occurrence of \"any condition\" starting between 30 days before and 30 days after \"Empty Concept Set\" start date.",
+            "2. condition occurrences of \"Empty Concept Set\"; with all of the following criteria:",
+            "1. having at least 1 condition occurrence of \"Empty Concept Set\", who are &gt; 18 years old starting anytime on or before \"Empty Concept Set\" start date.",
+            "2. having at least 1 condition occurrence of \"any condition\", who are &lt; 64 years old starting between 0 days before and all days after \"Empty Concept Set\" start date.",
+            "#### 1. any time",
+            "Entry events having at least 1 condition occurrence of \"any condition\".",
+            "#### 2. any time +visit",
+            "Entry events having at least 1 condition occurrence of \"Empty Concept Set\" at same visit as \"cohort entry\".",
+            "#### 3. any time +visit +op",
+            "Entry events having at least 1 condition occurrence of \"any condition\" at same visit as \"cohort entry\" and allow events outside observation period.",
+            "#### 4. prior time",
+            "Entry events having at least 1 condition occurrence of \"any condition\" starting anytime on or before \"cohort entry\" start date.",
+            "#### 5. prior time +visit",
+            "Entry events having at least 1 condition occurrence of \"Empty Concept Set\" starting anytime on or before \"cohort entry\" start date; at same visit as \"cohort entry\".",
+            "#### 6. prior time +visit +op",
+            "Entry events having at least 1 condition occurrence of \"any condition\" starting anytime on or before \"cohort entry\" start date; at same visit as \"cohort entry\" and allow events outside observation period.",
+            "#### 7. sub-groups",
+            "Entry events with all of the following criteria:",
+            "1. having at least 1 condition occurrence of \"Empty Concept Set\" starting anytime on or before \"cohort entry\" start date.",
+            "2. having no condition occurrences of \"Empty Concept Set\" starting between 0 days before and all days after \"cohort entry\" start date.",
+            "3. with any of the following criteria:",
+            "1. having at least 1 condition occurrence of \"Empty Concept Set\" starting between 30 days before and 30 days after \"cohort entry\" start date.",
+            "2. having no condition occurrences of \"Empty Concept Set\" starting anytime up to 31 days before \"cohort entry\" start date."
+    ));
+    
+  }
 
 }

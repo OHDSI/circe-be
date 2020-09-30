@@ -54,9 +54,9 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.conditionType??><#local temp>a death type that<#if c.deathTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.deathType/></#local><#local attrs+=[temp]></#if>
-death of "${utils.codesetName(c.codesetId!"", "any condition")}"<#if 
-c.deathSourceConcept??> (including "${utils.codesetName(c.deathSourceConcept, "any condition")}" source concepts)</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any death") /></#if></#macro>
+death of "${utils.codesetName(c.codesetId!"", "any form")}"<#if 
+c.deathSourceConcept??> (including "${utils.codesetName(c.deathSourceConcept, "any form")}" source concepts)</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any form") /></#if></#macro>
 
 <#macro DeviceExposure c level isPlural=true><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
@@ -243,20 +243,18 @@ group.demographicCriteriaList?size == 1><@DemographicCriteria c=group.demographi
 <#-- CountCriteria macros -->
 
 <#macro CountCriteria countCriteria level=0 indexLabel="cohort entry">having <#if countCriteria.occurrence.type == 0 && countCriteria.occurrence.count == 0>no<#else>${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}</#if><#if
-countCriteria.occurrence.isDistinct> distinct</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1)/><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#macro>
+countCriteria.occurrence.isDistinct> distinct</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1)/><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/>.</#macro>
 
 <#macro WindowCriteria countCriteria indexLabel="cohort entry" level=0><#local windowParts=[] restrictParts=[]>
 <#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>
 <#local temp><@inputTypes.Window countCriteria.startWindow indexLabel /></#local><#local windowParts+=[temp]></#if>
 <#if countCriteria.endWindow?? && (countCriteria.endWindow.start.days?? || countCriteria.endWindow.end.days??)>
 <#local temp><@inputTypes.Window countCriteria.endWindow indexLabel /></#local><#local windowParts+=[temp]></#if>
-<#if countCriteria.restrictVisit!false>
-<#local temp>at same visit as "${indexLabel}"</#local><#local restrictParts+=[temp]></#if>
-<#if countCriteria.ignoreObservationPeriod!false>
-<#local temp>allow events outside observation period</#local><#local restrictParts+=[temp]></#if>
-<#if (windowParts?size + restrictParts?size) gt 0>
-  
-<#if windowParts?size gt 0>${windowParts?join(" and ")}<#if restrictParts?size gt 0>; </#if></#if>${restrictParts?join(" and ")}</#if></#macro>
+<#if countCriteria.restrictVisit!false><#local temp>at same visit as "${indexLabel}"</#local><#local restrictParts+=[temp]></#if>
+<#if countCriteria.ignoreObservationPeriod!false><#local temp>allow events outside observation period</#local><#local restrictParts+=[temp]></#if>
+<#if windowParts?size + restrictParts?size gt 0> </#if><#if 
+windowParts?size gt 0>${windowParts?join(" and ")}<#if restrictParts?size gt 0>; </#if></#if><#if 
+restrictParts?size gt 0>${restrictParts?join(" and ")}</#if></#macro>
 
 <#-- Demographic Criteria -->
 <#macro DemographicCriteria c level=0 indexLabel = "cohort entry"><#local attrs = []><#local 

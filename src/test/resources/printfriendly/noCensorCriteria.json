@@ -1,0 +1,403 @@
+{
+  "cdmVersionRange":">=5.0.0",
+  "PrimaryCriteria":{
+    "CriteriaList":[
+      {
+        "ConditionOccurrence":{
+          "CodesetId":0,
+          "First":true,
+          "ConditionTypeExclude":false,
+          "VisitType":[
+            {
+              "CONCEPT_ID":9203,
+              "CONCEPT_NAME":"Emergency Room Visit",
+              "STANDARD_CONCEPT":null,
+              "STANDARD_CONCEPT_CAPTION":"Unknown",
+              "INVALID_REASON":null,
+              "INVALID_REASON_CAPTION":"Unknown",
+              "CONCEPT_CODE":"ER",
+              "DOMAIN_ID":"Visit",
+              "VOCABULARY_ID":"Visit",
+              "CONCEPT_CLASS_ID":null
+            },
+            {
+              "CONCEPT_ID":9201,
+              "CONCEPT_NAME":"Inpatient Visit",
+              "STANDARD_CONCEPT":null,
+              "STANDARD_CONCEPT_CAPTION":"Unknown",
+              "INVALID_REASON":null,
+              "INVALID_REASON_CAPTION":"Unknown",
+              "CONCEPT_CODE":"IP",
+              "DOMAIN_ID":"Visit",
+              "VOCABULARY_ID":"Visit",
+              "CONCEPT_CLASS_ID":null
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow":{
+      "PriorDays":0,
+      "PostDays":0
+    },
+    "PrimaryCriteriaLimit":{
+      "Type":"First"
+    }
+  },
+  "AdditionalCriteria":{
+    "Type":"ALL",
+    "CriteriaList":[
+      {
+        "Criteria":{
+          "ConditionOccurrence":{
+            "CodesetId":1,
+            "ConditionTypeExclude":false
+          }
+        },
+        "StartWindow":{
+          "Start":{
+            "Days":365,
+            "Coeff":-1
+          },
+          "End":{
+            "Days":60,
+            "Coeff":1
+          }
+        },
+        "RestrictVisit":false,
+        "IgnoreObservationPeriod":false,
+        "Occurrence":{
+          "Type":0,
+          "Count":0,
+          "IsDistinct":false
+        }
+      }
+    ],
+    "DemographicCriteriaList":[
+      
+    ],
+    "Groups":[
+      
+    ]
+  },
+  "ConceptSets":[
+    {
+      "id":0,
+      "name":"acute liver injury",
+      "expression":{
+        "items":[
+          {
+            "concept":{
+              "CONCEPT_ID":200763,
+              "CONCEPT_NAME":"Chronic hepatitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"76783007",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":true,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":377604,
+              "CONCEPT_NAME":"Hepatic coma",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"72836002",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":196029,
+              "CONCEPT_NAME":"Hepatic coma due to viral hepatitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"40946000",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":true,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":4337543,
+              "CONCEPT_NAME":"Hepatic necrosis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"87248009",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":194087,
+              "CONCEPT_NAME":"Hepatitis due to infection",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"235862008",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":true,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":196455,
+              "CONCEPT_NAME":"Hepatorenal syndrome",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"51292008",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":194990,
+              "CONCEPT_NAME":"Inflammatory disease of liver",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"128241005",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":4291005,
+              "CONCEPT_NAME":"Viral hepatitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"3738000",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":true,
+            "includeDescendants":true,
+            "includeMapped":false
+          }
+        ]
+      }
+    },
+    {
+      "id":1,
+      "name":"acute liver injury exclusion concepts",
+      "expression":{
+        "items":[
+          {
+            "concept":{
+              "CONCEPT_ID":192956,
+              "CONCEPT_NAME":"Cholecystitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"76581006",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":200763,
+              "CONCEPT_NAME":"Chronic hepatitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"76783007",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":4212540,
+              "CONCEPT_NAME":"Chronic liver disease",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"328383001",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":197917,
+              "CONCEPT_NAME":"Disorder of biliary tract",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"105997008",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":192353,
+              "CONCEPT_NAME":"Disorder of gallbladder",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"39621005",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":192963,
+              "CONCEPT_NAME":"Disorder of pancreas",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"3855007",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":196456,
+              "CONCEPT_NAME":"Gallstone",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"235919008",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":4130518,
+              "CONCEPT_NAME":"Neoplasm of liver",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"126851005",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          },
+          {
+            "concept":{
+              "CONCEPT_ID":4291005,
+              "CONCEPT_NAME":"Viral hepatitis",
+              "STANDARD_CONCEPT":"S",
+              "STANDARD_CONCEPT_CAPTION":"Standard",
+              "INVALID_REASON":"V",
+              "INVALID_REASON_CAPTION":"Valid",
+              "CONCEPT_CODE":"3738000",
+              "DOMAIN_ID":"Condition",
+              "VOCABULARY_ID":"SNOMED",
+              "CONCEPT_CLASS_ID":"Clinical Finding"
+            },
+            "isExcluded":false,
+            "includeDescendants":true,
+            "includeMapped":false
+          }
+        ]
+      }
+    }
+  ],
+  "QualifiedLimit":{
+    "Type":"First"
+  },
+  "ExpressionLimit":{
+    "Type":"First"
+  },
+  "InclusionRules":[
+    
+  ],
+  "CollapseSettings":{
+    "CollapseType":"ERA",
+    "EraPad":0
+  }
+}
