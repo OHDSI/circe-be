@@ -27,14 +27,14 @@ ${pc?counter}. <@ct.Criteria c=pc/>
 </#list>
 <#if primaryCriteria.primaryLimit.type != "All">
 
-Limit cohort entry events to <@inputTypes.Limit limit=primaryCriteria.primaryLimit/> per person.
+Limit cohort entry events to the <@inputTypes.Limit limit=primaryCriteria.primaryLimit/> per person.
 </#if>
 <#if additionalCriteria??>
 
 Restrict entry events to <@ct.Group group=additionalCriteria />  
 <#if primaryCriteria.primaryLimit.type == "All" && qualifiedLimit.type != "All">
 
-Limit cohort entry events to <@inputTypes.Limit limit=qualifiedLimit /> per person.
+Limit these restricted entry events to the <@inputTypes.Limit limit=qualifiedLimit /> per person.
 </#if>
 </#if>
 <#if inclusionRules?size gt 0>
@@ -49,7 +49,7 @@ Entry events <@ct.Group group=rule.expression />
 </#if>
 <#if primaryCriteria.primaryLimit.type == "All" && (!additionalCriteria?? || qualifiedLimit.type == "All") && expressionLimit.type != "All">
 
-Limit qualifying entry events to <@inputTypes.Limit limit=qualifiedLimit /> per person.
+Limit qualifying entry events to the <@inputTypes.Limit limit=qualifiedLimit /> per person.
 </#if>
 
 ### Cohort Exit

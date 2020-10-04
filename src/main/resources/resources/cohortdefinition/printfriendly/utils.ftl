@@ -19,7 +19,7 @@ END Note!!!!
   <#if !codesetId?has_content>
     <#return defaultName>
   <#else>
-    <#return optionName(conceptSets, codesetId)>
+    <#return "'" + optionName(conceptSets, codesetId) + "'">
   </#if>
 </#function>
 
@@ -34,6 +34,8 @@ END Note!!!!
 <#function renderCheckbox value>
   <#if value == true><#return "YES"><#else><#return "NO"></#if>
 </#function>
+
+<#macro formatValue value unit="">${value}<#if unit?has_content> ${unit}<#if value != 1>s</#if></#if></#macro>
 
 <#macro showKeys obj>
 <#list obj?keys as key>

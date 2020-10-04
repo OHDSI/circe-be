@@ -12,6 +12,15 @@
     "CriteriaList": [
       {
         "ConditionOccurrence": {
+          "CodesetId": 0,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "gte"
+          }
+        }
+      },
+      {
+        "ConditionOccurrence": {
           "CorrelatedCriteria": {
             "Type": "ALL",
             "CriteriaList": [
