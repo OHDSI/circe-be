@@ -16,10 +16,10 @@ END Note!!!!
 <#macro indent level=0><#list 1..((level*3)) as x> </#list></#macro>
 
 <#function codesetName codesetId defaultName>
-  <#if !codesetId??>
+  <#if !codesetId?has_content>
     <#return defaultName>
   <#else>
-    <#return optionName(conceptSets, codesetId)>
+    <#return "'" + optionName(conceptSets, codesetId) + "'">
   </#if>
 </#function>
 
@@ -30,6 +30,12 @@ END Note!!!!
     <#return "_invalid date_">
   </#if>
 </#function>
+
+<#function renderCheckbox value>
+  <#if value == true><#return "YES"><#else><#return "NO"></#if>
+</#function>
+
+<#macro formatValue value unit="">${value}<#if unit?has_content> ${unit}<#if value != 1>s</#if></#if></#macro>
 
 <#macro showKeys obj>
 <#list obj?keys as key>

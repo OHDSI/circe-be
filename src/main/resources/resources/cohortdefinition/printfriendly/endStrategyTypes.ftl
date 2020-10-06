@@ -24,11 +24,11 @@ The person exits the cohort at the end of continuous observation.
 <#assign dateOffsetFieldOptions = [{"id": "StartDate", "name": "start date"}, {"id": "EndDate", "name": "end date"}]>
 
 <#macro DateOffsetStrategy s>
-The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus ${s.offset} days.
+The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offset "day"/>.
 </#macro>
 
 <#macro CustomEraStrategy s>
-The cohort end date will be based on a continuous exposure to "${utils.codesetName(s.drugCodesetId, "_invalid drug specified_")}":
-allowing ${s.gapDays} days between exposures, adding ${s.offset} days after exposure ends, and <#if 
-s.daysSupplyOverride??>forcing drug exposure days suply to: ${s.daysSupplyOverride} days.<#else>using days supply and exposure end date for exposure duration.</#if>
+The cohort end date will be based on a continuous exposure to ${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}:
+allowing ${s.gapDays} days between exposures, adding <@utils.formatValue s.offset "day"/> after exposure ends, and <#if 
+s.daysSupplyOverride??>forcing drug exposure days suply to: <@utils.formatValue s.daysSupplyOverride "day"/>.<#else>using days supply and exposure end date for exposure duration.</#if>
 </#macro>

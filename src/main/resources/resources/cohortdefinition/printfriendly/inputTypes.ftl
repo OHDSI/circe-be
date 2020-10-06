@@ -87,11 +87,11 @@ END Note!!!!
 <#function temporalDirection coeff><#if coeff lt 0><#return "before"><#else><#return "after"></#if></#function>
 
 <#macro Window w indexLabel="cohort entry">${whichEventPart(w.useEventEnd!false)} <#--
---><#if !w.start.days?? && w.end.days == 0 && w.start.coeff == -1 >anytime on or before "${indexLabel}" ${whichIndexPart(w.useIndexEnd!false)}<#--
---><#elseif (w.end.days!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if w.start.days??>in the ${w.start.days} days<#else>anytime</#if> prior to "${indexLabel}" ${whichIndexPart(w.useIndexEnd!false)}<#--
---><#elseif !w.start.days?? && (w.end.days!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.days} days ${temporalDirection(w.end.coeff)} "${indexLabel}" ${whichIndexPart(w.useIndexEnd!false)}<#--
---><#elseif !w.end.days?? && (w.start.days!0) gt 0 && w.end.coeff ==1> ${w.start.days} days ${temporalDirection(w.start.coeff)} "${indexLabel}" ${whichIndexPart(w.useIndexEnd!false)}<#--
---><#else>between ${w.start.days!"all"} days ${temporalDirection(w.start.coeff)} and ${w.end.days!"all"} days ${temporalDirection(w.end.coeff)} "${indexLabel}" ${whichIndexPart(w.useIndexEnd!false)}</#if></#macro>
+--><#if !w.start.days?? && w.end.days == 0 && w.start.coeff == -1 >anytime on or before ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif (w.end.days!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if w.start.days??>in the ${w.start.days} days<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.start.days?? && (w.end.days!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.days} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.end.days?? && (w.start.days!0) gt 0 && w.end.coeff ==1> ${w.start.days} days ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#else>between ${w.start.days!"all"} days ${temporalDirection(w.start.coeff)} and ${w.end.days!"all"} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if></#macro>
 
 <#-- User Defined Period -->
 

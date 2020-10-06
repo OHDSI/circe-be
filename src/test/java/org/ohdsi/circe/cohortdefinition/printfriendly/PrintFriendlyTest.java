@@ -2,17 +2,19 @@ package org.ohdsi.circe.cohortdefinition.printfriendly;
 
 import java.io.File;
 import java.io.FileWriter;
-import static java.lang.String.format;
 import java.util.regex.Pattern;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
+import org.ohdsi.circe.cohortdefinition.ConceptSet;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 public class PrintFriendlyTest {
@@ -25,11 +27,14 @@ public class PrintFriendlyTest {
     return Pattern.compile(regex, Pattern.DOTALL);
   }
 
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
+  
   @Test
   @Ignore
   public void processExpression() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/allAttributes.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     System.out.println("Markdown:");
     System.out.println("=====================================");
     System.out.println(markdown);
@@ -61,86 +66,58 @@ public class PrintFriendlyTest {
   @Test
   public void conditionEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conditionEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
-            // concept set name and first in history attribute
-            "1. condition era of \"Concept Set 1\" for the first time in the person's history,",
-            // age/gender criteria
-            "who are male &lt; 30 years old at era start and &lt;= 40 years old at era end;",
-            // age at start and age at end
-            "starting before January 1, 2010 and ending before December 31, 2014;",
-            // era length
-            "era length is &gt; 15 days",
-            // occurrence count
-            "containing between 1 and 5 occurrences",
-            // nested criteria
-            "having no condition eras of \"Concept Set 2\"",
-            "starting between 90 days before and 30 days after \"Concept Set 1\" start date and ending between 7 days after and 90 days after \"Concept Set 1\" start date",
+            // criteria attributes + nested criteria
+            "1. condition era of 'Concept Set 1' for the first time in the person's history, who are male &lt; 30 years old at era start and &lt;= 40 years old at era end; starting before January 1, 2010 and ending before December 31, 2014; era length is &gt; 15 days; containing between 1 and 5 occurrences; having no condition eras of 'Concept Set 2', starting between 90 days before and 30 days after 'Concept Set 1' start date and ending between 7 days after and 90 days after 'Concept Set 1' start date.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "having at least 1 condition era of \"Concept Set 3\" for the first time in the person's history",
-            "starting between 90 days before and 0 days before \"cohort entry\" start date"
+            "Entry events having at least 1 condition era of 'Concept Set 3' for the first time in the person's history, starting between 90 days before and 0 days before cohort entry start date."
     ));
   }
 
   @Test
   public void conditionOccurrenceTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conditionOccurrence.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
-            // concept set name and first in history attribute
-            "1. condition occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
-            // age/gender criteria
-            "who are male or female, &gt;= 18 years old;",
-            // age at start and age at end
-            "starting before January 1, 2010 and ending after June 1, 2016;",
-            // condition type
-            "a condition type that is not: \"admission note\" or \"ancillary report\"",
-            // stop reason
-            "with a stop reason containing \"some stop reason\"",
-            //provider specialty
-            "a provider specialty that is: \"rheumatology\"",
-            // visit
-            "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\"",
+            // criteria attributes
+            "1. condition occurrence of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history, who are male or female, &gt;= 18 years old; starting before January 1, 2010 and ending after June 1, 2016; a condition type that is not: \"admission note\" or \"ancillary report\"; with a stop reason containing \"some stop reason\"; a provider specialty that is: \"rheumatology\"; a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\"; with any of the following criteria:",
             // nested criteria
-            "with any of the following criteria:",
-            "1. with the following event criteria: who are male &gt;= 18 years old",
-            "2. having at least 1 condition occurrence of \"Concept Set 1\", who are female &lt; 30 years old",
-            "starting  1 days after \"Concept Set 1\" start date",
+            "1. with the following event criteria: who are male &gt;= 18 years old.",
+            "2. having at least 1 condition occurrence of 'Concept Set 1', starting  1 days after 'Concept Set 1' start date; who are female &lt; 30 years old.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "having at least 1 condition occurrence of \"Concept Set 3\" for the first time in the person's history ",
-            "starting between all days before and 1 days after \"cohort entry\" start date"
+            "Entry events having at least 1 condition occurrence of 'Concept Set 3' for the first time in the person's history, starting between all days before and 1 days after cohort entry start date."
     ));
   }
   
   @Test
   public void deathTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/death.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. death of \"Concept Set 1\" (including \"Concept Set 2\" source concepts),",
+            "1. death of 'Concept Set 1' (including 'Concept Set 2' source concepts),",
             // age/gender criteria
             "who are female &lt; 18 years old;",
             // age at start and age at end
             "starting on or after January 1, 2010",
             // nested criteria
-            "having no death of \"Concept Set 3\"",
-            "starting anytime prior to \"Concept Set 1\" start date",
+            "having no death of 'Concept Set 3', starting anytime prior to 'Concept Set 1' start date.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "having at least 1 death of \"Concept Set 3\", who are &gt; 12 years old"
+            "Entry events having at least 1 death of 'Concept Set 3', who are &gt; 12 years old."
     ));
   }
 
   @Test
   public void deviceExposureTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/deviceExposure.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. device exposures of \"Concept Set 1\" (including \"Concept Set 2\" source concepts),",
+            "1. device exposures of 'Concept Set 1' (including 'Concept Set 2' source concepts),",
             // occurrence start/end dates
             "starting before January 1, 2010 and ending after December 31, 2010;",
             // device type
@@ -152,26 +129,22 @@ public class PrintFriendlyTest {
             // visit
             "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
             // nested criteria
-            "having at least 1 device exposure of \"Concept Set 2\" for the first time in the person's history,",
-            "who are female or male, between 12 and 18 years old",
-            "starting between all days before and 1 days after \"Concept Set 1\" start date",
+            "having at least 1 device exposure of 'Concept Set 2' for the first time in the person's history, starting between all days before and 1 days after 'Concept Set 1' start date; who are female or male, between 12 and 18 years old.",
             // entry restriction
-            "Restrict entry events to having at least 1 device exposure of \"Concept Set 3\" for the first time in the person's history",
-            "starting anytime prior to \"cohort entry\" start date",
+            "Restrict entry events to having at least 1 device exposure of 'Concept Set 3' for the first time in the person's history, starting anytime prior to cohort entry start date.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "having at least 1 device exposure of \"Concept Set 3\" for the first time in the person's history",
-            "starting between 30 days before and 30 days after \"cohort entry\" start date"
+            "Entry events having at least 1 device exposure of 'Concept Set 3' for the first time in the person's history, starting between 30 days before and 30 days after cohort entry start date."
     ));
   }
 
   @Test
   public void doseEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/doseEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. dose era of \"Concept Set 1\" for the first time in the person's history,",
+            "1. dose era of 'Concept Set 1' for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old at era start and &lt; 30 years old at era end;",
             // age at start and age at end
@@ -184,33 +157,27 @@ public class PrintFriendlyTest {
             "with dose value between 15 and 45;",
             // nested criteria
             "with any of the following criteria:",
-            "1. having at least 1 dose era of \"Concept Set 2\" for the first time in the person's history",
-            "starting between 30 days before and 0 days after \"Concept Set 1\" start date",
-            "2. having at least 1 dose era of \"Concept Set 3\"",
-            "starting in the 30 days prior to \"Concept Set 1\" start date",
+            "1. having at least 1 dose era of 'Concept Set 2' for the first time in the person's history, starting between 30 days before and 0 days after 'Concept Set 1' start date.",
+            "2. having at least 1 dose era of 'Concept Set 3', starting in the 30 days prior to 'Concept Set 1' start date.",
             // inital event restriction
             "Restrict entry events to with all of the following criteria:",
-            "1. having at least 1 dose era of \"Concept Set 2\" for the first time in the person's history",
-            "starting between 60 days before and 0 days after \"cohort entry\" start date",
-            "2. having at least 1 dose era of \"Concept Set 3\"",
-            "starting in the 60 days prior to \"cohort entry\" start date",
+            "1. having at least 1 dose era of 'Concept Set 2' for the first time in the person's history, starting between 60 days before and 0 days after cohort entry start date.",
+            "2. having at least 1 dose era of 'Concept Set 3', starting in the 60 days prior to cohort entry start date.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "with all of the following criteria:",
-            "1. having at least 1 dose era of \"Concept Set 3\" for the first time in the person's history",
-            "starting anytime on or before \"cohort entry\" start date",
-            "2. having no dose eras of \"Concept Set 2\", who are &gt; 18 years old",
-            "starting anytime prior to \"cohort entry\" start date"
+            "Entry events with all of the following criteria:",
+            "1. having at least 1 dose era of 'Concept Set 3' for the first time in the person's history, starting anytime on or before cohort entry start date.",
+            "2. having no dose eras of 'Concept Set 2', starting anytime prior to cohort entry start date; who are &gt; 18 years old."
     ));
   }
 
   @Test
   public void drugEraTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugEra.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. drug era of \"Concept Set 1\" for the first time in the person's history,",
+            "1. drug era of 'Concept Set 1' for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt;= 18 years old at era start and &lt;= 64 years old at era end;",
             // start date/end date
@@ -221,23 +188,21 @@ public class PrintFriendlyTest {
             "with occurrence count between 4 and 6;",
             // nested criteria
             "with all of the following criteria:",
-            "1. having at least 1 drug era of \"Concept Set 2\" for the first time in the person's history",
-            "starting anytime prior to \"Concept Set 1\" start date",
-            "2. having at least 1 drug era of \"Concept Set 3\", starting on or after January 1, 2010",
+            "1. having at least 1 drug era of 'Concept Set 2' for the first time in the person's history, starting anytime prior to 'Concept Set 1' start date.",
+            "2. having at least 1 drug era of 'Concept Set 3', starting on or after January 1, 2010.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
-            "having at least 1 drug era of \"Concept Set 3\" for the first time in the person's history",
-            "starting between 0 days before and all days after \"cohort entry\" start date"
+            "Entry events having at least 1 drug era of 'Concept Set 3' for the first time in the person's history, starting between 0 days before and all days after cohort entry start date."
     ));
   }
 
   @Test
   public void drugExposureTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/drugExposure.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. drug exposure of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            "1. drug exposure of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old;",
             // start date/end date
@@ -266,20 +231,18 @@ public class PrintFriendlyTest {
             "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
             // nested criteria
             "with all of the following criteria:",
-            "1. having at least 1 drug exposure of \"Concept Set 2\"",
-            "starting anytime prior to \"Concept Set 1\" start date",
-            "2. having at least 1 drug exposure of \"Concept Set 3\"",
-            "starting between 14 days before and 0 days before \"Concept Set 1\" start date"
+            "1. having at least 1 drug exposure of 'Concept Set 2', starting anytime prior to 'Concept Set 1' start date.",
+            "2. having at least 1 drug exposure of 'Concept Set 3', starting between 14 days before and 0 days before 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void measurementTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/measurement.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. measurement of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            "1. measurement of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old;",
             // start date/end date
@@ -310,20 +273,18 @@ public class PrintFriendlyTest {
             "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
             // nested criteria
             "with all of the following criteria:",
-            "having at least 1 measurement of \"Concept Set 2\" for the first time in the person's history",
-            "starting anytime on or before \"Concept Set 1\" start date",
-            "2. having at least 1 measurement of \"Concept Set 3\" ",
-            "starting between 0 days before and all days after \"Concept Set 1\" start date"
+            "1. having at least 1 measurement of 'Concept Set 2' for the first time in the person's history, starting anytime on or before 'Concept Set 1' start date.",
+            "2. having at least 1 measurement of 'Concept Set 3', starting between 0 days before and all days after 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void observationTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observation.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. observation of \"Concept Set 1\" for the first time in the person's history,",
+            "1. observation of 'Concept Set 1' for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old;",
             // start date/end date
@@ -345,15 +306,14 @@ public class PrintFriendlyTest {
             // visit
             "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
             // nested criteria
-            "having no observation of \"Concept Set 2\" for the first time in the person's history",
-            "starting anytime prior to \"Concept Set 1\" start date"
+            "having no observation of 'Concept Set 2' for the first time in the person's history, starting anytime prior to 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void observationPeriodTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/observationPeriod_1.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
             "1. observation period (first obsrvation period in person's history),",
@@ -368,18 +328,17 @@ public class PrintFriendlyTest {
             // era length 
             "with a length &gt; 400 days;",
             // nested criteria
-            "having exactly 1 observation period",
-            "starting  1 days after \"observation period\" end date"
+            "having exactly 1 observation period, starting  1 days after observation period end date."
     ));
   }
 
   @Test
   public void procedureOccurrenceTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/procedureOccurrence.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. procedure occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            "1. procedure occurrence of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old;",
             // start date/end date
@@ -395,18 +354,17 @@ public class PrintFriendlyTest {
             // visit
             "a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\";",
             // nested criteria
-            "having at least 1 procedure occurrence of \"Concept Set 3\"",
-            "starting anytime prior to \"Concept Set 1\" start date"
+            "having at least 1 procedure occurrence of 'Concept Set 3', starting anytime prior to 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void specimenTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/specimen.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. specimen of \"Concept Set 1\" for the first time in the person's history,",
+            "1. specimen of 'Concept Set 1' for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, &gt; 18 years old;",
             // start date/end date
@@ -424,18 +382,17 @@ public class PrintFriendlyTest {
             // sourceID
             "with source ID starting with \"source Id Prefix\";",
             // nested criteria
-            "having at least 1 specimen of \"Concept Set 2\"",
-            "starting anytime prior to \"Concept Set 1\" start date"
+            "having at least 1 specimen of 'Concept Set 2', starting anytime prior to 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void visitTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/visit.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             // concept set name and first in history attribute
-            "1. visit occurrence of \"Concept Set 1\" (including \"Concept Set 2\" source concepts) for the first time in the person's history,",
+            "1. visit occurrence of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
             // age/gender criteria
             "who are female or male, between 18 and 64 years old;",
             // start date/end date
@@ -449,15 +406,14 @@ public class PrintFriendlyTest {
             // visit length
             "with length &gt; 12 days",
             // nested criteria
-            "having at least 1 visit occurrence of \"Concept Set 2\"",
-            "starting anytime on or before \"Concept Set 1\" start date"
+            "having at least 1 visit occurrence of 'Concept Set 2', starting anytime on or before 'Concept Set 1' start date."
     ));
   }
 
   @Test
   public void dateOffsetTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateOffset.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "The cohort end date will be offset from index event's end date plus 7 days."
     ));
@@ -467,12 +423,152 @@ public class PrintFriendlyTest {
   @Test
   public void customEraExitTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExit.json"));
-    String markdown = pf.generate(expression);
+    String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
-            "The cohort end date will be based on a continuous exposure to \"Concept Set 1\":",
-            "allowing 14 days between exposures, adding 0 days after exposure ends, and forcing drug exposure days suply to: 7 days."
+            "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
+            "allowing 14 days between exposures, adding 1 day after exposure ends, and forcing drug exposure days suply to: 7 days."
+    ));
+    
+  }
+  
+  @Test
+  public void conceptSetSimpleTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conceptSet_simple.json"));
+    String markdown = pf.renderConceptSetList(expression.conceptSets);
+    assertThat(markdown, stringContainsInOrder(
+            "### Empty Concept Set",
+            "There are no concept set items in this concept set.",
+            "### Only Descendants",
+            "|Concept ID|Concept Name|Code|Vocabulary|Excluded|Descendants|Mapped",
+            "|140168|Psoriasis|9014002|SNOMED|NO|YES|NO|",
+            "### Only Excluded",
+            "|140168|Psoriasis|9014002|SNOMED|YES|NO|NO|"
+    ));
+    
+  }  
+  
+  @Test
+  public void anyConditionTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/anyCondition.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of any condition."
+    ));
+    
+  }
+  
+  @Test
+  public void censorCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/censorCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "The person exits the cohort when encountering any of the following events:",
+            "death of any form"
+    ));
+    
+  }
+  
+  @Test
+  public void noCensorCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/noCensorCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, not(stringContainsInOrder(
+            "The person exits the cohort when encountering any of the following events:"
+    )));
+    
+  }
+  
+  @Test
+  public void continuousObservationNoneTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_none.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPriorTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_prior.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days before event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPostTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_post.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days after event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void continuousObservationPriorPostTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/continuousObservation_priorpost.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "People with continuous observation of 30 days before and 30 days after event enter the cohort when observing any of the following:"
+    ));
+    
+  }
+  
+  @Test
+  public void countCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/countCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of 'Empty Concept Set', starting on or after January 1, 2010.",
+            "2. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
+            "3. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
+            "1. having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
+            "2. having at least 1 condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old.",
+            "#### 1. any time",
+            "Entry events having at least 1 condition occurrence of any condition.",
+            "#### 2. any time +visit",
+            "Entry events having at least 1 condition occurrence of 'Empty Concept Set', at same visit as cohort entry.",
+            "#### 3. any time +visit +op",
+            "Entry events having at least 1 condition occurrence of any condition, at same visit as cohort entry and allow events outside observation period.",
+            "#### 4. prior time",
+            "Entry events having at least 1 condition occurrence of any condition, starting anytime on or before cohort entry start date.",
+            "#### 5. prior time +visit",
+            "Entry events having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before cohort entry start date; at same visit as cohort entry.",
+            "#### 6. prior time +visit +op",
+            "Entry events having at least 1 condition occurrence of any condition, starting anytime on or before cohort entry start date; at same visit as cohort entry and allow events outside observation period.",
+            "#### 7. sub-groups",
+            "Entry events with all of the following criteria:",
+            "1. having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before cohort entry start date.",
+            "2. having no condition occurrences of 'Empty Concept Set', starting between 0 days before and all days after cohort entry start date.",
+            "3. with any of the following criteria:",
+            "1. having at least 1 condition occurrence of 'Empty Concept Set', starting between 30 days before and 30 days after cohort entry start date.",
+            "2. having no condition occurrences of 'Empty Concept Set', starting anytime up to 31 days before cohort entry start date."
     ));
     
   }
 
+  @Test
+  public void nullCohortTest() {
+    exceptionRule.expect(RuntimeException.class);
+    pf.renderCohort((CohortExpression)null);
+    
+  }
+
+  @Test
+  public void nullConceptSetTest() {
+    exceptionRule.expect(RuntimeException.class);
+    pf.renderConceptSet((ConceptSet)null);
+    
+  }
+
+  @Test
+  public void nullConceptSetListTest() {
+    exceptionRule.expect(RuntimeException.class);
+    pf.renderConceptSetList((ConceptSet[])null);
+    
+  }
 }
