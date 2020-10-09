@@ -552,6 +552,11 @@ public class PrintFriendlyTest {
   }
 
   @Test
+  public void nullCodesetIdTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/nullCodesetId.json"));
+    pf.renderCohort(expression);
+  }
+  @Test
   public void nullCohortTest() {
     exceptionRule.expect(RuntimeException.class);
     pf.renderCohort((CohortExpression)null);
