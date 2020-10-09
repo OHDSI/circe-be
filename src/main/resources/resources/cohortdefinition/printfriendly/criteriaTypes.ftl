@@ -37,7 +37,7 @@ c.eraLength??><#local temp>era length is <@inputTypes.NumericRange range=c.eraLe
 c.occurrenceCount??><#local temp>containing <@inputTypes.NumericRange range=c.occurrenceCount /> occurrences</#local><#local attrs+=[temp]></#if>
 condition era<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any condition")}<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any condition") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any condition") /><#else>.</#if></#macro>
 
 <#macro ConditionOccurrence c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -50,7 +50,7 @@ c.conditionType??><#local temp>a condition type that<#if c.conditionTypeExclude!
 condition occurrence<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any condition")}<#if 
 c.conditionSourceConcept??> (including ${utils.codesetName(c.conditionSourceConcept, "any condition")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any condition") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any condition") /><#else>.</#if></#macro>
 
 <#macro Death c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -59,7 +59,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 c.conditionType??><#local temp>a death type that<#if c.deathTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.deathType/></#local><#local attrs+=[temp]></#if>
 death of ${utils.codesetName(c.codesetId!"", "any form")}<#if 
 c.deathSourceConcept??> (including ${utils.codesetName(c.deathSourceConcept, "any form")} source concepts)</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any form") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any form") /><#else>.</#if></#macro>
 
 <#macro DeviceExposure c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -73,7 +73,7 @@ c.deviceType??><#local temp>a device type that<#if c.deviceTypeExclude!false> is
 device exposure<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any device")}<#if 
 c.deviceSourceConcept??> (including ${utils.codesetName(c.deviceSourceConcept, "any condition")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any device") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any device") /><#else>.</#if></#macro>
 
 <#macro DoseEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -84,7 +84,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#local temp>with dose value <@inputTypes.NumericRange range=c.doseValue /></#local><#local attrs+=[temp]></#if>
 dose era<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any drug")}<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any drug") /><#else>.</#if></#macro>
 
 <#macro DrugEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -95,7 +95,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#local temp>with gap days <@inputTypes.NumericRange range=c.gapDays /></#local><#local attrs+=[temp]></#if>
 drug era<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any drug")}<#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any drug") /><#else>.</#if></#macro>
 
 <#macro DrugExposure c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -115,13 +115,13 @@ c.drugType??><#local temp>a drug type that<#if c.drugTypeExclude!false> is not:<
 drug exposure<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any drug")}<#if 
 c.drugSourceConcept??> (including ${utils.codesetName(c.drugSourceConcept, "any drug")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any drug") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any drug") /><#else>.</#if></#macro>
 
 <#macro LocationRegion c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@EventDateCriteria c.startDate!{} c.endDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 location of ${utils.codesetName(c.codesetId!"", "any location")}<#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any location") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any location") /><#else>.</#if></#macro>
 
 <#macro Measurement c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -142,7 +142,7 @@ c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList 
 measurement<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any measurement")}<#if 
 c.measurementSourceConcept??> (including ${utils.codesetName(c.measurementSourceConcept, "any measurement")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any measurement") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any measurement") /><#else>.</#if></#macro>
 
 <#macro Observation c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -159,7 +159,7 @@ c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList 
 observation<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any observation")}<#if 
 c.observationSourceConcept??> (including ${utils.codesetName(c.observationSourceConcept, "any observation")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any observation") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any observation") /><#else>.</#if></#macro>
 
 <#macro ObservationPeriod c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -184,7 +184,7 @@ c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList 
 procedure occurrence<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any procedure")}<#if 
 c.procedureSourceConcept??> (including ${utils.codesetName(c.procedureSourceConcept, "any procedure")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any procedure") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any procedure") /><#else>.</#if></#macro>
 
 <#macro Specimen c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -199,7 +199,7 @@ c.sourceId??><#local temp>with source ID <@inputTypes.TextFilter filter=c.source
 specimen<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any specimen")}<#if 
 c.specimenSourceConcept??> (including ${utils.codesetName(c.specimenSourceConcept, "any specimen")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any specimen") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any specimen") /><#else>.</#if></#macro>
 
 <#macro VisitOccurrence c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -212,7 +212,7 @@ c.visitLength??><#local temp>with length <@inputTypes.NumericRange range=c.visit
 visit occurrence<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any visit")}<#if 
 c.visitSourceConcept??> (including ${utils.codesetName(c.visitSourceConcept, "any visit")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId, "any visit") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit") /><#else>.</#if></#macro>
 
 <#-- temp has content: '${temp}' -->
 
