@@ -605,7 +605,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     // Occurrence criteria
     String occurrenceCriteria = String.format(
-            "HAVING COUNT(%sA.TARGET_CONCEPT_ID) %s %d",
+            "HAVING COUNT(%scc.target_concept_id) %s %d",
             corelatedCriteria.occurrence.isDistinct ? "DISTINCT " : "",
             getOccurrenceOperator(corelatedCriteria.occurrence.type),
             corelatedCriteria.occurrence.count
