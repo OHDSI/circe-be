@@ -92,7 +92,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     final CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
     final String RESULTS_SCHEMA = "simple_window_test";
     final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
-      "/criteria/simpleWindowCriteria_PREP.json"};
+      "/corelatedcriteria/simpleWindowCriteria_PREP.json"};
 
     final String[] testDataSetsVerify = new String[] {"/corelatedcriteria/simpleWindowCriteria_VERIFY.json"};
 
