@@ -622,6 +622,19 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // <editor-fold defaultstate="collapsed" desc="ICriteriaSqlDispatcher implementation">
+
+  protected <T extends Criteria> String getCriteriaSql(CriteriaSqlBuilder<T> builder, T criteria) {
+    String query = builder.getCriteriaSql(criteria);
+    return processCorrelatedCriteria(query, criteria);
+  }
+
+  protected String processCorrelatedCriteria(String query, Criteria criteria) {
+    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
+      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+    }
+    return query;
+  }
+
   @Override
   public String getCriteriaSql(ConditionEra criteria) {
     return getCriteriaSql(conditionEraSqlBuilder, criteria);
@@ -657,11 +670,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return getCriteriaSql(drugExposureSqlBuilder, criteria);
   }
 
-  protected <T extends Criteria> String getCriteriaSql(CriteriaSqlBuilder<T> builder, T criteria) {
-    String query = builder.getCriteriaSql(criteria);
-    return processCorrelatedCriteria(query, criteria);
-  }
-
   @Override
   public String getCriteriaSql(Measurement criteria) {
     return getCriteriaSql(measurementSqlBuilder, criteria);
@@ -695,13 +703,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria) {
     return getCriteriaSql(visitOccurrenceSqlBuilder, criteria);
-  }
-
-  protected String processCorrelatedCriteria(String query, Criteria criteria) {
-    if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
-    }
-    return query;
   }
 
   @Override

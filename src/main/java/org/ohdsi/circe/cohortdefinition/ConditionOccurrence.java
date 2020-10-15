@@ -47,7 +47,7 @@ public class ConditionOccurrence extends Criteria {
 
   @JsonProperty("ConditionTypeExclude")
   public boolean conditionTypeExclude = false;
-	
+
   @JsonProperty("StopReason")
   public TextFilter stopReason;
 

@@ -6,16 +6,11 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import com.github.mjeanroy.dbunit.core.dataset.DataSetFactory;
-import java.sql.SQLException;
 import org.dbunit.Assertion;
-import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.operation.DatabaseOperation;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ohdsi.circe.AbstractDatabaseTest;
@@ -181,8 +176,8 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
     
-    final ITable actualExclusion = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".inclusion", translatedInclusionQuery);
-    final ITable expectedExclusion = expectedDataSet.getTable(RESULTS_SCHEMA + ".inclusion");
+    final ITable actualExclusion = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".exclusion", translatedExclusionQuery);
+    final ITable expectedExclusion = expectedDataSet.getTable(RESULTS_SCHEMA + ".exclusion");
 
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedExclusion, actualExclusion);
