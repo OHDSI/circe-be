@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 
 /**
  *
@@ -47,8 +48,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
   @JsonSubTypes.Type(value = PayerPlanPeriod.class, name = "PayerPlanPeriod")
 })
 public abstract class Criteria {
-  public abstract String accept(IGetCriteriaSqlDispatcher dispatcher);
-  
+  public String accept(IGetCriteriaSqlDispatcher dispatcher) {
+    return this.accept(dispatcher, null);
+  }
+
+  public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options){
+    return this.accept(dispatcher, options);
+  };
+
   @JsonProperty("CorrelatedCriteria")  
   public CriteriaGroup CorrelatedCriteria;
   

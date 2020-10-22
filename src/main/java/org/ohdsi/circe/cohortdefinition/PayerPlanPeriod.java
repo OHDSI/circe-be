@@ -20,6 +20,7 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.ohdsi.analysis.versioning.CdmVersion;
+import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 import org.ohdsi.circe.vocabulary.Concept;
 
 @CdmVersion(range = ">=5.3")
@@ -73,7 +74,7 @@ public class PayerPlanPeriod extends Criteria {
 	public Integer stopReasonSourceConcept;
 	
 	@Override
-	public String accept(IGetCriteriaSqlDispatcher dispatcher) {
-	  return dispatcher.getCriteriaSql(this);
+	public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
+	  return dispatcher.getCriteriaSql(this, options);
 	}
 }

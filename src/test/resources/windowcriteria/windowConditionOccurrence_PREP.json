@@ -54,7 +54,7 @@
       "period_type_concept_id": 0
     }
   ],
-  "simple_window_test.cohort" : [
+  "window_condition_occurrence.cohort" : [
     {
       "cohort_definition_id": 1,
       "subject_id":1,

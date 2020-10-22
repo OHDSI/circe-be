@@ -1,32 +1,50 @@
 {
-  "simple_window_test.output": [
+  "window_condition_occurrence.no_columns": [
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "window_condition_occurrence.add_columns": [
     {
       "person_id":1,
       "event_id":1,
       "start_date": "2005-01-01",
       "end_date": "2005-01-02",
-      "target_concept_id": 2
+      "domain_concept_id": 2
     },
     {
       "person_id":1,
       "event_id":1,
       "start_date": "2005-02-01",
       "end_date": "2005-02-02",
-      "target_concept_id": 2
+      "domain_concept_id": 2
     },
     {
       "person_id":1,
       "event_id":1,
       "start_date": "2005-03-01",
       "end_date": "2005-03-02",
-      "target_concept_id": 2
+      "domain_concept_id": 2
     },
     {
       "person_id":1,
       "event_id":1,
       "start_date": "2005-04-01",
       "end_date": "2005-04-02",
-      "target_concept_id": 2
+      "domain_concept_id": 2
     }
   ]
 }
