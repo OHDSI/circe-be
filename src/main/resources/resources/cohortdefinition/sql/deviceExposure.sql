@@ -1,5 +1,5 @@
 -- Begin Device Exposure Criteria
-select C.person_id, C.device_exposure_id as event_id, C.device_exposure_start_date as start_date, C.device_exposure_end_date as end_date,
+select C.person_id, C.device_exposure_id as event_id, C.device_exposure_start_date as start_date, COALESCE(C.device_exposure_end_date, DATEADD(day,1,C.device_exposure_start_date)) as end_date,
         C.visit_occurrence_id, C.device_exposure_start_date as sort_date@additionalColumns
 from 
 (

@@ -31,6 +31,7 @@ public enum CriteriaColumn {
   RANGE_LOW("range_low"),
   REFILLS("refills"),
   START_DATE("start_date"),
+  UNIT("unit_concept_id"),
   VALUE_AS_NUMBER("value_as_number");
 
   private final String columnName;

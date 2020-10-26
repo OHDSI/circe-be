@@ -26,10 +26,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ohdsi.circe.AbstractDatabaseTest;
-import org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.WindowedCriteria;
+import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
@@ -127,6 +124,98 @@ public class WindowCriteria_5_0_0_Test  extends AbstractDatabaseTest {
     wc.criteria = new ConditionOccurrence(); // find any condition occurence
     wc.startWindow = CriteriaUtils.getPrior365Window();
     List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDeathTest() throws Exception {
+
+    final String resultsSchema = "window_death";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowDeath_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowDeath_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new Death(); // find any death
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDeviceExposureTest() throws Exception {
+
+    final String resultsSchema = "window_device_exposure";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowDeviceExposure_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowDeviceExposure_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new DeviceExposure(); // find any device exposure
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.QUANTITY);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDoseEraTest() throws Exception {
+
+    final String resultsSchema = "window_dose_era";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowDoseEra_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowDoseEra_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new DoseEra(); // find any dose era
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.VALUE_AS_NUMBER, CriteriaColumn.UNIT);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDrugEraTest() throws Exception {
+
+    final String resultsSchema = "window_drug_era";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowDrugEra_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowDrugEra_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new DrugEra(); // find any drug era
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.GAP_DAYS, CriteriaColumn.ERA_OCCURRENCES);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDrugExposureTest() throws Exception {
+
+    final String resultsSchema = "window_drug_exposure";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowDrugExposure_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowDrugExposure_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new DrugExposure(); // find any drug exposure
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT,
+            CriteriaColumn.REFILLS, CriteriaColumn.QUANTITY, CriteriaColumn.DAYS_SUPPLY);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowMeasurementTest() throws Exception {
+
+    final String resultsSchema = "window_measurement";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/windowcriteria/windowMeasurement_PREP.json"};
+    final String[] testDataSetsVerify = new String[] {"/windowcriteria/windowMeasurement_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new Measurement(); // find any measurement
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT,
+            CriteriaColumn.VALUE_AS_NUMBER, CriteriaColumn.RANGE_HIGH, CriteriaColumn.RANGE_LOW);
     this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
 
   }

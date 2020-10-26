@@ -40,6 +40,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.device_concept_id";
+      case QUANTITY:
+        return "C.quantity";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Device Exposure:" + column.toString());
     }

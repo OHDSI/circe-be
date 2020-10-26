@@ -37,6 +37,10 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
+      case UNIT:
+        return "C.unit_concept_id";
+      case VALUE_AS_NUMBER:
+        return "C.dose_value";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Device Exposure:" + column.toString());
     }

@@ -1,0 +1,80 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.measurement": [
+    {
+			"measurement_id": 1,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_type_concept_id":0,
+			"value_as_number": 1,
+			"range_high": 10,
+			"range_low": 3,
+      "measurement_date":"2000-01-01"
+    },
+    {
+			"measurement_id": 2,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_type_concept_id":0,
+			"value_as_number": 2,
+			"range_high": 11,
+			"range_low": 6,
+      "measurement_date":"2005-01-01"
+    },
+    {
+			"measurement_id": 3,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_type_concept_id":0,
+			"value_as_number": 3,
+			"range_high": 12,
+			"range_low": 9,
+      "measurement_date":"2005-02-01"
+    },
+    {
+			"measurement_id": 4,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_type_concept_id":0,
+			"value_as_number": 4,
+			"range_high": 13,
+			"range_low": 12,
+      "measurement_date":"2005-03-01"
+    },
+    {
+			"measurement_id": 5,
+      "person_id":1,
+      "measurement_concept_id":2,
+      "measurement_type_concept_id":0,
+			"value_as_number": 5,
+			"range_high": 14,
+			"range_low": 15,
+      "measurement_date":"2005-04-01"
+    }
+  ],
+  "cdm.observation_period" : [
+    {
+      "observation_period_id": 1,
+      "person_id":1,
+      "observation_period_start_date":"2000-01-01",
+      "observation_period_end_date":"2010-01-01",
+      "period_type_concept_id": 0
+    }
+  ],
+  "window_measurement.cohort" : [
+    {
+      "cohort_definition_id": 1,
+      "subject_id":1,
+      "cohort_start_date":"2006-01-01",
+      "cohort_end_date":"2006-01-01"
+    }
+  ]
+}
