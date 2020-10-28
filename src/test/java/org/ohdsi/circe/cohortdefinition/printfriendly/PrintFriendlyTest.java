@@ -1,5 +1,6 @@
 package org.ohdsi.circe.cohortdefinition.printfriendly;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.regex.Pattern;
@@ -7,12 +8,14 @@ import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.ohdsi.analysis.Utils;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -563,6 +566,31 @@ public class PrintFriendlyTest {
             "2. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
             "3. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
     ));
+    
+  }
+
+  @Test
+  public void conceptSetListTest() {
+    String conceptSetListJson = ResourceHelper.GetResourceAsString("/printfriendly/conceptSetList.json");
+    String markdown = pf.renderConceptSetList(conceptSetListJson);
+    assertThat(markdown, stringContainsInOrder(
+            "Acrodermatitis continua",
+            "Psoriasis"));
+    ConceptSet[] conceptSetList = Utils.deserialize(conceptSetListJson, new TypeReference<ConceptSet[]>() {});
+    String objMarkdown = pf.renderConceptSetList(conceptSetList);
+    assertThat(markdown, equalTo(objMarkdown));
+    
+  }
+
+  @Test
+  public void conceptSetTest() {
+    String conceptSetListJson = ResourceHelper.GetResourceAsString("/printfriendly/conceptSetList.json");
+    ConceptSet[] conceptSetList = Utils.deserialize(conceptSetListJson, new TypeReference<ConceptSet[]>() {});
+    String markdown = pf.renderConceptSet(conceptSetList[0]);
+    assertThat(markdown, stringContainsInOrder(
+            "Acrodermatitis continua"));
+    String markdownJson = pf.renderConceptSet(Utils.serialize(conceptSetList[0]));
+    assertThat(markdown, equalTo(markdownJson));
     
   }
 

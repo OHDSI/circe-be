@@ -1,5 +1,6 @@
 package org.ohdsi.circe.cohortdefinition.printfriendly;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -11,6 +12,7 @@ import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateModel;
 import java.util.HashMap;
 import java.util.Map;
+import org.ohdsi.analysis.Utils;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
 import org.ohdsi.circe.vocabulary.ConceptSetExpression;
 
@@ -49,7 +51,7 @@ public class MarkdownRender
     CohortExpression expression = CohortExpression.fromJson(expressionJson);
     return this.renderCohort(expression);
   }
-  
+
   public String renderConceptSetList(ConceptSet[] conceptSetList) {
     try {
       Map<String, Object> root = new HashMap<>();
@@ -62,10 +64,19 @@ public class MarkdownRender
       throw new RuntimeException(e);
     }
   }
-  
+
+  public String renderConceptSetList(String conceptSetListJson) {
+    ConceptSet[] conceptSetList = Utils.deserialize(conceptSetListJson, new TypeReference<ConceptSet[]>() {});
+    return renderConceptSetList(conceptSetList);
+  }
+
   public String renderConceptSet(ConceptSet conceptSet) {
     ConceptSet[] conceptSetList =  new ConceptSet[] {conceptSet};// wrap param in array
     return renderConceptSetList(conceptSetList);
   }
 
+  public String renderConceptSet(String conceptSetJson) {
+    ConceptSet conceptSet = Utils.deserialize(conceptSetJson, new TypeReference<ConceptSet>() {});
+    return renderConceptSet(conceptSet);
+  }
 }
