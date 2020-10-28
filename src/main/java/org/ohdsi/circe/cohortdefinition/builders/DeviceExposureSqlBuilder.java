@@ -42,6 +42,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
         return "C.device_concept_id";
       case QUANTITY:
         return "C.quantity";
+      case DURATION:
+        return "DATEDIFF(d,device_exposure_start_date, COALESCE(C.device_exposure_end_date, DATEADD(d,1,C.device_exposure_start_date)))";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Device Exposure:" + column.toString());
     }

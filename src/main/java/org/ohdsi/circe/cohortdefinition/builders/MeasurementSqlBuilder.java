@@ -38,6 +38,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.measurement_concept_id";
+      case DURATION:
+        return "CAST(1 as int)";
       case VALUE_AS_NUMBER:
         return "C.value_as_number";
       case RANGE_HIGH:

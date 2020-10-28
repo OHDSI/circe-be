@@ -37,9 +37,11 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
   protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
     switch (column) {
       case DOMAIN_CONCEPT:
-        return "C.condition_concept_id";
+        return "C.specimen_concept_id";
+      case DURATION:
+        return "CAST(1 as int)";
       default:
-        throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
+        throw new IllegalArgumentException("Invalid CriteriaColumn for Specimen:" + column.toString());
     }
   }
 

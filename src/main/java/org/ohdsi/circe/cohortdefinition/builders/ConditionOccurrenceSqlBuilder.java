@@ -39,7 +39,9 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.condition_concept_id";
-      default:
+      case DURATION:
+        return "(DATEDIFF(d,C.condition_start_date, COALESCE(C.condition_end_date, DATEADD(day,1,C.condition_start_date))))";
+       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
     }
   }

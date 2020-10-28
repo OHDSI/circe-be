@@ -39,6 +39,19 @@ public class CriteriaUtils {
     return prior365Window;
   }
   
+  public static Window getAnyTimeWindow() {
+    Window anytimeWindow = new Window();  
+    // index starts between 365d before
+    Window.Endpoint startPoint = new Window.Endpoint();
+    startPoint.coeff = -1;
+    anytimeWindow.start = startPoint;
+    // ... and 0 days before
+    Window.Endpoint endPoint = new Window.Endpoint();
+    endPoint.coeff = 1;
+    anytimeWindow.end = endPoint;
+    return anytimeWindow;    
+  }
+  
   public static Occurrence getAtLeast1Occurrence() {
     Occurrence atLeast1 = new Occurrence();
     atLeast1.type = Occurrence.AT_LEAST;

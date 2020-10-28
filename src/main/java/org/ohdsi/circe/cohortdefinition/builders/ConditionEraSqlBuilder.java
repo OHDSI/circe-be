@@ -38,8 +38,10 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
         return "C.condition_concept_id";
       case ERA_OCCURRENCES:
         return "C.condition_occurrence_count";
+      case DURATION:
+        return "(DATEDIFF(d,C.condition_era_start_date, C.condition_era_end_date))";
       default:
-        throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Era:" + column.toString());
+       throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Era:" + column.toString());
     }
   }
 

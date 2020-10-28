@@ -38,6 +38,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.procedure_concept_id";
+      case DURATION:
+        return "CAST(1 as int)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
     }

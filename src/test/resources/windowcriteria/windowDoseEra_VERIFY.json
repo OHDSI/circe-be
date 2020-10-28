@@ -25,7 +25,8 @@
       "end_date": "2005-01-07",
       "domain_concept_id": 2,
 			"value_as_number": 2,
-			"unit_concept_id": 0
+			"unit_concept_id": 0,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -34,7 +35,8 @@
       "end_date": "2005-02-07",
       "domain_concept_id": 2,
 			"value_as_number": 3,
-			"unit_concept_id": 0
+			"unit_concept_id": 0,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -43,7 +45,8 @@
       "end_date": "2005-03-07",
       "domain_concept_id": 2,
 			"value_as_number": 4,
-			"unit_concept_id": 0
+			"unit_concept_id": 0,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -52,7 +55,8 @@
       "end_date": "2005-04-07",
       "domain_concept_id": 2,
 			"value_as_number": 5,
-			"unit_concept_id": 0
+			"unit_concept_id": 0,
+			"duration": 6
     }
   ]
 }

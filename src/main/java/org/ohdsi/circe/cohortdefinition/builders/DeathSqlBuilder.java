@@ -38,6 +38,8 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "coalesce(C.cause_concept_id,0)";
+      case DURATION:
+        return "CAST(1 as int)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Death:" + column.toString());
     }

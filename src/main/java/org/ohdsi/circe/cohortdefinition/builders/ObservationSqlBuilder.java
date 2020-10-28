@@ -42,6 +42,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
         return "C.observation_concept_id";
       case VALUE_AS_NUMBER:
         return "C.value_as_number";
+      case DURATION:
+        return "CAST(1 as int)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Observation:" + column.toString());
     }

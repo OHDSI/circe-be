@@ -41,6 +41,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
         return "C.days_supply";
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
+      case DURATION:
+        return "DATEDIFF(d, C.drug_exposure_start_date, COALESCE(C.drug_exposure_end_date, DATEADD(day,C.days_supply,C.drug_exposure_start_date), DATEADD(day,1,C.drug_exposure_start_date)))";
       case QUANTITY:
         return "C.quantity";
       case REFILLS:

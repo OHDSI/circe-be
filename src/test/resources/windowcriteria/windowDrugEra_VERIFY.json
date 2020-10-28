@@ -25,7 +25,8 @@
       "end_date": "2005-01-07",
       "domain_concept_id": 2,
 			"gap_days": 2,
-			"occurrence_count":11
+			"occurrence_count":11,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -34,7 +35,8 @@
       "end_date": "2005-02-07",
       "domain_concept_id": 2,
 			"gap_days": 3,
-			"occurrence_count":12
+			"occurrence_count":12,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -43,7 +45,8 @@
       "end_date": "2005-03-07",
       "domain_concept_id": 2,
 			"gap_days": 4,
-			"occurrence_count":13
+			"occurrence_count":13,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -52,7 +55,8 @@
       "end_date": "2005-04-07",
       "domain_concept_id": 2,
 			"gap_days": 5,
-			"occurrence_count":14
+			"occurrence_count":14,
+			"duration": 6
     }
   ]
 }

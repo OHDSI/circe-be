@@ -41,6 +41,8 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
         return "C.drug_exposure_count";
       case GAP_DAYS:
         return "C.gap_days";
+      case DURATION:
+        return "DATEDIFF(d,C.drug_era_start_date, C.drug_era_end_date)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Drug Era:" + column.toString());
     }

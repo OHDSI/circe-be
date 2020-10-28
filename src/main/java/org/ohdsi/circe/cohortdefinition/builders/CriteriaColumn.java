@@ -23,6 +23,7 @@ public enum CriteriaColumn {
   DAYS_SUPPLY("days_supply"),
   DOMAIN_CONCEPT("domain_concept_id"),
   DOMAIN_SOURCE_CONCEPT("domain_source_concept_id"),
+  DURATION("duration"),
   END_DATE("end_date"),
   ERA_OCCURRENCES("occurrence_count"),
   GAP_DAYS("gap_days"),

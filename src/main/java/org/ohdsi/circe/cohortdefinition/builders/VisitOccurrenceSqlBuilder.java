@@ -31,9 +31,11 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
     switch (column) {
       case DOMAIN_CONCEPT:
-        return "C.condition_concept_id";
+        return "C.visit_concept_id";
+      case DURATION:
+        return "DATEDIFF(d, C.visit_start_date, C.visit_end_date)";
       default:
-        throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
+        throw new IllegalArgumentException("Invalid CriteriaColumn for Visit Occurrence:" + column.toString());
     }
   }
 

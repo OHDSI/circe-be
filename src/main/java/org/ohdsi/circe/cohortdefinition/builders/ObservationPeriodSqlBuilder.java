@@ -55,6 +55,8 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.period_type_concept_id";
+      case DURATION:
+        return "DATEDIFF(d, @startDateExpression, @endDateExpression)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Observation Period:" + column.toString());
     }

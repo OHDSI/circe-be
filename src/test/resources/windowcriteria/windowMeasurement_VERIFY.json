@@ -26,7 +26,8 @@
       "domain_concept_id": 2,
 			"value_as_number": 2,
 			"range_high":11,
-			"range_low": 6
+			"range_low": 6,
+			"duration": 1
     },
     {
       "person_id":1,
@@ -36,7 +37,8 @@
       "domain_concept_id": 2,
 			"value_as_number": 3,
 			"range_high":12,
-			"range_low": 9
+			"range_low": 9,
+			"duration": 1
     },
     {
       "person_id":1,
@@ -46,7 +48,8 @@
       "domain_concept_id": 2,
 			"value_as_number": 4,
 			"range_high":13,
-			"range_low": 12
+			"range_low": 12,
+			"duration": 1
     },
     {
       "person_id":1,
@@ -56,7 +59,8 @@
       "domain_concept_id": 2,
 			"value_as_number": 5,
 			"range_high":14,
-			"range_low": 15
+			"range_low": 15,
+			"duration": 1
     }
   ]
 }

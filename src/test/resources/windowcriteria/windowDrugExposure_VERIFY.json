@@ -26,7 +26,8 @@
       "domain_concept_id": 2,
 			"refills": 2,
 			"quantity":11,
-			"days_supply": 6
+			"days_supply": 6,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -36,7 +37,8 @@
       "domain_concept_id": 2,
 			"refills": 3,
 			"quantity":12,
-			"days_supply": 9
+			"days_supply": 9,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -46,7 +48,8 @@
       "domain_concept_id": 2,
 			"refills": 4,
 			"quantity":13,
-			"days_supply": 12
+			"days_supply": 12,
+			"duration": 6
     },
     {
       "person_id":1,
@@ -56,7 +59,8 @@
       "domain_concept_id": 2,
 			"refills": 5,
 			"quantity":14,
-			"days_supply": 15
+			"days_supply": 15,
+			"duration": 6
     }
   ]
 }

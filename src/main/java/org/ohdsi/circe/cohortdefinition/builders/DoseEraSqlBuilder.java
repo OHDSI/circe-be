@@ -37,6 +37,8 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
+      case DURATION:
+        return "DATEDIFF(d, C.dose_era_start_date, C.dose_era_end_date)";
       case UNIT:
         return "C.unit_concept_id";
       case VALUE_AS_NUMBER:
