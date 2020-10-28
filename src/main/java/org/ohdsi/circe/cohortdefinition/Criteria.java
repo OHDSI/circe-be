@@ -52,9 +52,7 @@ public abstract class Criteria {
     return this.accept(dispatcher, null);
   }
 
-  public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options){
-    return this.accept(dispatcher, options);
-  };
+  public abstract String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options);
 
   @JsonProperty("CorrelatedCriteria")  
   public CriteriaGroup CorrelatedCriteria;
