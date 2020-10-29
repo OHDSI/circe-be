@@ -19,6 +19,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ohdsi.circe.cohortdefinition.builders.CriteriaColumn;
 
 /**
  *
@@ -36,5 +37,8 @@ public class Occurrence {
   public int count;
   
   @JsonProperty("IsDistinct")
-  public boolean isDistinct;  
+  public boolean isDistinct;
+  
+  @JsonProperty("CountColumn")
+  public CriteriaColumn countColumn;
 }

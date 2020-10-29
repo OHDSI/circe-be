@@ -68,6 +68,14 @@ public class CriteriaUtils {
     return exactly0;
   }
   
+  public static Occurrence getDistinctCount(CriteriaColumn countCol, int type, int count) {
+    Occurrence o = new Occurrence();
+    o.type=type;
+    o.count = count;
+    o.isDistinct = true;
+    o.countColumn = countCol;
+    return o;
+  }
   public static final String EVENT_TABLE_TEMPLATE = "(SELECT ROW_NUMBER() OVER (partition by E.subject_id order by E.cohort_start_date) AS event_id, " +
             "E.subject_id AS person_id, E.cohort_start_date AS start_date, E.cohort_end_date AS end_date, " +
             "OP.observation_period_start_date AS op_start_date, OP.observation_period_end_date AS op_end_date\n" +

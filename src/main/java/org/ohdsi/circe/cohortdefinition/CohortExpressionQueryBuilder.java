@@ -619,12 +619,19 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     // pick the appropraite query template that is optimized for include (at least 1) or exclude (allow 0)
     String query = (corelatedCriteria.occurrence.type == Occurrence.AT_MOST || corelatedCriteria.occurrence.count == 0) ? ADDITIONAL_CRITERIA_LEFT_TEMPLATE : ADDITIONAL_CRITERIA_INNER_TEMPLATE;
 
-    String countColumn = "cc.event_id";
+    String countColumnExpression = "cc.event_id";
 
     BuilderOptions builderOptions = new BuilderOptions();
     if (corelatedCriteria.occurrence.isDistinct) {
-      builderOptions.additionalColumns.add(CriteriaColumn.DOMAIN_CONCEPT);
-      countColumn = String.format("cc.%s", CriteriaColumn.DOMAIN_CONCEPT.columnName());
+      if (corelatedCriteria.occurrence.countColumn == null) { // backwards compatability:  default column uses domain_concept_id
+        builderOptions.additionalColumns.add(CriteriaColumn.DOMAIN_CONCEPT);
+        countColumnExpression = String.format("cc.%s", CriteriaColumn.DOMAIN_CONCEPT.columnName());
+      } else {
+        builderOptions.additionalColumns.add(corelatedCriteria.occurrence.countColumn);
+        countColumnExpression = String.format("cc.%s", corelatedCriteria.occurrence.countColumn.columnName());
+        
+      }
+    
     }
     query = getWindowedCriteriaQuery(query, corelatedCriteria, eventTable, builderOptions);
 
@@ -632,7 +639,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String occurrenceCriteria = String.format(
             "HAVING COUNT(%s%s) %s %d",
             corelatedCriteria.occurrence.isDistinct ? "DISTINCT " : "",
-            countColumn,
+            countColumnExpression,
             getOccurrenceOperator(corelatedCriteria.occurrence.type),
             corelatedCriteria.occurrence.count
     );
