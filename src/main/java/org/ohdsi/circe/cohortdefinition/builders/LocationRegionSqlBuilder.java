@@ -5,47 +5,66 @@ import org.ohdsi.circe.cohortdefinition.LocationRegion;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 
 public class LocationRegionSqlBuilder<T extends LocationRegion> extends CriteriaSqlBuilder<T> {
 
-    private final static String LOCATION_REGION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/locationRegion.sql");
+  private final static String LOCATION_REGION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/locationRegion.sql");
 
-    @Override
-    protected String getQueryTemplate() {
+  // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
 
-        return LOCATION_REGION_TEMPLATE;
+  @Override
+  protected Set<CriteriaColumn> getDefaultColumns() {
+    return DEFAULT_COLUMNS;
+  }
+
+  @Override
+  protected String getQueryTemplate() {
+    return LOCATION_REGION_TEMPLATE;
+  }
+
+  @Override
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+    switch (column) {
+      case DOMAIN_CONCEPT:
+        return "C.region_concept_id";
+      default:
+        throw new IllegalArgumentException("Invalid CriteriaColumn for Location Region:" + column.toString());
     }
+  }
 
-    @Override
-    protected String embedCodesetClause(String query, T criteria) {
+  @Override
+  protected String embedCodesetClause(String query, T criteria) {
 
-        return StringUtils.replace(query, "@codesetClause",
-                getCodesetJoinExpression(criteria.codesetId,
-                        "l.region_concept_id",
-                        null,
-                        null)
-        );
-    }
+    return StringUtils.replace(query, "@codesetClause",
+            getCodesetJoinExpression(criteria.codesetId,
+                    "l.region_concept_id",
+                    null,
+                    null)
+    );
+  }
 
-    @Override
-    protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  @Override
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
 
-        return query;
-    }
+    return query;
+  }
 
-    @Override
-    protected List<String> resolveJoinClauses(T criteria) {
+  @Override
+  protected List<String> resolveJoinClauses(T criteria) {
 
-        return new ArrayList<>();
-    }
+    return new ArrayList<>();
+  }
 
-    @Override
-    protected List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables) {
+  @Override
+  protected List<String> resolveWhereClauses(T criteria) {
 
-        return new ArrayList<>();
-    }
+    return new ArrayList<>();
+  }
 }

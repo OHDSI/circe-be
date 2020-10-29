@@ -5,8 +5,11 @@ import org.ohdsi.circe.cohortdefinition.Observation;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -18,11 +21,33 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
 
     private final static String OBSERVATION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/observation.sql");
 
+  // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
+
+  @Override
+  protected Set<CriteriaColumn> getDefaultColumns() {
+    return DEFAULT_COLUMNS;
+  }
+
     @Override
     protected String getQueryTemplate() {
 
         return OBSERVATION_TEMPLATE;
     }
+
+  @Override
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+    switch (column) {
+      case DOMAIN_CONCEPT:
+        return "C.observation_concept_id";
+      case VALUE_AS_NUMBER:
+        return "C.value_as_number";
+      case DURATION:
+        return "CAST(1 as int)";
+      default:
+        throw new IllegalArgumentException("Invalid CriteriaColumn for Observation:" + column.toString());
+    }
+  }
 
     @Override
     protected String embedCodesetClause(String query, T criteria) {
@@ -69,7 +94,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     @Override
-    protected List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables) {
+    protected List<String> resolveWhereClauses(T criteria) {
 
         List<String> whereClauses = new ArrayList<>();
 

@@ -6,66 +6,36 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import com.github.mjeanroy.dbunit.core.dataset.DataSetFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.ohdsi.circe.AbstractDatabaseTest;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlSplit;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.opentable.db.postgres.junit.EmbeddedPostgresRules;
-import com.opentable.db.postgres.junit.SingleInstancePostgresRule;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 
 // Note: to verify the test results, we must directly query the database
 // via createQueryTable(), because loading the result schema tables via
 // getTables() fails because the results schema isn't seen by the existing connection.
 
-public class CohortGeneration_5_0_0_Test {
+public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
 
   private final static Logger log = LoggerFactory.getLogger(CohortGeneration_5_0_0_Test.class);
-  private static final String CDM_DDL_PATH = "/cohortgeneration/cdm_v5.0.sql";
-  private static final String RESULTS_DDL_PATH = "/cohortgeneration/resultsSchema.sql";
-  private static JdbcTemplate jdbcTemplate;
-
-  @ClassRule
-  public static SingleInstancePostgresRule pg = EmbeddedPostgresRules.singleInstance();
-
-  private static DataSource getDataSource() {
-    return pg.getEmbeddedPostgres().getPostgresDatabase();
-  }
-
-  private static IDatabaseConnection getConnection() throws SQLException {
-    final IDatabaseConnection con = new DatabaseDataSourceConnection(getDataSource());
-    con.getConfig().setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, true);
-    con.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
-    return con;
-  }
-
-  private static void prepareSchema(final String schemaName, final String schemaPath) {
-    final String sql = StringUtils.replace(ResourceHelper.GetResourceAsString(schemaPath), "@schemaName", schemaName);
-    jdbcTemplate.execute(String.format("DROP SCHEMA IF EXISTS %s CASCADE", schemaName));
-    jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
-    jdbcTemplate.batchUpdate(SqlSplit.splitSql(sql));
-  }
+  private static final String CDM_DDL_PATH = "/ddl/cdm_v5.0.sql";
+  private static final String RESULTS_DDL_PATH = "/ddl/resultsSchema.sql";
 
   private static CohortExpressionQueryBuilder.BuildExpressionQueryOptions buildExpressionQueryOptions(
       final int cohortId, final String resultsSchema) {

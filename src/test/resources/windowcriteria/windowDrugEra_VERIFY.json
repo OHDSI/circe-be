@@ -1,0 +1,62 @@
+{
+  "window_drug_era.no_columns": [
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "window_drug_era.add_columns": [
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-01-01",
+      "end_date": "2005-01-07",
+      "domain_concept_id": 2,
+			"gap_days": 2,
+			"occurrence_count":11,
+			"duration": 6
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-02-01",
+      "end_date": "2005-02-07",
+      "domain_concept_id": 2,
+			"gap_days": 3,
+			"occurrence_count":12,
+			"duration": 6
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-03-01",
+      "end_date": "2005-03-07",
+      "domain_concept_id": 2,
+			"gap_days": 4,
+			"occurrence_count":13,
+			"duration": 6
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-04-01",
+      "end_date": "2005-04-07",
+      "domain_concept_id": 2,
+			"gap_days": 5,
+			"occurrence_count":14,
+			"duration": 6
+    }
+  ]
+}

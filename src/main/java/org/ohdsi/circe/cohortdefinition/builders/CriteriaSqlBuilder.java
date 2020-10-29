@@ -3,56 +3,79 @@ package org.ohdsi.circe.cohortdefinition.builders;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
-    public String getCriteriaSql(T criteria) {
+  public String getCriteriaSql(T criteria) {
+    return getCriteriaSql(criteria, null);
+  }
 
-        String query = getQueryTemplate();
+  public String getCriteriaSql(T criteria, BuilderOptions options) {
 
-        query = embedCodesetClause(query, criteria);
+    String query = getQueryTemplate();
 
-        List<String> joinClauses = resolveJoinClauses(criteria);
-        
-        Map<String, String> additionalVariables = new HashMap<>();
-        List<String> whereClauses = resolveWhereClauses(criteria, additionalVariables);
+    query = embedCodesetClause(query, criteria);
 
-        query = embedOrdinalExpression(query, criteria, whereClauses);
+    List<String> joinClauses = resolveJoinClauses(criteria);
+    List<String> whereClauses = resolveWhereClauses(criteria);
 
-        query = embedJoinClauses(query, joinClauses);
-        query = embedWhereClauses(query, whereClauses);
+    query = embedOrdinalExpression(query, criteria, whereClauses);
 
-        for (Map.Entry<String, String> entry: additionalVariables.entrySet()) {
-            query = StringUtils.replace(query, entry.getKey(), entry.getValue());
-        }
+    query = embedJoinClauses(query, joinClauses);
+    query = embedWhereClauses(query, whereClauses);
 
-        return query;
+    if (options != null) {
+      List<CriteriaColumn> filteredColumns = options.additionalColumns.stream()
+              .filter((column) -> !this.getDefaultColumns().contains(column))
+              .collect(Collectors.toList());
+      if (filteredColumns.size() > 0) {
+        query = StringUtils.replace(query, "@additionalColumns", ", " + this.getAdditionalColumns(filteredColumns));
+      } else {
+        query = StringUtils.replace(query, "@additionalColumns", "");
+      }
+    } else {
+      query = StringUtils.replace(query, "@additionalColumns", "");
     }
 
-    protected String embedJoinClauses(String query, List<String> joinClauses) {
+    return query;
+  }
 
-        return StringUtils.replace(query, "@joinClause", StringUtils.join(joinClauses, "\n"));
+  protected abstract String getTableColumnForCriteriaColumn(CriteriaColumn column);
+  
+  protected String getAdditionalColumns(List<CriteriaColumn> columns) {
+    String cols = String.join(", ", columns.stream()
+            .map((column) -> {
+              return String.format("%s as %s", getTableColumnForCriteriaColumn(column), column.columnName());
+            }).collect(Collectors.toList()));
+    return cols;
+  }
+
+  protected abstract Set<CriteriaColumn> getDefaultColumns();
+
+  protected String embedJoinClauses(String query, List<String> joinClauses) {
+
+    return StringUtils.replace(query, "@joinClause", StringUtils.join(joinClauses, "\n"));
+  }
+
+  protected String embedWhereClauses(String query, List<String> whereClauses) {
+
+    String whereClause = "";
+    if (whereClauses.size() > 0) {
+      whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
     }
+    return StringUtils.replace(query, "@whereClause", whereClause);
+  }
 
-    protected String embedWhereClauses(String query, List<String> whereClauses) {
+  protected abstract String getQueryTemplate();
 
-        String whereClause = "";
-        if (whereClauses.size() > 0) {
-            whereClause = "WHERE " + StringUtils.join(whereClauses, "\nAND ");
-        }
-        return StringUtils.replace(query, "@whereClause", whereClause);
-    }
+  protected abstract String embedCodesetClause(String query, T criteria);
 
-    protected abstract String getQueryTemplate();
+  protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
 
-    protected abstract String embedCodesetClause(String query, T criteria);
+  protected abstract List<String> resolveJoinClauses(T criteria);
 
-    protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
-
-    protected abstract List<String> resolveJoinClauses(T criteria);
-
-    protected abstract List<String> resolveWhereClauses(T criteria, Map<String, String> additionalVariables);
+  protected abstract List<String> resolveWhereClauses(T criteria);
 }

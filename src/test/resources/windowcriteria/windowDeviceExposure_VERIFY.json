@@ -1,0 +1,58 @@
+{
+  "window_device_exposure.no_columns": [
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "window_device_exposure.add_columns": [
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-01-01",
+      "end_date": "2005-01-02",
+      "domain_concept_id": 2,
+			"quantity": 2,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-02-01",
+      "end_date": "2005-02-02",
+      "domain_concept_id": 2,
+			"quantity": 3,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-03-01",
+      "end_date": "2005-03-02",
+      "domain_concept_id": 2,
+			"quantity": 4,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-04-01",
+      "end_date": "2005-04-02",
+      "domain_concept_id": 2,
+			"quantity": 5,
+			"duration": 1
+    }
+  ]
+}

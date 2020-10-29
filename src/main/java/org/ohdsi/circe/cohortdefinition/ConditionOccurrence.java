@@ -20,6 +20,7 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -47,7 +48,7 @@ public class ConditionOccurrence extends Criteria {
 
   @JsonProperty("ConditionTypeExclude")
   public boolean conditionTypeExclude = false;
-	
+
   @JsonProperty("StopReason")
   public TextFilter stopReason;
 
@@ -67,8 +68,8 @@ public class ConditionOccurrence extends Criteria {
   public Concept[] visitType;
 
   @Override
-  public String accept(IGetCriteriaSqlDispatcher dispatcher)
+  public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)
   {
-    return dispatcher.getCriteriaSql(this);
+    return dispatcher.getCriteriaSql(this, options);
   }
 }

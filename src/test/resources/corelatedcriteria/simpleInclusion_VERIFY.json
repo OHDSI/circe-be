@@ -1,0 +1,16 @@
+{
+  "simple_inclusion_test.inclusion": [
+    {
+      "index_id": 0,
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "simple_inclusion_test.exclusion": [
+    {
+      "index_id": 0,
+      "person_id":2,
+      "event_id":1
+    }
+  ]
+}

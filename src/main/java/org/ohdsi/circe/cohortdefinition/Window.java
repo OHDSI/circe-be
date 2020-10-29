@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Window {
 
-  public class Endpoint {
+  public static class Endpoint {
     @JsonProperty("Days")
     public Integer days;
 

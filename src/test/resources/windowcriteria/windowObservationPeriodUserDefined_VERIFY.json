@@ -1,0 +1,18 @@
+{
+  "window_observation_period_userdefined.no_columns": [
+    {
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "window_observation_period_userdefined.add_columns": [
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2008-01-01",
+      "end_date": "2009-01-01",
+      "domain_concept_id": 0,
+			"duration": 366
+    }
+  ]
+}

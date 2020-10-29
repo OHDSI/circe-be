@@ -18,24 +18,26 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+
 /**
  *
  * @author cknoll1
  */
 public interface IGetCriteriaSqlDispatcher {
-  String getCriteriaSql(LocationRegion locationRegion);
-  String getCriteriaSql(ConditionEra conditionEraCriteria);
-  String getCriteriaSql(ConditionOccurrence conditionOccurrenceCriteria);
-  String getCriteriaSql(Death deathCriteria);
-  String getCriteriaSql(DeviceExposure deviceExposureCriteria);
-  String getCriteriaSql(DoseEra doseEraCriteria);
-  String getCriteriaSql(DrugEra drugEraCriteria);
-  String getCriteriaSql(DrugExposure drugExposureCriteria);
-  String getCriteriaSql(Measurement measurementCriteria);
-  String getCriteriaSql(Observation observationCriteria);
-  String getCriteriaSql(ObservationPeriod observationPeriodCriteria);
-  String getCriteriaSql(PayerPlanPeriod payerPlanPeriodCriteria);
-  String getCriteriaSql(ProcedureOccurrence procedureOccurrenceCriteria);
-  String getCriteriaSql(Specimen specimenCriteria);
-  String getCriteriaSql(VisitOccurrence specimenCriteria);
+  String getCriteriaSql(LocationRegion locationRegion, BuilderOptions options);
+  String getCriteriaSql(ConditionEra conditionEraCriteria, BuilderOptions options);
+  String getCriteriaSql(ConditionOccurrence conditionOccurrenceCriteria, BuilderOptions options);
+  String getCriteriaSql(Death deathCriteria, BuilderOptions options);
+  String getCriteriaSql(DeviceExposure deviceExposureCriteria, BuilderOptions options);
+  String getCriteriaSql(DoseEra doseEraCriteria, BuilderOptions options);
+  String getCriteriaSql(DrugEra drugEraCriteria, BuilderOptions options);
+  String getCriteriaSql(DrugExposure drugExposureCriteria, BuilderOptions options);
+  String getCriteriaSql(Measurement measurementCriteria, BuilderOptions options);
+  String getCriteriaSql(Observation observationCriteria, BuilderOptions options);
+  String getCriteriaSql(ObservationPeriod observationPeriodCriteria, BuilderOptions options);
+  String getCriteriaSql(PayerPlanPeriod payerPlanPeriodCriteria, BuilderOptions options);
+  String getCriteriaSql(ProcedureOccurrence procedureOccurrenceCriteria, BuilderOptions options);
+  String getCriteriaSql(Specimen specimenCriteria, BuilderOptions options);
+  String getCriteriaSql(VisitOccurrence visitOccurrenceCriteria, BuilderOptions options);
 }
