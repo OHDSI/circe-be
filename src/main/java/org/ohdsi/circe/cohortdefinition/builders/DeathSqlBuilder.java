@@ -20,7 +20,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   private final static String DEATH_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/death.sql");
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
-  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {

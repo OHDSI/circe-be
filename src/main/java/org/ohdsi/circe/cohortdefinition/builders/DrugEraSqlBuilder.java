@@ -19,7 +19,7 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
   private final static String DRUG_ERA_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugEra.sql");
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
-  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {

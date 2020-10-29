@@ -15,7 +15,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   private final static String VISIT_OCCURRENCE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/visitOccurrence.sql");
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
-  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {

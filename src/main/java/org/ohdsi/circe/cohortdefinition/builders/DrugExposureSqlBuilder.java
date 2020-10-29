@@ -21,7 +21,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   private final static String DRUG_EXPOSURE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/drugExposure.sql");
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
-  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE));
+  private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {

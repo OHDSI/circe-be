@@ -1,0 +1,9 @@
+{
+  "distinct_visit.output": [
+    {
+			"index_id":0,
+      "person_id":2,
+      "event_id":1
+    }
+  ]
+}

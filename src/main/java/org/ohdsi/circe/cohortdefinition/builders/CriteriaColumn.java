@@ -33,7 +33,8 @@ public enum CriteriaColumn {
   REFILLS("refills"),
   START_DATE("start_date"),
   UNIT("unit_concept_id"),
-  VALUE_AS_NUMBER("value_as_number");
+  VALUE_AS_NUMBER("value_as_number"),
+  VISIT_ID("visit_occurrence_id");
 
   private final String columnName;
 
