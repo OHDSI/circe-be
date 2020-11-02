@@ -42,8 +42,7 @@
                 "Occurrence": {
                   "IsDistinct": true,
                   "Type": 2,
-                  "Count": 1,
-                  "CountColumn": "DOMAIN_CONCEPT"
+                  "Count": 1
                 }
               }
             ],
@@ -63,6 +62,33 @@
           "CorrelatedCriteria": {
             "Type": "ALL",
             "CriteriaList": [
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CodesetId": 0,
+                    "Age": {
+                      "Value": 18,
+                      "Op": "gt"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Days": 0,
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "IsDistinct": true,
+                  "Type": 2,
+                  "Count": 1,
+                  "CountColumn": "DOMAIN_CONCEPT"
+                }
+              },
               {
                 "Criteria": {
                   "ConditionOccurrence": {

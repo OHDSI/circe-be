@@ -559,8 +559,9 @@ public class PrintFriendlyTest {
             "1. condition occurrences of 'Empty Concept Set', starting on or after January 1, 2010.",
             "2. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 distinct standard concepts from condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
             "3. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
-            "1. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
-            "2. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
+            "1. having at least 1 distinct standard concepts from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
+            "2. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
+            "3. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
     ));
     
   }
