@@ -254,8 +254,8 @@ group.demographicCriteriaList?size == 1><@DemographicCriteria c=group.demographi
 
 <#-- CountCriteria macros -->
 
-<#macro CountCriteria countCriteria level=0 indexLabel="cohort entry">having <#if countCriteria.occurrence.type == 0 && countCriteria.occurrence.count == 0>no<#else>${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}</#if><#if
-countCriteria.occurrence.isDistinct> distinct</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1) countCriteria=countCriteria indexLabel=indexLabel /></#macro>
+<#macro CountCriteria countCriteria level=0 indexLabel="cohort entry">having <#if countCriteria.occurrence.type == 0 && countCriteria.occurrence.count == 0>no<#else>${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}</#if><#--
+--><#if countCriteria.occurrence.isDistinct> distinct <@utils.countColumn countCriteria.occurrence.countColumn /> from</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1) countCriteria=countCriteria indexLabel=indexLabel /></#macro>
 
 <#macro WindowCriteria countCriteria indexLabel="cohort entry" level=0><#local windowParts=[] restrictParts=[]><#if 
 countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??><#local temp><@inputTypes.Window countCriteria.startWindow indexLabel /></#local><#local windowParts+=[temp]></#if><#if 

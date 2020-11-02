@@ -8,7 +8,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -547,6 +547,20 @@ public class PrintFriendlyTest {
             "3. with any of the following criteria:",
             "1. having at least 1 condition occurrence of 'Empty Concept Set', starting between 30 days before and 30 days after cohort entry start date.",
             "2. having no condition occurrences of 'Empty Concept Set', starting anytime up to 31 days before cohort entry start date."
+    ));
+    
+  }
+  
+  @Test
+  public void countDistinctCriteriaTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/countDistinctCriteria.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of 'Empty Concept Set', starting on or after January 1, 2010.",
+            "2. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 distinct standard concepts from condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
+            "3. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
+            "1. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
+            "2. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
     ));
     
   }
