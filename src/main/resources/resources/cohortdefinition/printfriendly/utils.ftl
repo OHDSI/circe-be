@@ -37,6 +37,12 @@ END Note!!!!
 
 <#macro formatValue value unit="">${value}<#if unit?has_content> ${unit}<#if value != 1>s</#if></#if></#macro>
 
+<#macro countColumn col><#switch col>
+	<#case "DOMAIN_CONCEPT">standard concepts<#break>
+	<#case "START_DATE">start dates<#break>
+	<#case "VISIT_ID">visits<#break>
+</#switch></#macro>
+
 <#macro showKeys obj>
 <#list obj?keys as key>
   ${key}
