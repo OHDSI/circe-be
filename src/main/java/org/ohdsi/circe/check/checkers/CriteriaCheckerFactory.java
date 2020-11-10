@@ -29,6 +29,7 @@ import org.ohdsi.circe.cohortdefinition.DeviceExposure;
 import org.ohdsi.circe.cohortdefinition.DoseEra;
 import org.ohdsi.circe.cohortdefinition.DrugEra;
 import org.ohdsi.circe.cohortdefinition.DrugExposure;
+import org.ohdsi.circe.cohortdefinition.LocationRegion;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.cohortdefinition.Observation;
 import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
@@ -75,6 +76,8 @@ class CriteriaCheckerFactory {
             result = c -> Objects.equals(((Specimen)c).codesetId, conceptSet.id);
         } else if (criteria instanceof VisitOccurrence) {
             result = c -> Objects.equals(((VisitOccurrence) c).codesetId, conceptSet.id);
+        } else if (criteria instanceof LocationRegion) {
+            result = c -> Objects.equals(((LocationRegion) c).codesetId, conceptSet.id);
         }
         return result;
     }
