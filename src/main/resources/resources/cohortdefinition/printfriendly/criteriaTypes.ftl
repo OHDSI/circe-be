@@ -45,7 +45,8 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.conditionType??><#local temp>a condition type that<#if c.conditionTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.conditionType/></#local><#local attrs+=[temp]></#if><#if c.stopReason??> 
 <#local temp>with a stop reason <@inputTypes.TextFilter filter=c.stopReason /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
-<#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
+<#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if c.conditionStatus??>
+<#local temp>a condition status that is: <@inputTypes.ConceptList list=c.conditionStatus/></#local><#local attrs+=[temp]></#if><#if c.visitType??>
 <#local temp>a visit occurrence that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if>
 condition occurrence<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any condition")}<#if 
 c.conditionSourceConcept??> (including ${utils.codesetName(c.conditionSourceConcept, "any condition")} source concepts)</#if><#if 

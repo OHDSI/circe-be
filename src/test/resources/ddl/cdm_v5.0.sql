@@ -272,8 +272,8 @@ CREATE TABLE @schemaName.device_exposure
      device_exposure_start_date		DATE			NOT NULL , 
      device_exposure_end_date		DATE			NULL , 
      device_type_concept_id			INTEGER			NOT NULL , 
-	 unique_device_id				VARCHAR(50)		NULL ,
-	 quantity						INTEGER			NULL ,
+     unique_device_id      VARCHAR(50)		NULL ,
+     quantity						INTEGER			NULL ,
      provider_id					INTEGER			NULL , 
      visit_occurrence_id			INTEGER			NULL , 
      device_source_value			VARCHAR(100)	NULL ,
@@ -293,7 +293,7 @@ CREATE TABLE @schemaName.condition_occurrence
      provider_id					INTEGER			NULL , 
      visit_occurrence_id			INTEGER			NULL , 
      condition_source_value			VARCHAR(50)		NULL ,
-	 condition_source_concept_id	INTEGER			NULL
+     condition_source_concept_id	INTEGER			NULL
     ) 
 ;
 
