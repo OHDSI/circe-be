@@ -94,22 +94,37 @@ public class CohortGeneration_5_2_0_Test extends AbstractDatabaseTest {
     DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
 
     
-    // create criteria expression with a condition occurrence with condition_status of '1'.
+    // create 3 cohorts: one looking for a conditionStatusConcept of NULL, zero-length array, and '1'
+    String cohortSql = null;
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = null;
+    // null case: id = 1
     CohortExpression expression = new CohortExpression();   
     expression.conceptSets = new ConceptSet[0];
     expression.primaryCriteria = new PrimaryCriteria();
     expression.primaryCriteria.observationWindow = new ObservationFilter();
     final ConditionOccurrence c = new ConditionOccurrence();
+    expression.primaryCriteria.criteriaList = new Criteria[] { c };
+
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // zero-length case: id = 2
+    c.conditionStatus = new Concept[0];
+    options = buildExpressionQueryOptions(2, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // condition_status = 1
     Concept conditionStatusConcept = new Concept();
     conditionStatusConcept.conceptId = 1L;
     c.conditionStatus = new Concept[] {conditionStatusConcept};
-    expression.primaryCriteria.criteriaList = new Criteria[] { c };
-
-    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
-    String cohortSql = buildExpressionSql(expression, options);
+    options = buildExpressionQueryOptions(3, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
     // execute on database, expect no errors
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
-      
 
     // Validate results
     // Load actual records from cohort table
