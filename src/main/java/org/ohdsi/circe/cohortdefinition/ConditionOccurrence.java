@@ -67,6 +67,9 @@ public class ConditionOccurrence extends Criteria {
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("ConditionStatus")
+  public Concept[] conditionStatus;
+
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)
   {

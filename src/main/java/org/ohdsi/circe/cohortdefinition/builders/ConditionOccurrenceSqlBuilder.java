@@ -136,6 +136,11 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
     }
 
+    // conditionStatus
+    if (criteria.conditionStatus != null && criteria.conditionStatus.length > 0) {
+      whereClauses.add(String.format("C.condition_status_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.conditionStatus), ",")));
+    }
+
     return whereClauses;
   }
 }
