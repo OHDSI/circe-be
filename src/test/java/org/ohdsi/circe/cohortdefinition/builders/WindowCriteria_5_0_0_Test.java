@@ -285,7 +285,7 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
     WindowedCriteria wc = new WindowedCriteria();
     wc.criteria = new ProcedureOccurrence(); // find any procedure
     wc.startWindow = CriteriaUtils.getPrior365Window();
-    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION, CriteriaColumn.QUANTITY);
     this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
 
   }

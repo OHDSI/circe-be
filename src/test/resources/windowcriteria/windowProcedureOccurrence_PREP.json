@@ -10,39 +10,44 @@
   ],
   "cdm.procedure_occurrence": [
     {
-			"procedure_occurrence_id": 1,
+      "procedure_occurrence_id": 1,
       "person_id":1,
       "procedure_concept_id":2,
       "procedure_type_concept_id":0,
-      "procedure_date":"2000-01-01"
+      "procedure_date":"2000-01-01",
+      "quantity": 1
     },
     {
-			"procedure_occurrence_id": 2,
+      "procedure_occurrence_id": 2,
       "person_id":1,
       "procedure_concept_id":2,
       "procedure_type_concept_id":0,
-      "procedure_date":"2005-01-01"
+      "procedure_date":"2005-01-01",
+      "quantity": 2
     },
     {
-			"procedure_occurrence_id": 3,
+      "procedure_occurrence_id": 3,
       "person_id":1,
       "procedure_concept_id":2,
       "procedure_type_concept_id":0,
-      "procedure_date":"2005-02-01"
+      "procedure_date":"2005-02-01",
+      "quantity": 3
     },
     {
-			"procedure_occurrence_id": 4,
+      "procedure_occurrence_id": 4,
       "person_id":1,
       "procedure_concept_id":2,
       "procedure_type_concept_id":0,
-      "procedure_date":"2005-03-01"
+      "procedure_date":"2005-03-01",
+      "quantity": 4
     },
     {
-			"procedure_occurrence_id": 5,
+      "procedure_occurrence_id": 5,
       "person_id":1,
       "procedure_concept_id":2,
       "procedure_type_concept_id":0,
-      "procedure_date":"2005-04-01"
+      "procedure_date":"2005-04-01",
+      "quantity": 5
     }
   ],
   "cdm.observation_period" : [
