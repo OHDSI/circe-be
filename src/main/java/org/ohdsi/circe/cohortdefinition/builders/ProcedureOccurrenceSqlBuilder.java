@@ -40,8 +40,10 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
         return "C.procedure_concept_id";
       case DURATION:
         return "CAST(1 as int)";
+      case QUANTITY:
+        return "C.quantity";
       default:
-        throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
+        throw new IllegalArgumentException("Invalid CriteriaColumn for Procedure Occurrence:" + column.toString());
     }
   }
 
