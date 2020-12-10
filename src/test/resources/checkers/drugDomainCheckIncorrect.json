@@ -1,0 +1,170 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Angioedema",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Clinical Finding",
+              "CONCEPT_CODE": "402392000",
+              "CONCEPT_ID": 4270863,
+              "CONCEPT_NAME": "Allergic urticaria and/or angioedema",
+              "DOMAIN_ID": "Condition",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "name": "diclofenac_d",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "3355",
+              "CONCEPT_ID": 1124300,
+              "CONCEPT_NAME": "Diclofenac",
+              "DOMAIN_ID": "Drug",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "ibuprofen",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "5640",
+              "CONCEPT_ID": 1177480,
+              "CONCEPT_NAME": "Ibuprofen",
+              "DOMAIN_ID": "Drug",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionEra": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "Death": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "DeviceExposure": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "DoseEra": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "DrugEra": {
+          "CodesetId": 0
+        }
+      },
+      {
+        "DrugExposure": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "Measurement": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "Observation": {
+          "CodesetId": 0
+        }
+      },
+      {
+        "ObservationPeriod": {}
+      },
+      {
+        "ProcedureOccurrence": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "Specimen": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "VisitOccurrence": {
+          "CodesetId": 2
+        }
+      },
+      {
+        "PayerPlanPeriod": {}
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "Last"
+  },
+  "ExpressionLimit": {
+    "Type": "Last"
+  },
+  "InclusionRules": [],
+  "EndStrategy": {
+    "CustomEra": {
+      "DrugCodesetId": 1,
+      "GapDays": 0,
+      "Offset": 0
+    }
+  },
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.3.0"
+}
