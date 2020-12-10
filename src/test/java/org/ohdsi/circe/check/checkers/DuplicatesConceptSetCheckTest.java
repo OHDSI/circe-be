@@ -9,15 +9,15 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ConceptSetCriteriaCheckTest {
+public class DuplicatesConceptSetCheckTest {
     private static final CohortExpression INCORRECT_EXPRESSION =
-            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/conceptSetCriteriaCheckIncorrect.json"));
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesConceptSetCheckIncorrect.json"));
     private static final CohortExpression CORRECT_EXPRESSION =
-            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/conceptSetCriteriaCheckCorrect.json"));
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesConceptSetCheckCorrect.json"));
 
-    private static final int WARNING_COUNT = 12;
+    private static final int WARNING_COUNT = 1;
 
-    private BaseCheck check = new ConceptSetCriteriaCheck();
+    private BaseCheck check = new DuplicatesConceptSetCheck();
 
     @Test
     public void checkIncorrect() {
