@@ -10,26 +10,26 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class DomainTypeCheckTest {
-    private static final CohortExpression INCORRECT_DOMAIN_TYPE_EXPRESSION =
+    private static final CohortExpression INCORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/domainTypeCheckIncorrect.json"));
-    private static final CohortExpression CORRECT_DOMAIN_TYPE_EXPRESSION =
+    private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/domainTypeCheckCorrect.json"));
 
-    private static final int DOMAIN_TYPE_WARNING_COUNT =9;
+    private static final int WARNING_COUNT = 9;
 
-    private BaseCheck domainTypeCheck = new DomainTypeCheck();
+    private BaseCheck check = new DomainTypeCheck();
 
     @Test
-    public void checkDuplicatesIncorrect() {
-        List<Warning> warnings = domainTypeCheck.check(INCORRECT_DOMAIN_TYPE_EXPRESSION);
+    public void checkIncorrect() {
+        List<Warning> warnings = check.check(INCORRECT_EXPRESSION);
         assertEquals(1, warnings.size());
         int incorrectDomainsCount = warnings.get(0).toMessage().split("at initial event").length;
-        assertEquals(DOMAIN_TYPE_WARNING_COUNT, incorrectDomainsCount);
+        assertEquals(WARNING_COUNT, incorrectDomainsCount);
     }
 
     @Test
-    public void checkDuplicatesCorrect() {
-        List<Warning> warnings = domainTypeCheck.check(CORRECT_DOMAIN_TYPE_EXPRESSION);
+    public void checkCorrect() {
+        List<Warning> warnings = check.check(CORRECT_EXPRESSION);
         assertEquals(0, warnings.size());
     }
 }

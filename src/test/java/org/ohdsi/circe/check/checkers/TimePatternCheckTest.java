@@ -10,24 +10,24 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TimePatternCheckTest {
-    private static final CohortExpression INCORRECT_TIME_PATTERN_EXPRESSION =
+    private static final CohortExpression INCORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/timePatternCheckIncorrect.json"));
-    private static final CohortExpression CORRECT_TIME_PATTERN_EXPRESSION =
+    private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/timePatternCheckCorrect.json"));
 
-    private static final int TIME_PATTERN_WARNING_COUNT = 3;
+    private static final int WARNING_COUNT = 3;
 
-    private BaseCheck timePatternCheck = new TimePatternCheck();
+    private BaseCheck check = new TimePatternCheck();
 
     @Test
     public void checkTimePatternIncorrect() {
-        List<Warning> warnings = timePatternCheck.check(INCORRECT_TIME_PATTERN_EXPRESSION);
-        assertEquals(TIME_PATTERN_WARNING_COUNT, warnings.size());
+        List<Warning> warnings = check.check(INCORRECT_EXPRESSION);
+        assertEquals(WARNING_COUNT, warnings.size());
     }
 
     @Test
     public void checkTimePatternCorrect() {
-        List<Warning> warnings = timePatternCheck.check(CORRECT_TIME_PATTERN_EXPRESSION);
+        List<Warning> warnings = check.check(CORRECT_EXPRESSION);
         assertEquals(0, warnings.size());
     }
 }

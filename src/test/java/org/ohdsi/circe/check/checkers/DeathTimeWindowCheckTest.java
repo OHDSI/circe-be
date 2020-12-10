@@ -9,15 +9,15 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class EventsProgressionCheckTest {
+public class DeathTimeWindowCheckTest {
     private static final CohortExpression INCORRECT_EXPRESSION =
-            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/eventsProgressionCheckIncorrect.json"));
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/deathTimeWindowCheckIncorrect.json"));
     private static final CohortExpression CORRECT_EXPRESSION =
-            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/eventsProgressionCheckCorrect.json"));
+            CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/deathTimeWindowCheckCorrect.json"));
 
     private static final int WARNING_COUNT = 2;
 
-    private BaseCheck check = new EventsProgressionCheck();
+    private BaseCheck check = new DeathTimeWindowCheck();
 
     @Test
     public void checkIncorrect() {

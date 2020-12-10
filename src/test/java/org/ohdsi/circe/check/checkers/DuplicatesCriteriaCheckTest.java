@@ -10,24 +10,24 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class DuplicatesCriteriaCheckTest {
-    private static final CohortExpression INCORRECT_DUPLICATES_EXPRESSION =
+    private static final CohortExpression INCORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesCriteriaCheckIncorrect.json"));
-    private static final CohortExpression CORRECT_DUPLICATES_EXPRESSION =
+    private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesCriteriaCheckCorrect.json"));
 
-    private static final int DUPLICATES_WARNING_COUNT = 16;
+    private static final int WARNING_COUNT = 16;
 
-    private BaseCheck duplicatesCriteriaCheck = new DuplicatesCriteriaCheck();
+    private BaseCheck check = new DuplicatesCriteriaCheck();
 
     @Test
-    public void checkDuplicatesIncorrect() {
-        List<Warning> warnings = duplicatesCriteriaCheck.check(INCORRECT_DUPLICATES_EXPRESSION);
-        assertEquals(DUPLICATES_WARNING_COUNT, warnings.size());
+    public void checkIncorrect() {
+        List<Warning> warnings = check.check(INCORRECT_EXPRESSION);
+        assertEquals(WARNING_COUNT, warnings.size());
     }
 
     @Test
-    public void checkDuplicatesCorrect() {
-        List<Warning> warnings = duplicatesCriteriaCheck.check(CORRECT_DUPLICATES_EXPRESSION);
+    public void checkCorrect() {
+        List<Warning> warnings = check.check(CORRECT_EXPRESSION);
         assertEquals(0, warnings.size());
     }
 }
