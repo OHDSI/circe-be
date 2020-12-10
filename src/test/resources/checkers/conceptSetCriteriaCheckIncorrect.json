@@ -1,0 +1,93 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Angioedema",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Clinical Finding",
+              "CONCEPT_CODE": "402392000",
+              "CONCEPT_ID": 4270863,
+              "CONCEPT_NAME": "Allergic urticaria and/or angioedema",
+              "DOMAIN_ID": "Condition",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionEra": {}
+      },
+      {
+        "ConditionOccurrence": {}
+      },
+      {
+        "Death": {}
+      },
+      {
+        "DeviceExposure": {}
+      },
+      {
+        "DoseEra": {}
+      },
+      {
+        "DrugEra": {}
+      },
+      {
+        "DrugExposure": {}
+      },
+      {
+        "Measurement": {}
+      },
+      {
+        "Observation": {}
+      },
+      {
+        "ObservationPeriod": {}
+      },
+      {
+        "ProcedureOccurrence": {}
+      },
+      {
+        "Specimen": {}
+      },
+      {
+        "VisitOccurrence": {}
+      },
+      {
+        "PayerPlanPeriod": {}
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.3.0"
+}

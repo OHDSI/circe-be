@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class DuplicatesCriteriaCheckTest {
-    private static final CohortExpression WRONG_DUPLICATES_EXPRESSION =
+    private static final CohortExpression INCORRECT_DUPLICATES_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesCriteriaCheckIncorrect.json"));
     private static final CohortExpression CORRECT_DUPLICATES_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesCriteriaCheckCorrect.json"));
@@ -20,13 +20,13 @@ public class DuplicatesCriteriaCheckTest {
     private BaseCheck duplicatesCriteriaCheck = new DuplicatesCriteriaCheck();
 
     @Test
-    public void checkPrimaryRangeIncorrect() {
-        List<Warning> warnings = duplicatesCriteriaCheck.check(WRONG_DUPLICATES_EXPRESSION);
+    public void checkDuplicatesIncorrect() {
+        List<Warning> warnings = duplicatesCriteriaCheck.check(INCORRECT_DUPLICATES_EXPRESSION);
         assertEquals(DUPLICATES_WARNING_COUNT, warnings.size());
     }
 
     @Test
-    public void checkPrimaryRangeCorrect() {
+    public void checkDuplicatesCorrect() {
         List<Warning> warnings = duplicatesCriteriaCheck.check(CORRECT_DUPLICATES_EXPRESSION);
         assertEquals(0, warnings.size());
     }
