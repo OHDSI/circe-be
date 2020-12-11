@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
  *
  * @author cknoll1
  */
-public class NegativeControlTests extends BaseTest {
+public class NegativeControlTest extends BaseTest {
 
 	@Test
 	public void allDomainsDetectTrueOccurrenceFirst() throws Exception {
