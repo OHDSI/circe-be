@@ -1,0 +1,27 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.drug_exposure": [
+    {
+      "drug_exposure_id": 1,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-07-01",
+      "drug_type_concept_id":0
+    },
+    {
+      "drug_exposure_id": 2,
+      "person_id":1,
+      "drug_concept_id":2,
+      "drug_exposure_start_date":"2000-09-01",
+      "drug_type_concept_id":0
+    }
+  ] 
+}

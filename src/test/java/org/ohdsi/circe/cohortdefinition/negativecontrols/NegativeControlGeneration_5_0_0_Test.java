@@ -16,6 +16,7 @@
 package org.ohdsi.circe.cohortdefinition.negativecontrols;
 
 import com.github.mjeanroy.dbunit.core.dataset.DataSetFactory;
+import java.util.ArrayList;
 import java.util.List;
 import org.dbunit.Assertion;
 import org.dbunit.database.IDatabaseConnection;
@@ -54,12 +55,64 @@ public class NegativeControlGeneration_5_0_0_Test extends AbstractDatabaseTest {
     CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
     OutcomeCohortExpression cohortExpression = new OutcomeCohortExpression();
     try {
-      String cohortSql = queryBuilder.buildExpressionQuery(cohortExpression);
+      queryBuilder.buildExpressionQuery(cohortExpression);
+    } catch (Exception re) {
+      exceptionThrown = true;
+    }
+    assertTrue("A NULL cohort expression results in an exception.", exceptionThrown);
+  }
+  
+  @Test
+  public void getDomainQueryExceptionTest() throws Exception {
+    boolean exceptionThrown = false;
+    CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
+    try {
+      ArrayList<String> domainIds = new ArrayList<>();
+      domainIds.add("Some Invalid Domain Name");
+      queryBuilder.getDomainQuery(domainIds, true);
       } catch (Exception re)
     {
       exceptionThrown = true;
     }
-    assertTrue("A NULL cohort expression results in an exception.", exceptionThrown);
+    assertTrue("A NULL domain id list results in an exception.", exceptionThrown);
+  }
+  
+  
+  @Test
+  public void outcomeCohortExpressionDeseralizationTest() throws Exception {
+    final String json = "{\"occurrenceType\": \"all\",\"detectOnDescendants\": true,\"domains\": [\"condition\",\"procedure\"]}";
+    OutcomeCohortExpression cohortExpression = OutcomeCohortExpression.fromJson(json);
+    assertTrue(cohortExpression.detectOnDescendants == true && 
+               cohortExpression.occurrenceType == OccurrenceType.ALL &&
+               cohortExpression.domains.size() == 2);
+  }
+  
+  @Test
+  public void outcomeCohortExpressionDeseralizationExceptionTest() throws Exception {
+    boolean exceptionThrown = false;
+    try {
+      OutcomeCohortExpression.fromJson(null);
+    } catch (Exception re) {
+      exceptionThrown = true;
+    }
+    assertTrue("Parsing an invalid outcome cohort expression JSON results in an exception.", exceptionThrown);
+  }
+  
+  @Test
+  public void occurrenceTypeNullTest() throws Exception {
+    assertTrue(OccurrenceType.fromString("Some invalid string") == null);
+  }
+  
+  @Test
+  public void getEmptyDomainConfigurationTest() throws Exception {
+    boolean exceptionThrown = false;
+    try {
+      CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
+      String query = queryBuilder.getDomainQuery(1, "invalidDomain", false);
+    } catch (Exception re) {
+      exceptionThrown = true;
+    }
+    assertTrue("Passing an invalid domain id for the domain query results in an exception.", exceptionThrown);
   }
   
   @Test
@@ -81,11 +134,127 @@ public class NegativeControlGeneration_5_0_0_Test extends AbstractDatabaseTest {
     DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
     
     // Perform test
-    CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
     OutcomeCohortExpression cohortExpression = new OutcomeCohortExpression();
     cohortExpression.occurrenceType = OccurrenceType.FIRST;
     cohortExpression.domains.add("condition");
     cohortExpression.detectOnDescendants = true;
+    String sql = buildExpressionSql(cohortExpression, RESULTS_SCHEMA, "1"); // 1 == ancestor concept id
+    
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(sql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+  }
+  
+  @Test
+  public void allOccurrencesTest() throws Exception {
+    final String RESULTS_SCHEMA = "negAllOccurrencesTest";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/negativecontrols/allOccurrences/allOccurrencesTest_PREP.json" 
+    };
+
+    final String[] testDataSetsVerify = new String[] {"/negativecontrols/allOccurrences/allOccurrencesTest_VERIFY.json"};
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+    
+    // Perform test
+    OutcomeCohortExpression cohortExpression = new OutcomeCohortExpression();
+    cohortExpression.occurrenceType = OccurrenceType.ALL;
+    cohortExpression.domains.add("drug");
+    cohortExpression.detectOnDescendants = true;
+    String sql = buildExpressionSql(cohortExpression, RESULTS_SCHEMA, "1"); // 1 == ancestor concept id
+    
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(sql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+  }
+
+  @Test
+  public void detectOnDescendantsTrueTest() throws Exception {
+    final String RESULTS_SCHEMA = "negDetectOnDescendantsTrueTest";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/negativecontrols/detectOnDescendants/detectOnDescendantsTrueTest_PREP.json" 
+    };
+
+    final String[] testDataSetsVerify = new String[] {"/negativecontrols/detectOnDescendants/detectOnDescendantsTrueTest_VERIFY.json"};
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+    
+    // Perform test
+    OutcomeCohortExpression cohortExpression = new OutcomeCohortExpression();
+    cohortExpression.occurrenceType = OccurrenceType.ALL;
+    cohortExpression.domains.add("procedure");
+    cohortExpression.detectOnDescendants = true;
+    String sql = buildExpressionSql(cohortExpression, RESULTS_SCHEMA, "1"); // 1 == ancestor concept id
+    
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(sql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+  }
+
+  @Test
+  public void detectOnDescendantsFalseTest() throws Exception {
+    final String RESULTS_SCHEMA = "negDetectOnDescendantsFalseTest";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/negativecontrols/detectOnDescendants/detectOnDescendantsFalseTest_PREP.json" 
+    };
+
+    final String[] testDataSetsVerify = new String[] {"/negativecontrols/detectOnDescendants/detectOnDescendantsFalseTest_VERIFY.json"};
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+    
+    // Perform test
+    OutcomeCohortExpression cohortExpression = new OutcomeCohortExpression();
+    cohortExpression.occurrenceType = OccurrenceType.ALL;
+    cohortExpression.domains.add("observation");
+    cohortExpression.detectOnDescendants = false;
     String sql = buildExpressionSql(cohortExpression, RESULTS_SCHEMA, "1"); // 1 == ancestor concept id
     
     // execute on database, expect no errors
