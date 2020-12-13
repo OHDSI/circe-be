@@ -1,0 +1,16 @@
+{
+  "negAllOccurrencesTest.cohort": [
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2000-07-01",
+      "cohort_end_date":"2000-07-01"
+    },
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2000-09-01",
+      "cohort_end_date":"2000-09-01"
+    }
+  ]
+}

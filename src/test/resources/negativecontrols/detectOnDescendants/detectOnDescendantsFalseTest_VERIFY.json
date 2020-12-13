@@ -1,0 +1,10 @@
+{
+  "negDetectOnDescendantsFalseTest.cohort": [
+    {
+      "cohort_definition_id":1,
+      "subject_id":2,
+      "cohort_start_date":"2004-04-01",
+      "cohort_end_date":"2004-04-01"
+    }
+  ]
+}

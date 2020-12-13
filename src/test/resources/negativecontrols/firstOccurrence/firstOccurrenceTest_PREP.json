@@ -1,0 +1,27 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.condition_occurrence": [
+    {
+      "condition_occurrence_id": 1,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_start_date":"2000-06-07",
+      "condition_type_concept_id":0
+    },
+    {
+      "condition_occurrence_id": 2,
+      "person_id":1,
+      "condition_concept_id":2,
+      "condition_start_date":"2000-09-01",
+      "condition_type_concept_id":0
+    }
+  ]
+}
