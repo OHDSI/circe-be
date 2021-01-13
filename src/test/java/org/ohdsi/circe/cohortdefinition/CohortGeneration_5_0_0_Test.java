@@ -421,6 +421,49 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
    * Inclusion rule tests
    */
 
+  @Test
+  public void testSimpleInclusionRule() throws Exception  {
+    final String RESULTS_SCHEMA = "simpleInclusionRule";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/inclusionRules/simpleInclusionRule_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+    
+    // load the default expression, which looks for the event with exactly 0 conceptSet = 1 between all days beore and 0 days before index
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/inclusionRules/simpleInclusionRule.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable cohortTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    final ITable censorStatsTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort_inclusion_result", String.format("SELECT * from %s ORDER BY cohort_definition_id, mode_id, inclusion_rule_mask", RESULTS_SCHEMA + ".cohort_inclusion_result"));
+    final IDataSet actualDataSet = new CompositeDataSet(new ITable[] {cohortTable, censorStatsTable});
+
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/inclusionRules/simpleInclusionRule_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedDataSet, actualDataSet);     
+
+  }
+
   /**
    *  Exit strategies and censoring events
    */

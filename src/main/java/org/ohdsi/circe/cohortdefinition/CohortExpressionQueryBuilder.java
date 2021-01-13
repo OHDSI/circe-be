@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 import org.ohdsi.circe.cohortdefinition.builders.CriteriaSqlBuilder;
@@ -71,6 +72,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");
+  private final static String INCLUSION_RULE_TEMP_TABLE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionRuleTempTable.sql");
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
 
   private final static String EVENT_TABLE_EXPRESSION_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/eventTableExpression.sql");
@@ -255,6 +257,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
+  private String getInclusionRuleTableSql(CohortExpression expression) {
+    String EMPTY_TABLE = "CREATE TABLE #inclusion_rules (rule_sequence int);";
+    if (expression.inclusionRules.size() == 0 ) return EMPTY_TABLE;
+    
+    String UNION_TEMPLATE = "SELECT CAST(%d as int) as rule_sequence";
+    List<String> unionList = IntStream.range(0,expression.inclusionRules.size())
+            .mapToObj(i -> (String)String.format(UNION_TEMPLATE, i))
+            .collect(Collectors.toList());
+    
+    return StringUtils.replace(INCLUSION_RULE_TEMP_TABLE_TEMPLATE, "@inclusionRuleUnions", StringUtils.join(unionList, " UNION ALL "));
+  }
   private String getInclusionAnalysisQuery(String eventTable, int modeId) {
     String resultSql = COHORT_INCLUSION_ANALYSIS_TEMPALTE;
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactMode", Integer.toString(modeId));
@@ -353,6 +366,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
 
+    resultSql = StringUtils.replace(resultSql, "@inclusionRuleTable", getInclusionRuleTableSql(expression));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
 

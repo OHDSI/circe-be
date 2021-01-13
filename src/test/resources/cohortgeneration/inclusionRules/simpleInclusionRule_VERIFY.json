@@ -1,0 +1,36 @@
+{
+  "simpleInclusionRule.cohort": [
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2000-06-01",
+      "cohort_end_date":"2001-01-01"
+    }
+  ],
+  "simpleInclusionRule.cohort_inclusion_result": [
+    {
+      "cohort_definition_id":1,
+      "inclusion_rule_mask":0,
+			"person_count":1,
+			"mode_id": 0
+    },
+		{
+      "cohort_definition_id":1,
+      "inclusion_rule_mask":1,
+			"person_count":1,
+			"mode_id": 0
+    },
+		{
+      "cohort_definition_id":1,
+      "inclusion_rule_mask":0,
+			"person_count":1,
+			"mode_id": 1
+    },
+		{
+      "cohort_definition_id":1,
+      "inclusion_rule_mask":1,
+			"person_count":1,
+			"mode_id": 1
+    }
+  ]
+}

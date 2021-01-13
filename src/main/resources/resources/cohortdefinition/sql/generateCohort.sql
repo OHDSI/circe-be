@@ -118,7 +118,16 @@ INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name,
 @finalCohortQuery
 ;
 
-{@generateStats != 0}?{
+-- BEGIN: Censored Stats
+
+delete from @results_database_schema.cohort_censor_stats where @cohort_id_field_name = @target_cohort_id;
+@cohortCensoredStatsQuery
+-- END: Censored Stats
+
+{@generateStats != 0 & @ruleTotal != 0}?{
+
+@inclusionRuleTable
+
 -- Find the event that is the 'best match' per person.  
 -- the 'best match' is defined as the event that satisfies the most inclusion rules.
 -- ties are solved by choosing the event that matches the earliest inclusion rule, and then earliest.
@@ -151,13 +160,11 @@ WHERE ranked.rank_value = 1
 @inclusionImpactAnalysisByPersonQuery
 -- END: Inclusion Impact Analysis - person
 
--- BEGIN: Censored Stats
-@cohortCensoredStatsQuery
--- END: Censored Stats
-
 TRUNCATE TABLE #best_events;
 DROP TABLE #best_events;
 
+TRUNCATE TABLE #inclusion_rules;
+DROP TABLE #inclusion_rules;
 }
 
 @strategy_ends_cleanup
