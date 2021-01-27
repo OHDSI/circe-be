@@ -118,12 +118,13 @@ INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name,
 @finalCohortQuery
 ;
 
+{@generateStats != 0}?{
 -- BEGIN: Censored Stats
 
 delete from @results_database_schema.cohort_censor_stats where @cohort_id_field_name = @target_cohort_id;
 @cohortCensoredStatsQuery
 -- END: Censored Stats
-
+}
 {@generateStats != 0 & @ruleTotal != 0}?{
 
 @inclusionRuleTable
