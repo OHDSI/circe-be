@@ -95,8 +95,29 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
   }
 
 
-  /* Cohort Expression Tests */
 
+    @Test
+  public void rawJsonTest() throws SQLException {
+
+    final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");
+
+    // prepare results schema
+    prepareSchema(options.resultSchema, RESULTS_DDL_PATH);
+
+    // load 'all' criteria json
+    final String expression = ResourceHelper.GetResourceAsString("/cohortgeneration/allCriteria/allCriteriaExpression.json");
+
+    // build Sql
+    final CohortExpressionQueryBuilder builder = new CohortExpressionQueryBuilder();
+    String cohortSql = builder.buildExpressionQuery(expression, options);
+    cohortSql = SqlRender.renderSql(SqlTranslate.translateSql(cohortSql, "postgresql"), null, null);
+
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+  }
+
+  /* Cohort Expression Tests */
+  
   @Test
   public void allCriteriaTest() throws SQLException {
 
