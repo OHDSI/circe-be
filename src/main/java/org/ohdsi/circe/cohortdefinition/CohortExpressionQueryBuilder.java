@@ -275,6 +275,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return resultSql;
   }
 
+  public String buildExpressionQuery(String expression, BuildExpressionQueryOptions options) {
+    return this.buildExpressionQuery(CohortExpression.fromJson(expression), options);
+  }
+
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
