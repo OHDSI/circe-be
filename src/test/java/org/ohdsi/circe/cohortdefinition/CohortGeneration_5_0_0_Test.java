@@ -771,4 +771,50 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     Assertion.assertEquals(expectedDataSet, actualDataSet);     
   }
   
+  /**
+   * Other Tests
+   */
+  @Test
+  public void testMixedConceptsets() throws Exception {
+    final String RESULTS_SCHEMA = "mixedConceptsets";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/mixedConceptsets/mixedConceptsets_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // all drug exposure events, fixed offset of endDate + 31 days.
+
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/mixedConceptsets/mixedConceptsetsExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/mixedConceptsets/mixedConceptsets_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+
+  }
+  
 }

@@ -10,26 +10,26 @@ import java.util.ArrayList;
 
 public abstract class BuilderUtils {
 
-    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets codesets on (@codesetClauses)";
-
+    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
+    private final static String STANARD_ALIAS = "cs";
+    private final static String NON_STANARD_ALIAS = "cns";
+    
     public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
 
-        final String codsetJoinClause = "(%s = codesets.concept_id and codesets.codeset_id = %d)";
         String joinExpression = "";
-
         ArrayList<String> codesetClauses = new ArrayList<>();
 
         if (standardCodesetId != null) {
-            codesetClauses.add(String.format(codsetJoinClause, standardConceptColumn, standardCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, standardCodesetId));
         }
 
         // conditionSourceConcept
         if (sourceCodesetId != null) {
-            codesetClauses.add(String.format(codsetJoinClause, sourceConceptColumn, sourceCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, sourceCodesetId));
         }
 
         if (codesetClauses.size() > 0) {
-            joinExpression = StringUtils.replace(CODESET_JOIN_TEMPLATE, "@codesetClauses", StringUtils.join(codesetClauses, " AND "));
+            joinExpression = StringUtils.join(codesetClauses, "\n");
         }
 
 
