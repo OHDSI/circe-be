@@ -19,6 +19,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -64,8 +65,8 @@ public class ProcedureOccurrence extends Criteria {
   public Concept[] visitType;
 
   @Override
-  public String accept(IGetCriteriaSqlDispatcher dispatcher) {
-    return dispatcher.getCriteriaSql(this);
+  public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
+    return dispatcher.getCriteriaSql(this, options);
   }
 
 }

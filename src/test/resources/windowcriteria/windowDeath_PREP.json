@@ -1,0 +1,60 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.death": [
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_type_concept_id":0,
+      "death_date":"2000-01-01"
+    },
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_type_concept_id":0,
+      "death_date":"2005-01-01"
+    },
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_type_concept_id":0,
+      "death_date":"2005-02-01"
+    },
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_type_concept_id":0,
+      "death_date":"2005-03-01"
+    },
+    {
+      "person_id":1,
+      "cause_concept_id":2,
+      "death_type_concept_id":0,
+      "death_date":"2005-04-01"
+    }
+  ],
+  "cdm.observation_period" : [
+    {
+      "observation_period_id": 1,
+      "person_id":1,
+      "observation_period_start_date":"2000-01-01",
+      "observation_period_end_date":"2010-01-01",
+      "period_type_concept_id": 0
+    }
+  ],
+  "window_death.cohort" : [
+    {
+      "cohort_definition_id": 1,
+      "subject_id":1,
+      "cohort_start_date":"2006-01-01",
+      "cohort_end_date":"2006-01-01"
+    }
+  ]
+}

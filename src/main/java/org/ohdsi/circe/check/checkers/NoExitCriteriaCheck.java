@@ -4,7 +4,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,17 +21,28 @@ package org.ohdsi.circe.check.checkers;
 import static org.ohdsi.circe.check.operations.Operations.match;
 
 import java.util.Objects;
+
+import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 
 public class NoExitCriteriaCheck extends BaseCheck {
 
-    private static final String NO_EXIT_CRITERIA_WARNING = " \"all events\" are selected and cohort exit criteria has not been specified";
+  private static final String NO_EXIT_CRITERIA_WARNING = " \"all events\" are selected and cohort exit criteria has not been specified";
 
-    @Override
-    protected void check(CohortExpression expression, WarningReporter reporter) {
+  @Override
+  protected WarningSeverity defineSeverity() {
 
-        match(expression)
-                .when(e -> Objects.equals("All", e.primaryCriteria.primaryLimit.type) && Objects.isNull(e.endStrategy))
-                .then(() -> reporter.add(NO_EXIT_CRITERIA_WARNING));
-    }
+    return WarningSeverity.WARNING;
+  }
+
+  @Override
+  protected void check(CohortExpression expression, WarningReporter reporter) {
+    match(expression)
+        .when(e -> "All".equalsIgnoreCase(e.primaryCriteria.primaryLimit.type)
+            && Objects.isNull(e.endStrategy)
+            && "All".equalsIgnoreCase(e.expressionLimit.type)
+            && (Objects.isNull(e.additionalCriteria)
+              || "All".equalsIgnoreCase(e.qualifiedLimit.type)))
+        .then(() -> reporter.add(NO_EXIT_CRITERIA_WARNING));
+  }
 }

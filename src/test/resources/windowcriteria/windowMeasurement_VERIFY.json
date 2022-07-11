@@ -1,0 +1,66 @@
+{
+  "window_measurement.no_columns": [
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    },
+    {
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "window_measurement.add_columns": [
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-01-01",
+      "end_date": "2005-01-02",
+      "domain_concept_id": 2,
+			"value_as_number": 2,
+			"range_high":11,
+			"range_low": 6,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-02-01",
+      "end_date": "2005-02-02",
+      "domain_concept_id": 2,
+			"value_as_number": 3,
+			"range_high":12,
+			"range_low": 9,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-03-01",
+      "end_date": "2005-03-02",
+      "domain_concept_id": 2,
+			"value_as_number": 4,
+			"range_high":13,
+			"range_low": 12,
+			"duration": 1
+    },
+    {
+      "person_id":1,
+      "event_id":1,
+      "start_date": "2005-04-01",
+      "end_date": "2005-04-02",
+      "domain_concept_id": 2,
+			"value_as_number": 5,
+			"range_high":14,
+			"range_low": 15,
+			"duration": 1
+    }
+  ]
+}

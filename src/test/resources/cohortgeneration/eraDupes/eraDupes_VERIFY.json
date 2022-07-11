@@ -1,0 +1,10 @@
+{
+  "eraDupes.cohort": [
+    {
+      "cohort_definition_id":1,
+      "subject_id":1,
+      "cohort_start_date":"2009-06-16",
+      "cohort_end_date":"2009-07-30"
+    }
+  ]
+}

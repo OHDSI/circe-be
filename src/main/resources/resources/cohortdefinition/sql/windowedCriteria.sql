@@ -1,6 +1,5 @@
-SELECT @indexId as index_id, p.person_id, p.event_id
+SELECT p.person_id, p.event_id @additionalColumns
 FROM @eventTable P
-@joinType JOIN
-(
+JOIN (
   @criteriaQuery
 ) A on A.person_id = P.person_id @windowCriteria

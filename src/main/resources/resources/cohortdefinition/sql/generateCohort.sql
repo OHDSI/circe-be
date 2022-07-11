@@ -73,8 +73,8 @@ with cteEndDates (person_id, end_date) AS -- the magic
 			person_id
 			, event_date
 			, event_type
-			, MAX(start_ordinal) OVER (PARTITION BY person_id ORDER BY event_date, event_type ROWS UNBOUNDED PRECEDING) AS start_ordinal 
-			, ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY event_date, event_type) AS overall_ord
+			, MAX(start_ordinal) OVER (PARTITION BY person_id ORDER BY event_date, event_type, start_ordinal ROWS UNBOUNDED PRECEDING) AS start_ordinal 
+			, ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY event_date, event_type, start_ordinal) AS overall_ord
 		FROM
 		(
 			SELECT
@@ -119,6 +119,16 @@ INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name,
 ;
 
 {@generateStats != 0}?{
+-- BEGIN: Censored Stats
+
+delete from @results_database_schema.cohort_censor_stats where @cohort_id_field_name = @target_cohort_id;
+@cohortCensoredStatsQuery
+-- END: Censored Stats
+}
+{@generateStats != 0 & @ruleTotal != 0}?{
+
+@inclusionRuleTable
+
 -- Find the event that is the 'best match' per person.  
 -- the 'best match' is defined as the event that satisfies the most inclusion rules.
 -- ties are solved by choosing the event that matches the earliest inclusion rule, and then earliest.
@@ -151,13 +161,11 @@ WHERE ranked.rank_value = 1
 @inclusionImpactAnalysisByPersonQuery
 -- END: Inclusion Impact Analysis - person
 
--- BEGIN: Censored Stats
-@cohortCensoredStatsQuery
--- END: Censored Stats
-
 TRUNCATE TABLE #best_events;
 DROP TABLE #best_events;
 
+TRUNCATE TABLE #inclusion_rules;
+DROP TABLE #inclusion_rules;
 }
 
 @strategy_ends_cleanup

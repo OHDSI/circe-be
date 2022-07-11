@@ -44,7 +44,7 @@ public class IncompleteRuleCheck extends BaseCheck {
 
 	private void checkInclusionRule(InclusionRule rule, WarningReporter reporter) {
 		if (rule.expression.isEmpty()) {
-			reporter.add(rule.name + " has no criteria");
+			reporter.add(rule.name);
 		}
 	}
 }

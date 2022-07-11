@@ -1,0 +1,216 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Angioedema",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Clinical Finding",
+              "CONCEPT_CODE": "402392000",
+              "CONCEPT_ID": 4270863,
+              "CONCEPT_NAME": "Allergic urticaria and/or angioedema",
+              "DOMAIN_ID": "Condition",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionEra": {
+          "CodesetId": 0
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 0,
+          "ConditionType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "Death": {
+          "CodesetId": 0,
+          "DeathType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "DeviceExposure": {
+          "CodesetId": 0,
+          "DeviceType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "DoseEra": {
+          "CodesetId": 0
+        }
+      },
+      {
+        "DrugEra": {
+          "CodesetId": 0
+        }
+      },
+      {
+        "DrugExposure": {
+          "CodesetId": 0,
+          "DrugType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "Measurement": {
+          "CodesetId": 0,
+          "MeasurementType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "Observation": {
+          "CodesetId": 0,
+          "ObservationType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "ObservationPeriod": {}
+      },
+      {
+        "ProcedureOccurrence": {
+          "CodesetId": 0,
+          "ProcedureType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "Specimen": {
+          "CodesetId": 0,
+          "SpecimenType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "VisitOccurrence": {
+          "CodesetId": 0,
+          "VisitType": [
+            {
+              "CONCEPT_CODE": "10021000000106",
+              "CONCEPT_ID": 44787739,
+              "CONCEPT_NAME": "FP34D drugs supplied payment form",
+              "DOMAIN_ID": "Type Concept",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "VOCABULARY_ID": "SNOMED"
+            }
+          ]
+        }
+      },
+      {
+        "PayerPlanPeriod": {}
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.3.0"
+}

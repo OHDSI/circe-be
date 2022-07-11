@@ -6,66 +6,36 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import com.github.mjeanroy.dbunit.core.dataset.DataSetFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.ohdsi.circe.AbstractDatabaseTest;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlSplit;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.opentable.db.postgres.junit.EmbeddedPostgresRules;
-import com.opentable.db.postgres.junit.SingleInstancePostgresRule;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 
 // Note: to verify the test results, we must directly query the database
 // via createQueryTable(), because loading the result schema tables via
 // getTables() fails because the results schema isn't seen by the existing connection.
 
-public class CohortGeneration_5_0_0_Test {
+public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
 
   private final static Logger log = LoggerFactory.getLogger(CohortGeneration_5_0_0_Test.class);
-  private static final String CDM_DDL_PATH = "/cohortgeneration/cdm_v5.0.sql";
-  private static final String RESULTS_DDL_PATH = "/cohortgeneration/resultsSchema.sql";
-  private static JdbcTemplate jdbcTemplate;
-
-  @ClassRule
-  public static SingleInstancePostgresRule pg = EmbeddedPostgresRules.singleInstance();
-
-  private static DataSource getDataSource() {
-    return pg.getEmbeddedPostgres().getPostgresDatabase();
-  }
-
-  private static IDatabaseConnection getConnection() throws SQLException {
-    final IDatabaseConnection con = new DatabaseDataSourceConnection(getDataSource());
-    con.getConfig().setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, true);
-    con.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
-    return con;
-  }
-
-  private static void prepareSchema(final String schemaName, final String schemaPath) {
-    final String sql = StringUtils.replace(ResourceHelper.GetResourceAsString(schemaPath), "@schemaName", schemaName);
-    jdbcTemplate.execute(String.format("DROP SCHEMA IF EXISTS %s CASCADE", schemaName));
-    jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
-    jdbcTemplate.batchUpdate(SqlSplit.splitSql(sql));
-  }
+  private static final String CDM_DDL_PATH = "/ddl/cdm_v5.0.sql";
+  private static final String RESULTS_DDL_PATH = "/ddl/resultsSchema.sql";
 
   private static CohortExpressionQueryBuilder.BuildExpressionQueryOptions buildExpressionQueryOptions(
       final int cohortId, final String resultsSchema) {
@@ -125,8 +95,29 @@ public class CohortGeneration_5_0_0_Test {
   }
 
 
-  /* Cohort Expression Tests */
 
+    @Test
+  public void rawJsonTest() throws SQLException {
+
+    final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");
+
+    // prepare results schema
+    prepareSchema(options.resultSchema, RESULTS_DDL_PATH);
+
+    // load 'all' criteria json
+    final String expression = ResourceHelper.GetResourceAsString("/cohortgeneration/allCriteria/allCriteriaExpression.json");
+
+    // build Sql
+    final CohortExpressionQueryBuilder builder = new CohortExpressionQueryBuilder();
+    String cohortSql = builder.buildExpressionQuery(expression, options);
+    cohortSql = SqlRender.renderSql(SqlTranslate.translateSql(cohortSql, "postgresql"), null, null);
+
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+  }
+
+  /* Cohort Expression Tests */
+  
   @Test
   public void allCriteriaTest() throws SQLException {
 
@@ -451,6 +442,49 @@ public class CohortGeneration_5_0_0_Test {
    * Inclusion rule tests
    */
 
+  @Test
+  public void testSimpleInclusionRule() throws Exception  {
+    final String RESULTS_SCHEMA = "simpleInclusionRule";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/inclusionRules/simpleInclusionRule_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+    
+    // load the default expression, which looks for the event with exactly 0 conceptSet = 1 between all days beore and 0 days before index
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/inclusionRules/simpleInclusionRule.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable cohortTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    final ITable censorStatsTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort_inclusion_result", String.format("SELECT * from %s ORDER BY cohort_definition_id, mode_id, inclusion_rule_mask", RESULTS_SCHEMA + ".cohort_inclusion_result"));
+    final IDataSet actualDataSet = new CompositeDataSet(new ITable[] {cohortTable, censorStatsTable});
+
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/inclusionRules/simpleInclusionRule_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedDataSet, actualDataSet);     
+
+  }
+
   /**
    *  Exit strategies and censoring events
    */
@@ -520,6 +554,48 @@ public class CohortGeneration_5_0_0_Test {
     Assertion.assertEquals(expectedTable, actualTable);        
 
   }
+  @Test
+  public void testContinuousExposureCensor() throws Exception{
+    final String RESULTS_SCHEMA = "continuousExposureCensor";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/exits/continuousExposureCensor_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // all drug exposure events, exit with end of continuous exposure with a persistence window of 60 days.
+
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/exits/continuousExposureCensorExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/exits/continuousExposureCensor_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);        
+
+  }
 
   @Test
   public void testFixedOffset() throws Exception {
@@ -560,7 +636,50 @@ public class CohortGeneration_5_0_0_Test {
     final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
 
     // Assert actual database table match expected table
-    Assertion.assertEquals(expectedTable, actualTable);            
+    Assertion.assertEquals(expectedTable, actualTable);
+
+  }
+
+  @Test
+  public void testFixedOffsetCensor() throws Exception {
+    final String RESULTS_SCHEMA = "fixedOffsetCensor";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/exits/fixedOffsetCensor_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // all drug exposure events, fixed offset of endDate + 31 days.
+
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/exits/fixedOffsetCensorExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/exits/fixedOffsetCensor_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
 
   }
 
@@ -652,4 +771,91 @@ public class CohortGeneration_5_0_0_Test {
     Assertion.assertEquals(expectedDataSet, actualDataSet);     
   }
   
+  /**
+   * Other Tests
+   */
+  @Test
+  public void testMixedConceptsets() throws Exception {
+    final String RESULTS_SCHEMA = "mixedConceptsets";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/mixedConceptsets/mixedConceptsets_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // all drug exposure events, fixed offset of endDate + 31 days.
+
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/mixedConceptsets/mixedConceptsetsExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/mixedConceptsets/mixedConceptsets_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+
+  }
+  @Test
+  public void testEraWithDupes() throws Exception {
+    final String RESULTS_SCHEMA = "eraDupes";
+    final String[] testDataSetsPrep = new String[] { 
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/eraDupes/eraDupes_PREP.json" 
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;   
+    String cohortSql;
+
+    // load the default expression: 
+    // all drug exposure events, fixed offset of endDate + 31 days.
+
+    // cohort 1 will use the default expression from JSON.
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/eraDupes/eraDupesExpression.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/eraDupes/eraDupes_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+
+  }
 }
