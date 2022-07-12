@@ -26,25 +26,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.ohdsi.circe.cohortdefinition.ConceptSet;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DateRange;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.NumericRange;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationFilter;
-import org.ohdsi.circe.cohortdefinition.Period;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
-import org.ohdsi.circe.cohortdefinition.Window;
+import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
 
 public class Comparisons {
@@ -173,6 +155,9 @@ public class Comparisons {
             } else if (c1 instanceof VisitOccurrence) {
                 VisitOccurrence vo1 = (VisitOccurrence) c1, vo2 = (VisitOccurrence) c2;
                 result = Objects.equals(vo1.codesetId, vo2.codesetId);
+            } else if (c1 instanceof VisitDetail) {
+                VisitDetail vd1 = (VisitDetail) c1, vd2 = (VisitDetail) c2;
+                result = Objects.equals(vd1.codesetId, vd2.codesetId);
             }
         }
         return result;

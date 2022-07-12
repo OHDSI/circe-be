@@ -28,22 +28,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 public class DuplicatesCriteriaCheck extends BaseCriteriaCheck {
 
@@ -143,6 +128,11 @@ public class DuplicatesCriteriaCheck extends BaseCriteriaCheck {
                 VisitOccurrence vo1 = (VisitOccurrence) c1, vo2 = (VisitOccurrence) c2;
                 return new EqualsBuilder()
                         .append(vo1.codesetId, vo2.codesetId)
+                        .build();
+            } else if (c1 instanceof VisitDetail) {
+                VisitDetail vd1 = (VisitDetail) c1, vd2 = (VisitDetail) c2;
+                return new EqualsBuilder()
+                        .append(vd1.codesetId, vd2.codesetId)
                         .build();
             } else if (c1 instanceof PayerPlanPeriod) {
                 PayerPlanPeriod p1 = (PayerPlanPeriod) c1, p2 = (PayerPlanPeriod) c2;

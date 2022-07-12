@@ -27,17 +27,7 @@ import java.util.stream.Collectors;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Execution;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 public class DomainTypeCheck extends BaseCriteriaCheck {
 
@@ -91,6 +81,10 @@ public class DomainTypeCheck extends BaseCriteriaCheck {
                 .isA(VisitOccurrence.class)
                 .then(c -> match((VisitOccurrence)c)
                         .when(visitOccurrence -> Objects.isNull(visitOccurrence.visitType))
+                        .then(addWarning))
+                .isA(VisitDetail.class)
+                .then(c -> match((VisitDetail)c)
+                        .when(visitDetail -> Objects.isNull(visitDetail.visitType))
                         .then(addWarning));
     }
 

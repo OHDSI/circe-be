@@ -1089,6 +1089,78 @@
               },
               {
                 "Criteria": {
+                  "VisitDetail": {
+                    "OccurrenceStartDate": {
+                      "Value": "2019-12-31",
+                      "Extent": "2020-01-01",
+                      "Op": "bt"
+                    },
+                    "OccurrenceEndDate": {
+                      "Value": "2019-12-31",
+                      "Extent": "2020-01-01",
+                      "Op": "!bt"
+                    },
+                    "VisitType": [
+                      {
+                        "CONCEPT_CODE": "10081000000107",
+                        "CONCEPT_ID": 44787995,
+                        "CONCEPT_NAME": "FP78 vocational training allowance form",
+                        "DOMAIN_ID": "Type Concept",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "SNOMED"
+                      }
+                    ],
+                    "VisitLength": {
+                      "Value": 1,
+                      "Extent": 2,
+                      "Op": "bt"
+                    },
+                    "Age": {
+                      "Value": 1,
+                      "Extent": 2,
+                      "Op": "!bt"
+                    },
+                    "Gender": [
+                      {
+                        "CONCEPT_CODE": "407378000",
+                        "CONCEPT_ID": 4251434,
+                        "CONCEPT_NAME": "Surgically transgendered transsexual, male-to-female",
+                        "DOMAIN_ID": "Gender",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "SNOMED"
+                      }
+                    ],
+                    "ProviderSpecialty": [
+                      {
+                        "CONCEPT_CODE": "101Y00000X",
+                        "CONCEPT_ID": 38003623,
+                        "CONCEPT_NAME": "Behavioral Health & Social Service Providers, Counselor",
+                        "DOMAIN_ID": "Provider Specialty",
+                        "INVALID_REASON_CAPTION": "Unknown",
+                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                        "VOCABULARY_ID": "NUCC"
+                      }
+                    ]
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
                   "LocationRegion": {
                     "StartDate": {
                       "Value": "2019-12-31",

@@ -89,6 +89,11 @@
         }
       },
       {
+        "VisitDetail": {
+          "CodesetId": 0
+        }
+      },
+      {
         "PayerPlanPeriod": {}
       }
     ],

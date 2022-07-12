@@ -159,6 +159,11 @@
         }
       },
       {
+        "VisitDetail": {
+          "CodesetId": 0
+        }
+      },
+      {
         "PayerPlanPeriod": {}
       }
     ],
@@ -423,6 +428,26 @@
           {
             "Criteria": {
               "VisitOccurrence": {
+                "CodesetId": 0
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Coeff": -1
+              },
+              "End": {
+                "Coeff": 1
+              },
+              "UseEventEnd": false
+            },
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1
+            }
+          },
+          {
+            "Criteria": {
+              "VisitDetail": {
                 "CodesetId": 0
               }
             },

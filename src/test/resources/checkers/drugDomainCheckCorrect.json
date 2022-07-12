@@ -135,6 +135,11 @@
         }
       },
       {
+        "VisitDetail": {
+          "CodesetId": 2
+        }
+      },
+      {
         "PayerPlanPeriod": {}
       }
     ],

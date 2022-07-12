@@ -20,21 +20,8 @@ package org.ohdsi.circe.check.checkers;
 
 import java.util.Objects;
 import java.util.function.Function;
-import org.ohdsi.circe.cohortdefinition.ConceptSet;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.LocationRegion;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+
+import org.ohdsi.circe.cohortdefinition.*;
 
 class CriteriaCheckerFactory {
 
@@ -76,6 +63,8 @@ class CriteriaCheckerFactory {
             result = c -> Objects.equals(((Specimen)c).codesetId, conceptSet.id);
         } else if (criteria instanceof VisitOccurrence) {
             result = c -> Objects.equals(((VisitOccurrence) c).codesetId, conceptSet.id);
+        } else if (criteria instanceof VisitDetail) {
+            result = c -> Objects.equals(((VisitDetail) c).codesetId, conceptSet.id);
         } else if (criteria instanceof LocationRegion) {
             result = c -> Objects.equals(((LocationRegion) c).codesetId, conceptSet.id);
         }

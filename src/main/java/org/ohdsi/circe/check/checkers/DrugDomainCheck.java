@@ -26,22 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Operations;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.ConceptSet;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.CustomEraStrategy;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 public class DrugDomainCheck extends BaseCheck {
 
@@ -93,6 +78,7 @@ public class DrugDomainCheck extends BaseCheck {
                 .isA(ProcedureOccurrence.class).thenReturn(c -> ((ProcedureOccurrence)c).codesetId)
                 .isA(Specimen.class).thenReturn(c -> ((Specimen)c).codesetId)
                 .isA(VisitOccurrence.class).thenReturn(c -> ((VisitOccurrence)c).codesetId)
+                .isA(VisitDetail.class).thenReturn(c -> ((VisitDetail)c).codesetId)
                 .value();
     }
 

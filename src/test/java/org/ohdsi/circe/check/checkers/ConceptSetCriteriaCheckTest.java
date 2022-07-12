@@ -15,7 +15,7 @@ public class ConceptSetCriteriaCheckTest {
     private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/conceptSetCriteriaCheckCorrect.json"));
 
-    private static final int WARNING_COUNT = 12;
+    private static final int WARNING_COUNT = 13;
 
     private BaseCheck check = new ConceptSetCriteriaCheck();
 

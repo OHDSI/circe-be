@@ -20,20 +20,7 @@ package org.ohdsi.circe.check.utils;
 
 import org.ohdsi.circe.check.Constants;
 import org.ohdsi.circe.check.operations.Operations;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 public class CriteriaNameHelper {
 
@@ -53,6 +40,7 @@ public class CriteriaNameHelper {
                 .isA(ProcedureOccurrence.class).thenReturn(c -> Constants.Criteria.PROCEDURE_OCCURRENCE)
                 .isA(Specimen.class).thenReturn(c -> Constants.Criteria.SPECIMEN)
                 .isA(VisitOccurrence.class).thenReturn(c -> Constants.Criteria.VISIT_OCCURRENCE)
+                .isA(VisitDetail.class).thenReturn(c -> Constants.Criteria.VISIT_DETAIL)
                 .isA(PayerPlanPeriod.class).thenReturn(c -> Constants.Criteria.PAYER_PLAN_PERIOD)
                 .value();
     }

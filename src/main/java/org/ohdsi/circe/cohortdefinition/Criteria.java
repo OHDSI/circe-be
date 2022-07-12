@@ -45,6 +45,7 @@ import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
   @JsonSubTypes.Type(value = ProcedureOccurrence.class, name = "ProcedureOccurrence"),
   @JsonSubTypes.Type(value = Specimen.class, name = "Specimen"),
   @JsonSubTypes.Type(value = VisitOccurrence.class, name = "VisitOccurrence"),
+  @JsonSubTypes.Type(value = VisitDetail.class, name = "VisitDetail"),
   @JsonSubTypes.Type(value = PayerPlanPeriod.class, name = "PayerPlanPeriod")
 })
 public abstract class Criteria {

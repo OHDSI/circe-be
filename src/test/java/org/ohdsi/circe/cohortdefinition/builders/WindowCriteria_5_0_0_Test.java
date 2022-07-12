@@ -320,4 +320,19 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
 
   }
 
+  @Test
+  public void windowVisitDetailTest() throws Exception {
+
+    final String resultsSchema = "window_visit_detail";
+    final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+            "/windowcriteria/windowVisitDetail_PREP.json"};
+    final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowVisitDetail_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new VisitDetail(); // find any visit detail
+    wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
 }

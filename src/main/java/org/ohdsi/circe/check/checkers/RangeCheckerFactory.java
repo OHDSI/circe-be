@@ -19,27 +19,7 @@
 package org.ohdsi.circe.check.checkers;
 
 import org.ohdsi.circe.check.Constants;
-import org.ohdsi.circe.cohortdefinition.CohortExpression;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DateRange;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.LocationRegion;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.NumericRange;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
-import org.ohdsi.circe.cohortdefinition.Period;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -180,6 +160,14 @@ public class RangeCheckerFactory extends BaseCheckerFactory {
                 checkRange(vo.occurrenceEndDate, Constants.Criteria.VISIT_OCCURRENCE, Constants.Attributes.OCCURRENCE_END_DATE_ATTR);
                 checkRange(vo.visitLength, Constants.Criteria.VISIT_OCCURRENCE, Constants.Attributes.VISIT_LENGTH_ATTR);
                 checkRange(vo.age, Constants.Criteria.VISIT_OCCURRENCE, Constants.Attributes.AGE_ATTR);
+            };
+        } else if (criteria instanceof VisitDetail) {
+            result = c -> {
+                VisitDetail vd = (VisitDetail) c;
+                checkRange(vd.occurrenceStartDate, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.OCCURRENCE_START_DATE_ATTR);
+                checkRange(vd.occurrenceEndDate, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.OCCURRENCE_END_DATE_ATTR);
+                checkRange(vd.visitLength, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.VISIT_LENGTH_ATTR);
+                checkRange(vd.age, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.AGE_ATTR);
             };
         } else if (criteria instanceof PayerPlanPeriod) {
             result = c -> {

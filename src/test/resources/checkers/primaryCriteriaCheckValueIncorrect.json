@@ -560,6 +560,41 @@
               },
               {
                 "Criteria": {
+                  "VisitDetail": {
+                    "OccurrenceStartDate": {
+                      "Op": "bt"
+                    },
+                    "OccurrenceEndDate": {
+                      "Op": "!bt"
+                    },
+                    "VisitType": [],
+                    "VisitLength": {
+                      "Op": "bt"
+                    },
+                    "Age": {
+                      "Op": "!bt"
+                    },
+                    "Gender": [],
+                    "ProviderSpecialty": [],
+                    "PlaceOfService": []
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
                   "LocationRegion": {}
                 },
                 "StartWindow": {

@@ -34,6 +34,7 @@ public interface Constants {
         String PROCEDURE_OCCURRENCE = "procedure occurrence";
         String SPECIMEN = "specimen";
         String VISIT_OCCURRENCE = "visit occurrence";
+        String VISIT_DETAIL = "visit detail";
         String PAYER_PLAN_PERIOD = "payer plan period";
         String OBSERVATION_PERIOD = "observation period";
         String LOCATION_REGION = "location region";
