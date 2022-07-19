@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -21,6 +22,10 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("m.person_id", "m.measurement_id", "m.measurement_concept_id", "m.visit_occurrence_id",
+          "m.value_as_number", "m.range_high", "m.range_low"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -76,6 +81,48 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     return query;
   }
 
+
+  @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // measurementType
+    if (criteria.measurementType != null && criteria.measurementType.length > 0) {
+      selectCols.add("m.measurement_type_concept_id");
+    }
+
+    // operator
+    if (criteria.operator != null && criteria.operator.length > 0) {
+      selectCols.add("m.operator_concept_id");
+    }
+
+    // valueAsConcept
+    if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+      selectCols.add("m.value_as_concept_id");
+    }
+
+    // unit
+    if (criteria.unit != null && criteria.unit.length > 0) {
+      selectCols.add("m.unit_concept_id");
+    }
+
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("m.provider_id");
+    }
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
+    } else {
+      selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
+    }
+    return selectCols;
+  }
+
   @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
@@ -98,11 +145,11 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.measurement_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // measurementType
@@ -161,7 +208,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.measurement_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

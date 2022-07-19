@@ -2,151 +2,163 @@ package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.DateRange;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import org.ohdsi.circe.cohortdefinition.NumericRange;
 import org.ohdsi.circe.cohortdefinition.TextFilter;
 import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.ArrayList;
 
+import org.ohdsi.circe.helper.ResourceHelper;
+
 public abstract class BuilderUtils {
 
-    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
+  private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
+  private final static String DATE_ADJUSTMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateAdjustment.sql");
+  ;
     private final static String STANARD_ALIAS = "cs";
-    private final static String NON_STANARD_ALIAS = "cns";
+  private final static String NON_STANARD_ALIAS = "cns";
 
-    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
+  public static String getDateAdjustmentExpression(DateAdjustment dateAdjustment, String startColumn, String endColumn) {
+    String expression = StringUtils.replace(DATE_ADJUSTMENT_TEMPLATE, "@startOffset", Integer.toString(dateAdjustment.startOffset));
+    expression = StringUtils.replace(expression, "@startColumn", startColumn);
+    expression = StringUtils.replace(expression, "@endOffset", Integer.toString(dateAdjustment.endOffset));
+    expression = StringUtils.replace(expression, "@endColumn", endColumn);
+    return expression;
+  }
 
-        String joinExpression = "";
-        ArrayList<String> codesetClauses = new ArrayList<>();
+  public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
 
-        if (standardCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, standardCodesetId));
-        }
+    String joinExpression = "";
+    ArrayList<String> codesetClauses = new ArrayList<>();
 
-        // conditionSourceConcept
-        if (sourceCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, sourceCodesetId));
-        }
-
-        if (codesetClauses.size() > 0) {
-            joinExpression = StringUtils.join(codesetClauses, "\n");
-        }
-
-
-        return joinExpression;
+    if (standardCodesetId != null) {
+      codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, standardCodesetId));
     }
 
-    public static String getOperator(String op) {
-
-        switch (op) {
-            case "lt":
-                return "<";
-            case "lte":
-                return "<=";
-            case "eq":
-                return "=";
-            case "!eq":
-                return "<>";
-            case "gt":
-                return ">";
-            case "gte":
-                return ">=";
-        }
-        throw new RuntimeException("Unknown operator type: " + op);
+    // conditionSourceConcept
+    if (sourceCodesetId != null) {
+      codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, sourceCodesetId));
     }
 
-    public static String getOperator(NumericRange range) {
-
-        return getOperator(range.op);
+    if (codesetClauses.size() > 0) {
+      joinExpression = StringUtils.join(codesetClauses, "\n");
     }
 
-    public static String getOperator(DateRange range) {
+    return joinExpression;
+  }
 
-        return getOperator(range.op);
+  public static String getOperator(String op) {
+
+    switch (op) {
+      case "lt":
+        return "<";
+      case "lte":
+        return "<=";
+      case "eq":
+        return "=";
+      case "!eq":
+        return "<>";
+      case "gt":
+        return ">";
+      case "gte":
+        return ">=";
     }
+    throw new RuntimeException("Unknown operator type: " + op);
+  }
 
-    public static String dateStringToSql(String date) {
+  public static String getOperator(NumericRange range) {
 
-        String[] dateParts = StringUtils.split(date, '-');
-        return String.format("DATEFROMPARTS(%s, %s, %s)", Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
+    return getOperator(range.op);
+  }
+
+  public static String getOperator(DateRange range) {
+
+    return getOperator(range.op);
+  }
+
+  public static String dateStringToSql(String date) {
+
+    String[] dateParts = StringUtils.split(date, '-');
+    return String.format("DATEFROMPARTS(%s, %s, %s)", Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
+  }
+
+  public static String buildDateRangeClause(String sqlExpression, DateRange range) {
+
+    String clause;
+    if (range.op.endsWith("bt")) // range with a 'between' op
+    {
+      clause = String.format("%s(%s >= %s and %s <= %s)",
+              range.op.startsWith("!") ? "not " : "",
+              sqlExpression,
+              dateStringToSql(range.value),
+              sqlExpression,
+              dateStringToSql(range.extent));
+    } else // single value range (less than/eq/greater than, etc)
+    {
+      clause = String.format("%s %s %s", sqlExpression, getOperator(range), dateStringToSql(range.value));
     }
+    return clause;
+  }
 
-    public static String buildDateRangeClause(String sqlExpression, DateRange range) {
+  // assumes decimal range
+  public static String buildNumericRangeClause(String sqlExpression, NumericRange range, String format) {
 
-        String clause;
-        if (range.op.endsWith("bt")) // range with a 'between' op
-        {
-            clause = String.format("%s(%s >= %s and %s <= %s)",
-                    range.op.startsWith("!") ? "not " : "",
-                    sqlExpression,
-                    dateStringToSql(range.value),
-                    sqlExpression,
-                    dateStringToSql(range.extent));
-        } else // single value range (less than/eq/greater than, etc)
-        {
-            clause = String.format("%s %s %s", sqlExpression, getOperator(range), dateStringToSql(range.value));
-        }
-        return clause;
+    String clause;
+    if (range.op.endsWith("bt")) {
+      clause = String.format("%s(%s >= %" + format + " and %s <= %" + format + ")",
+              range.op.startsWith("!") ? "not " : "",
+              sqlExpression,
+              range.value.doubleValue(),
+              sqlExpression,
+              range.extent.doubleValue());
+    } else {
+      clause = String.format("%s %s %" + format, sqlExpression, getOperator(range), range.value.doubleValue());
     }
+    return clause;
+  }
 
-    // assumes decimal range
-    public static String buildNumericRangeClause(String sqlExpression, NumericRange range, String format) {
+  // Assumes integer numeric range
+  public static String buildNumericRangeClause(String sqlExpression, NumericRange range) {
 
-        String clause;
-        if (range.op.endsWith("bt")) {
-            clause = String.format("%s(%s >= %" + format + " and %s <= %" + format + ")",
-                    range.op.startsWith("!") ? "not " : "",
-                    sqlExpression,
-                    range.value.doubleValue(),
-                    sqlExpression,
-                    range.extent.doubleValue());
-        } else {
-            clause = String.format("%s %s %" + format, sqlExpression, getOperator(range), range.value.doubleValue());
-        }
-        return clause;
+    String clause;
+    if (range.op.endsWith("bt")) {
+      clause = String.format("%s(%s >= %d and %s <= %d)",
+              range.op.startsWith("!") ? "not " : "",
+              sqlExpression,
+              range.value.intValue(),
+              sqlExpression,
+              range.extent.intValue());
+    } else {
+      clause = String.format("%s %s %d", sqlExpression, getOperator(range), range.value.intValue());
     }
+    return clause;
+  }
 
-    // Assumes integer numeric range
-    public static String buildNumericRangeClause(String sqlExpression, NumericRange range) {
+  public static ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
 
-        String clause;
-        if (range.op.endsWith("bt")) {
-            clause = String.format("%s(%s >= %d and %s <= %d)",
-                    range.op.startsWith("!") ? "not " : "",
-                    sqlExpression,
-                    range.value.intValue(),
-                    sqlExpression,
-                    range.extent.intValue());
-        } else {
-            clause = String.format("%s %s %d", sqlExpression, getOperator(range), range.value.intValue());
-        }
-        return clause;
+    ArrayList<Long> conceptIdList = new ArrayList<>();
+    for (Concept concept : concepts) {
+      conceptIdList.add(concept.conceptId);
     }
+    return conceptIdList;
+  }
 
-    public static ArrayList<Long> getConceptIdsFromConcepts(Concept[] concepts) {
+  public static String buildTextFilterClause(String sqlExpression, TextFilter filter) {
 
-        ArrayList<Long> conceptIdList = new ArrayList<>();
-        for (Concept concept : concepts) {
-            conceptIdList.add(concept.conceptId);
-        }
-        return conceptIdList;
+    String negation = filter.op.startsWith("!") ? "not" : "";
+    String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
+    String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
+
+    String value = escapeSqlParam(filter.text);
+
+    return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
+  }
+
+  private static String escapeSqlParam(String value) {
+    if (StringUtils.isEmpty(value)) {
+      return value;
     }
-
-    public static String buildTextFilterClause(String sqlExpression, TextFilter filter) {
-
-        String negation = filter.op.startsWith("!") ? "not" : "";
-        String prefix = filter.op.endsWith("endsWith") || filter.op.endsWith("contains") ? "%" : "";
-        String postfix = filter.op.endsWith("startsWith") || filter.op.endsWith("contains") ? "%" : "";
-
-        String value = escapeSqlParam(filter.text);
-
-        return String.format("%s %s like '%s%s%s'", sqlExpression, negation, prefix, value, postfix);
-    }
-
-    private static String escapeSqlParam(String value) {
-        if (StringUtils.isEmpty(value)) {
-            return value;
-        }
-        return value.replaceAll("\\\\*\\'", "''");
-    }
+    return value.replaceAll("\\\\*\\'", "''");
+  }
 }

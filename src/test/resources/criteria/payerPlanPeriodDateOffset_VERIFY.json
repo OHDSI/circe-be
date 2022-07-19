@@ -1,0 +1,80 @@
+{
+  "payerPlanPeriod.simple": [
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2000-01-01",
+      "end_date": "2000-05-31",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-01-01"
+    },
+    {
+      "person_id": 1,
+      "event_id": 2,
+      "start_date": "2000-06-01",
+      "end_date": "2000-06-10",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-06-01"
+    },
+    {
+      "person_id": 1,
+      "event_id": 3,
+      "start_date": "2000-07-01",
+      "end_date": "2001-01-01",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-07-01"
+    },
+    {
+      "person_id": 2,
+      "event_id": 4,
+      "start_date": "2000-01-01",
+      "end_date": "2001-12-31",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-01-01"
+    }
+  ],
+  "payerPlanPeriod.date_adjust": [
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2000-01-16",
+      "end_date": "2000-05-21",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-01-16"
+    },
+    {
+      "person_id": 1,
+      "event_id": 3,
+      "start_date": "2000-07-16",
+      "end_date": "2000-12-22",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-07-16"
+    },
+    {
+      "person_id": 2,
+      "event_id": 4,
+      "start_date": "2000-01-16",
+      "end_date": "2001-12-21",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-01-16"
+    }
+  ],
+  "payerPlanPeriod.user_defined": [
+    {
+      "person_id": 1,
+      "event_id": 3,
+      "start_date": "2000-09-01",
+      "end_date": "2000-09-30",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-07-16"
+    },
+    {
+      "person_id": 2,
+      "event_id": 4,
+      "start_date": "2000-09-01",
+      "end_date": "2000-09-30",
+      "visit_occurrence_id": null,
+      "sort_date": "2000-01-16"
+    }
+  ]
+}

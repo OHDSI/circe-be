@@ -1,5 +1,6 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
+import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Criteria;
 
@@ -19,11 +20,13 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
     query = embedCodesetClause(query, criteria);
 
+    List<String> selectClauses = resolveSelectClauses(criteria);
     List<String> joinClauses = resolveJoinClauses(criteria);
     List<String> whereClauses = resolveWhereClauses(criteria);
 
     query = embedOrdinalExpression(query, criteria, whereClauses);
 
+    query = embedSelectClauses(query, selectClauses);
     query = embedJoinClauses(query, joinClauses);
     query = embedWhereClauses(query, whereClauses);
 
@@ -44,7 +47,7 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
   }
 
   protected abstract String getTableColumnForCriteriaColumn(CriteriaColumn column);
-  
+
   protected String getAdditionalColumns(List<CriteriaColumn> columns) {
     String cols = String.join(", ", columns.stream()
             .map((column) -> {
@@ -54,6 +57,10 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
   }
 
   protected abstract Set<CriteriaColumn> getDefaultColumns();
+
+  protected String embedSelectClauses(String query, List<String> selectClauses) {
+    return StringUtils.replace(query, "@selectClause", StringUtils.join(selectClauses, ","));
+  }
 
   protected String embedJoinClauses(String query, List<String> joinClauses) {
 
@@ -75,7 +82,20 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
   protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
 
+  protected List<String> resolveSelectClauses(T criteria) {
+    return new ArrayList<String>();
+  }
+
   protected abstract List<String> resolveJoinClauses(T criteria);
 
-  protected abstract List<String> resolveWhereClauses(T criteria);
+  protected List<String> resolveWhereClauses(T criteria) {
+    ArrayList<String> whereClauses = new ArrayList<>();
+    
+    // if date is adjusted, the record should only be included if end >= start
+    if (criteria.dateAdjustment != null) {
+      whereClauses.add("C.end_date >= C.start_date");
+    }
+    
+    return whereClauses;
+  }
 }

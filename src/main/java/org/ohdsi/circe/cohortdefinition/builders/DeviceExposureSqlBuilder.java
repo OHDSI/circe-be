@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -23,6 +24,10 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.device_exposure_id", "de.device_concept_id", 
+          "de.visit_occurrence_id", "de.quantity"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -43,7 +48,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
       case QUANTITY:
         return "C.quantity";
       case DURATION:
-        return "DATEDIFF(d,device_exposure_start_date, COALESCE(C.device_exposure_end_date, DATEADD(d,1,C.device_exposure_start_date)))";
+        return "DATEDIFF(d,c.start_date, c.end_date)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Device Exposure:" + column.toString());
     }
@@ -74,6 +79,35 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+    // Device Type
+    if (criteria.deviceType != null && criteria.deviceType.length > 0) {
+      selectCols.add("de.device_type_concept_id");
+    }
+
+    // uniqueDeviceId
+    if (criteria.uniqueDeviceId != null) {
+      selectCols.add("de.unique_device_id");
+    }
+
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("de.provider_id");
+    }
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))"));
+    } else {
+      selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
+    }
+    return selectCols;
+  }
+  
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -95,16 +129,16 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    ArrayList<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.device_exposure_start_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // occurrenceEndDate
     if (criteria.occurrenceEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.device_exposure_end_date", criteria.occurrenceEndDate));
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.occurrenceEndDate));
     }
 
     // deviceType
@@ -125,7 +159,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.device_exposure_start_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

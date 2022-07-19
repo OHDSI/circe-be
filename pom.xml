@@ -6,7 +6,7 @@
 
   <groupId>org.ohdsi</groupId>
   <artifactId>circe</artifactId>
-  <version>1.10.0-SNAPSHOT</version>
+  <version>1.11.0-SNAPSHOT</version>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -77,25 +77,20 @@
     <repository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
-      <url>https://repo.ohdsi.org/nexus/content/repositories/releases</url>
-    </repository>
-    <repository>
-      <id>ohdsi.thirdparty</id>
-      <name>repo.ohdsi.org</name>
-      <url>https://repo.ohdsi.org/nexus/content/repositories/thirdparty</url>
-    </repository>
-    <repository>
-      <id>ohdsi.snapshots</id>
-      <name>repo.ohdsi.org-snapshots</name>
-      <url>https://repo.ohdsi.org/nexus/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <url>https://repo.ohdsi.org/nexus/content/groups/public</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>ohdsi</id>
+      <name>repo.ohdsi.org</name>
+      <url>https://repo.ohdsi.org/nexus/content/groups/public</url>
+    </pluginRepository>
+  </pluginRepositories>
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -21,6 +22,9 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("d.person_id", "d.cause_concept_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -63,6 +67,23 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+    // Condition Type
+    if (criteria.deathType != null && criteria.deathType.length > 0) {
+      selectCols.add("d.death_type_concept_id");
+    }
+ 
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment, "d.death_date", "DATEADD(day,1,d.death_date)"));
+    } else {
+      selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
+    }
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -78,11 +99,11 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    ArrayList<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.death_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // deathType
@@ -93,7 +114,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.death_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

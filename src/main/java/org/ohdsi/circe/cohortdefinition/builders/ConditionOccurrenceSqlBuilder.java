@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -22,6 +24,9 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("co.person_id", "co.condition_occurrence_id", "co.condition_concept_id", "co.visit_occurrence_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -40,8 +45,8 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       case DOMAIN_CONCEPT:
         return "C.condition_concept_id";
       case DURATION:
-        return "(DATEDIFF(d,C.condition_start_date, COALESCE(C.condition_end_date, DATEADD(day,1,C.condition_start_date))))";
-       default:
+        return "(DATEDIFF(d,C.start_date, C.end_date))";
+      default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
     }
   }
@@ -49,12 +54,13 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
   @Override
   protected String embedCodesetClause(String query, T criteria) {
 
-    return StringUtils.replace(query, "@codesetClause",
-            getCodesetJoinExpression(criteria.codesetId,
-                    "co.condition_concept_id",
-                    criteria.conditionSourceConcept,
-                    "co.condition_source_concept_id")
-    );
+    ArrayList<String> joinClauses = new ArrayList<>();
+
+    joinClauses.add(getCodesetJoinExpression(criteria.codesetId,
+            "co.condition_concept_id",
+            criteria.conditionSourceConcept,
+            "co.condition_source_concept_id"));
+    return StringUtils.replace(query, "@codesetClause", StringUtils.join(joinClauses, "\n"));
   }
 
   @Override
@@ -69,6 +75,36 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     }
 
     return query;
+  }
+
+  @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+    // Condition Type
+    if (criteria.conditionType != null && criteria.conditionType.length > 0) {
+      selectCols.add("co.condition_type_concept_id");
+    }
+    // Stop Reason
+    if (criteria.stopReason != null) {
+      selectCols.add("co.stop_reason");
+    }
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("co.provider_id");
+    }
+    // conditionStatus
+    if (criteria.conditionStatus != null && criteria.conditionStatus.length > 0) {
+      selectCols.add("co.condition_status_concept_id");
+    }
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
+    } else {
+      selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+    }
+    return selectCols;
   }
 
   @Override
@@ -93,22 +129,22 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.condition_start_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // occurrenceEndDate
     if (criteria.occurrenceEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.condition_end_date", criteria.occurrenceEndDate));
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.occurrenceEndDate));
     }
 
     // conditionType
     if (criteria.conditionType != null && criteria.conditionType.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.conditionType);
-      whereClauses.add(String.format("C.condition_type_concept_id %s in (%s)", (criteria.conditionTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.condition_type_concept_id %s in (%s)", (Optional.ofNullable(criteria.conditionTypeExclude).orElse(false) ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
     // Stop Reason
@@ -118,7 +154,7 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.condition_start_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

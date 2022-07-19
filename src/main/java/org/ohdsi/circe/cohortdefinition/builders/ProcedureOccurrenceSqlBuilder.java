@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -21,6 +22,10 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("po.person_id", "po.procedure_occurrence_id",
+          "po.procedure_concept_id", "po.visit_occurrence_id", "po.quantity"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -72,6 +77,37 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // procedureType
+    if (criteria.procedureType != null && criteria.procedureType.length > 0) {
+      selectCols.add("po.procedure_type_concept_id");
+    }
+
+    // modifier
+    if (criteria.modifier != null && criteria.modifier.length > 0) {
+      selectCols.add("po.modifier_concept_id");
+    }
+
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("po.provider_id");
+    }
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)"));
+    } else {
+      selectCols.add("po.procedure_date as start_date, DATEADD(day,1,po.procedure_date) as end_date");
+    }
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -93,11 +129,11 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.procedure_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // procedureType
@@ -119,7 +155,7 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.procedure_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

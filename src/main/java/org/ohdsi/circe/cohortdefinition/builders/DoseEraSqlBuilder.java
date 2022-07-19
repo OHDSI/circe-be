@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -20,6 +21,9 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.dose_era_id", "de.drug_concept_id, de.unit_concept_id, de.dose_value"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -38,7 +42,7 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
       case DURATION:
-        return "DATEDIFF(d, C.dose_era_start_date, C.dose_era_end_date)";
+        return "DATEDIFF(d, C.start_date, C.end_date)";
       case UNIT:
         return "C.unit_concept_id";
       case VALUE_AS_NUMBER:
@@ -86,18 +90,35 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+ 
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.dose_era_start_date" : "de.dose_era_end_date",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.dose_era_start_date" : "de.dose_era_end_date"));
+    } else {
+      selectCols.add("de.dose_era_start_date as start_date, de.dose_era_end_date as end_date");
+    }
+
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // eraStartDate
     if (criteria.eraStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.dose_era_start_date", criteria.eraStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.eraStartDate));
     }
 
     // eraEndDate
     if (criteria.eraEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.dose_era_end_date", criteria.eraEndDate));
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.eraEndDate));
     }
 
     // unit
@@ -112,17 +133,17 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
 
     // eraLength
     if (criteria.eraLength != null) {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.dose_era_start_date, C.dose_era_end_date)", criteria.eraLength));
+      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.start_date, C.end_date)", criteria.eraLength));
     }
 
     // ageAtStart
     if (criteria.ageAtStart != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.dose_era_start_date) - P.year_of_birth", criteria.ageAtStart));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.ageAtStart));
     }
 
     // ageAtEnd
     if (criteria.ageAtEnd != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.dose_era_end_date) - P.year_of_birth", criteria.ageAtEnd));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.end_date) - P.year_of_birth", criteria.ageAtEnd));
     }
 
     // gender

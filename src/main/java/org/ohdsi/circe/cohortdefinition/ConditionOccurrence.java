@@ -47,7 +47,7 @@ public class ConditionOccurrence extends Criteria {
   public Concept[] conditionType;
 
   @JsonProperty("ConditionTypeExclude")
-  public boolean conditionTypeExclude = false;
+  public Boolean conditionTypeExclude;
 
   @JsonProperty("StopReason")
   public TextFilter stopReason;

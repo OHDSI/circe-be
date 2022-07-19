@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -21,6 +22,9 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("op.person_id", "op.observation_period_id", "op.period_type_concept_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -35,12 +39,12 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     // overwrite user defined dates in select
     String startDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.startDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.startDate)
-            : "C.observation_period_start_date";
+            : "C.start_date";
     query = StringUtils.replace(query, "@startDateExpression", startDateExpression);
 
     String endDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.endDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.endDate)
-            : "C.observation_period_end_date";
+            : "C.end_date";
     query = StringUtils.replace(query, "@endDateExpression", endDateExpression);
     return query;
   }
@@ -75,6 +79,22 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "op.observation_period_start_date" : "op.observation_period_end_date",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "op.observation_period_start_date" : "op.observation_period_end_date"));
+    } else {
+      selectCols.add("op.observation_period_start_date as start_date, op.observation_period_end_date as end_date");
+    }
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -90,7 +110,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     if (criteria.first != null && criteria.first == true) {
       whereClauses.add("C.ordinal = 1");
@@ -102,23 +122,23 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
       if (userDefinedPeriod.startDate != null) {
         String startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
-        whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
+        whereClauses.add(String.format("C.start_date <= %s and C.end_date >= %s", startDateExpression, startDateExpression));
       }
 
       if (userDefinedPeriod.endDate != null) {
         String endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
-        whereClauses.add(String.format("C.OBSERVATION_PERIOD_START_DATE <= %s and C.OBSERVATION_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
+        whereClauses.add(String.format("C.start_date <= %s and C.end_date >= %s", endDateExpression, endDateExpression));
       }
     }
 
     // periodStartDate
     if (criteria.periodStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.observation_period_start_date", criteria.periodStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.periodStartDate));
     }
 
     // periodEndDate
     if (criteria.periodEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.observation_period_end_date", criteria.periodEndDate));
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.periodEndDate));
     }
 
     // periodType
@@ -129,17 +149,17 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
     // periodLength
     if (criteria.periodLength != null) {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.observation_period_start_date, C.observation_period_end_date)", criteria.periodLength));
+      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.start_date, C.end_date)", criteria.periodLength));
     }
 
     // ageAtStart
     if (criteria.ageAtStart != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.observation_period_start_date) - P.year_of_birth", criteria.ageAtStart));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.ageAtStart));
     }
 
     // ageAtEnd
     if (criteria.ageAtEnd != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.observation_period_end_date) - P.year_of_birth", criteria.ageAtEnd));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.end_date) - P.year_of_birth", criteria.ageAtEnd));
     }
 
     return whereClauses;
