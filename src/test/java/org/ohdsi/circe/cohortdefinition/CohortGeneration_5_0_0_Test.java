@@ -140,9 +140,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
   /* first occurrence tests */
   private void setFirstOccurrenceCriteria(final Criteria c) throws Exception {
     final Field first = c.getClass().getDeclaredField("first");
-    final Field codesetId = c.getClass().getDeclaredField("codesetId");
     first.set(c, Boolean.valueOf(true));
-    codesetId.set(c, Integer.valueOf(0));
   }
 
   @Test
@@ -178,7 +176,8 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
       new Observation(),
       new ProcedureOccurrence(),
       new Specimen(),
-      new VisitOccurrence()
+      new VisitOccurrence(),
+			new PayerPlanPeriod()
     };
 
     // create and execute cohort for each test criteria
