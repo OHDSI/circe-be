@@ -46,9 +46,9 @@ public class VisitDetail extends Criteria {
 
   @JsonProperty("VisitTypeExclude")
   public boolean visitTypeExclude = false;
-	
-  @JsonProperty("SourceConcept")
-  public Integer sourceConcept;
+
+  @JsonProperty("VisitSourceConcept")
+  public Integer visitSourceConcept;
 
   @JsonProperty("VisitLength")
   public NumericRange visitLength;

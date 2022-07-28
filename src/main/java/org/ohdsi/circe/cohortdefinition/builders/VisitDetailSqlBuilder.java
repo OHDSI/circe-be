@@ -41,7 +41,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     return StringUtils.replace(query, "@codesetClause",
             BuilderUtils.getCodesetJoinExpression(criteria.codesetId,
                     "vd.visit_detail_concept_id",
-                    criteria.sourceConcept,
+                    criteria.visitSourceConcept,
                     "vd.visit_detail_source_concept_id")
     );
   }
