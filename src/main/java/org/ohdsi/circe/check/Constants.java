@@ -95,6 +95,8 @@ public interface Constants {
         String ANATOMIC_SITE_ATTR = "anatomic site";
         String DISEASE_STATUS_ATTR = "disease status";
         String PLACE_OF_SERVICE_ATTR = "place of service";
+        String ADMITTED_FROM_ATTR = "admitted from";
+        String DISCHARGED_TO_ATTR = "discharged to";
         String LOCATION_REGION_START_DATE_ATTR = "location region start date";
         String LOCATION_REGION_END_DATE_ATTR = "location region end date";
         String STOP_REASON_ATTR = "stop reason";

@@ -41,7 +41,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     return StringUtils.replace(query, "@codesetClause",
             BuilderUtils.getCodesetJoinExpression(criteria.codesetId,
                     "vd.visit_detail_concept_id",
-                    criteria.visitSourceConcept,
+                    criteria.visitDetailSourceConcept,
                     "vd.visit_detail_source_concept_id")
     );
   }
@@ -97,14 +97,14 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
 
     // visitType
-    if (criteria.visitType != null && criteria.visitType.length > 0) {
-      ArrayList<Long> conceptIds = BuilderUtils.getConceptIdsFromConcepts(criteria.visitType);
+    if (criteria.visitDetailType != null && criteria.visitDetailType.length > 0) {
+      ArrayList<Long> conceptIds = BuilderUtils.getConceptIdsFromConcepts(criteria.visitDetailType);
       whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
     // visitLength
-    if (criteria.visitLength != null) {
-      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitLength));
+    if (criteria.visitDetailLength != null) {
+      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitDetailLength));
     }
 
     // age

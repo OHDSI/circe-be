@@ -101,7 +101,7 @@ public class ConceptSetCriteriaCheck extends BaseCriteriaCheck {
                 .isA(VisitDetail.class)
                 .then(c -> match((VisitDetail)c)
                         .when(visitDetail -> Objects.isNull(visitDetail.codesetId)
-                                && Objects.isNull(visitDetail.visitSourceConcept))
+                                && Objects.isNull(visitDetail.visitDetailSourceConcept))
                         .then(addWarning));
     }
 }

@@ -41,17 +41,17 @@ public class VisitDetail extends Criteria {
   @JsonProperty("OccurrenceEndDate")
   public DateRange occurrenceEndDate;
 
-  @JsonProperty("VisitType")
-  public Concept[] visitType;
+  @JsonProperty("VisitDetailType")
+  public Concept[] visitDetailType;
 
   @JsonProperty("VisitTypeExclude")
   public boolean visitTypeExclude = false;
 
-  @JsonProperty("VisitSourceConcept")
-  public Integer visitSourceConcept;
+  @JsonProperty("VisitDetailSourceConcept")
+  public Integer visitDetailSourceConcept;
 
-  @JsonProperty("VisitLength")
-  public NumericRange visitLength;
+  @JsonProperty("VisitDetailLength")
+  public NumericRange visitDetailLength;
   
   @JsonProperty("Age")
   public NumericRange age;
@@ -64,6 +64,12 @@ public class VisitDetail extends Criteria {
 
   @JsonProperty("PlaceOfService")
   public Concept[] placeOfService;
+
+  @JsonProperty("DischargedToConcept")
+  public Concept[] dischargedToConcept;
+
+  @JsonProperty("AdmittedFromConcept")
+  public Concept[] admittedFromConcept;
 
   /**
    * ID of Codeset which defines Geo concepts.

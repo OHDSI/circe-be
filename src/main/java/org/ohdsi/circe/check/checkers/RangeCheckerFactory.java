@@ -166,7 +166,7 @@ public class RangeCheckerFactory extends BaseCheckerFactory {
                 VisitDetail vd = (VisitDetail) c;
                 checkRange(vd.occurrenceStartDate, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.OCCURRENCE_START_DATE_ATTR);
                 checkRange(vd.occurrenceEndDate, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.OCCURRENCE_END_DATE_ATTR);
-                checkRange(vd.visitLength, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.VISIT_LENGTH_ATTR);
+                checkRange(vd.visitDetailLength, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.VISIT_LENGTH_ATTR);
                 checkRange(vd.age, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.AGE_ATTR);
             };
         } else if (criteria instanceof PayerPlanPeriod) {

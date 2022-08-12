@@ -77,17 +77,17 @@
     <repository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
-      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+      <url>https://repo.ohdsi.org/nexus/content/repositories/releases</url>
     </repository>
     <repository>
       <id>ohdsi.thirdparty</id>
       <name>repo.ohdsi.org</name>
-      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/thirdparty</url>
+      <url>https://repo.ohdsi.org/nexus/content/repositories/thirdparty</url>
     </repository>
     <repository>
       <id>ohdsi.snapshots</id>
       <name>repo.ohdsi.org-snapshots</name>
-      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/snapshots</url>
+      <url>https://repo.ohdsi.org/nexus/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
