@@ -146,7 +146,7 @@ public class ConceptCheckerFactory extends BaseCheckerFactory{
         } else if (criteria instanceof VisitDetail) {
             result = c -> {
                 VisitDetail vd = (VisitDetail) c;
-                checkConcept(vd.visitDetailType, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.VISIT_TYPE_ATTR);
+                checkConcept(vd.visitDetailType, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.VISIT_DETAIL_TYPE_ATTR);
                 checkConcept(vd.gender, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.GENDER_ATTR);
                 checkConcept(vd.providerSpecialty, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.PROVIDER_SPECIALITY_ATTR);
                 checkConcept(vd.placeOfService, Constants.Criteria.VISIT_DETAIL, Constants.Attributes.PLACE_OF_SERVICE_ATTR);

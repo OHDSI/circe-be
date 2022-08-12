@@ -561,14 +561,14 @@
               {
                 "Criteria": {
                   "VisitDetail": {
-                    "OccurrenceStartDate": {
+                    "VisitDetailStartDate": {
                       "Op": "bt"
                     },
-                    "OccurrenceEndDate": {
+                    "VisitDetailEndDate": {
                       "Op": "!bt"
                     },
-                    "VisitType": [],
-                    "VisitLength": {
+                    "VisitDetailType": [],
+                    "VisitDetailLength": {
                       "Op": "bt"
                     },
                     "Age": {
@@ -576,7 +576,9 @@
                     },
                     "Gender": [],
                     "ProviderSpecialty": [],
-                    "PlaceOfService": []
+                    "PlaceOfService": [],
+                    "DischargedToConcept": [],
+                    "AdmittedFromConcept": []
                   }
                 },
                 "StartWindow": {

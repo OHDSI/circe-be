@@ -219,17 +219,17 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro VisitDetail c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
     <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
     <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
-    <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
-c.visitDetailType??><#local temp>a visit type that<#if c.visitTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if
+    <#local temp><@EventDateCriteria c.visitDetailStartDate!{} c.visitDetailEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
+c.visitDetailType??><#local temp>a visit detail type that<#if c.visitDetailTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.visitDetailType/></#local><#local attrs+=[temp]></#if><#if
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if
-c.visitDetailType??><#local temp>a visit type that is: <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if
-c.visitDetailLength??><#local temp>with length <@inputTypes.NumericRange range=c.visitLength /> days</#local><#local attrs+=[temp]></#if>
-    visit detail<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any visit")}<#if
-c.visitDetailSourceConcept??> (including ${utils.codesetName(c.visitSourceConcept, "any visit")} source concepts)</#if><#if
+c.visitDetailType??><#local temp>a visit detail type that is: <@inputTypes.ConceptList list=c.visitDetailType/></#local><#local attrs+=[temp]></#if><#if
+c.visitDetailLength??><#local temp>with length <@inputTypes.NumericRange range=c.visitDetailLength /> days</#local><#local attrs+=[temp]></#if>
+    visit detail<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any visit detail")}<#if
+c.visitDetailSourceConcept??> (including ${utils.codesetName(c.visitDetailSourceConcept, "any visit")} source concepts)</#if><#if
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit") /></#if><#if
-c.dischargedToConcept??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit") /></#if><#if
-c.admittedFromConcept??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit detail") /></#if><#if
+c.dischargedToConcept??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit detail") /></#if><#if
+c.admittedFromConcept??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any visit detail") /><#else>.</#if></#macro>
 
 
 <#-- temp has content: '${temp}' -->

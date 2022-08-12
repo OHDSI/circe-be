@@ -35,17 +35,17 @@ public class VisitDetail extends Criteria {
   @JsonProperty("First")
   public Boolean first;
 
-  @JsonProperty("OccurrenceStartDate")
-  public DateRange occurrenceStartDate;
+  @JsonProperty("VisitDetailStartDate")
+  public DateRange visitDetailStartDate;
 
-  @JsonProperty("OccurrenceEndDate")
-  public DateRange occurrenceEndDate;
+  @JsonProperty("VisitDetailEndDate")
+  public DateRange visitDetailEndDate;
 
   @JsonProperty("VisitDetailType")
   public Concept[] visitDetailType;
 
-  @JsonProperty("VisitTypeExclude")
-  public boolean visitTypeExclude = false;
+  @JsonProperty("VisitDetailTypeExclude")
+  public boolean visitDetailTypeExclude = false;
 
   @JsonProperty("VisitDetailSourceConcept")
   public Integer visitDetailSourceConcept;

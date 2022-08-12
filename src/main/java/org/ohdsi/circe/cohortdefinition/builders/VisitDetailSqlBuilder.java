@@ -87,19 +87,19 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     List<String> whereClauses = new ArrayList<>();
 
     // occurrenceStartDate
-    if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_start_date", criteria.occurrenceStartDate));
+    if (criteria.visitDetailStartDate != null) {
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_start_date", criteria.visitDetailStartDate));
     }
 
     // occurrenceEndDate
-    if (criteria.occurrenceEndDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_end_date", criteria.occurrenceEndDate));
+    if (criteria.visitDetailEndDate != null) {
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_end_date", criteria.visitDetailEndDate));
     }
 
     // visitType
     if (criteria.visitDetailType != null && criteria.visitDetailType.length > 0) {
       ArrayList<Long> conceptIds = BuilderUtils.getConceptIdsFromConcepts(criteria.visitDetailType);
-      whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitDetailTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
     // visitLength
