@@ -34,12 +34,12 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
     String startDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.startDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.startDate)
             : "C.payer_plan_period_start_date";
-    StringUtils.replace(query, "@startDateExpression", startDateExpression);
+    query = StringUtils.replace(query, "@startDateExpression", startDateExpression);
 
     String endDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.endDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.endDate)
             : "C.payer_plan_period_end_date";
-    StringUtils.replace(query, "@endDateExpression", endDateExpression);
+    query = StringUtils.replace(query, "@endDateExpression", endDateExpression);
     return query;
   }
 

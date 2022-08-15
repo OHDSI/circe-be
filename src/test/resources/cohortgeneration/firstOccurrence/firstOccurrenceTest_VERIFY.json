@@ -59,6 +59,12 @@
       "subject_id":1,
       "cohort_start_date":"2000-07-05",
       "cohort_end_date":"2001-01-01"
-    }
+    },
+    {
+      "cohort_definition_id":11,
+      "subject_id":1,
+      "cohort_start_date":"2000-07-05",
+      "cohort_end_date":"2001-01-01"
+    }		
   ]
 }

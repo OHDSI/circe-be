@@ -206,6 +206,26 @@
       "period_type_concept_id": 0
     }
   ],
+	"cdm.payer_plan_period": [
+		{
+      "payer_plan_period_id": 1,
+      "person_id":1,
+      "payer_plan_period_start_date":"2000-07-05",
+      "payer_plan_period_end_date":"2000-07-12"
+    },
+    {
+      "payer_plan_period_id": 2,
+      "person_id":1,
+      "payer_plan_period_start_date":"2000-09-01",
+      "payer_plan_period_end_date":"2000-09-02"
+    },
+    {
+      "payer_plan_period_id": 3,
+      "person_id":2,
+      "payer_plan_period_start_date":"2000-01-01",
+      "payer_plan_period_end_date":"2000-01-02"
+    }
+	],
   "cdm.procedure_occurrence": [
     {
       "procedure_occurrence_id": 1,
