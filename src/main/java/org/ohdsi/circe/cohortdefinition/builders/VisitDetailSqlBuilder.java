@@ -88,28 +88,28 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
     // occurrenceStartDate
     if (criteria.visitDetailStartDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_start_date", criteria.visitDetailStartDate));
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_detail_start_date", criteria.visitDetailStartDate));
     }
 
     // occurrenceEndDate
     if (criteria.visitDetailEndDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_end_date", criteria.visitDetailEndDate));
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_detail_end_date", criteria.visitDetailEndDate));
     }
 
     // visitType
     if (criteria.visitDetailType != null && criteria.visitDetailType.length > 0) {
       ArrayList<Long> conceptIds = BuilderUtils.getConceptIdsFromConcepts(criteria.visitDetailType);
-      whereClauses.add(String.format("C.visit_type_concept_id %s in (%s)", (criteria.visitDetailTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.visit_detail_type_concept_id %s in (%s)", (criteria.visitDetailTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
     // visitLength
     if (criteria.visitDetailLength != null) {
-      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitDetailLength));
+      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_detail_start_date, C.visit_detail_end_date)", criteria.visitDetailLength));
     }
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.visit_start_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.visit_detail_start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender
