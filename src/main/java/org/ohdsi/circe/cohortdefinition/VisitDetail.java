@@ -41,14 +41,14 @@ public class VisitDetail extends Criteria {
   @JsonProperty("VisitDetailEndDate")
   public DateRange visitDetailEndDate;
 
-  @JsonProperty("VisitDetailType")
-  public Concept[] visitDetailType;
+  @JsonProperty("VisitDetailTypeCS")
+  public Integer visitDetailTypeCS;
 
   @JsonProperty("VisitDetailTypeExclude")
   public boolean visitDetailTypeExclude = false;
 
-  @JsonProperty("VisitDetailSourceConcept")
-  public Integer visitDetailSourceConcept;
+  @JsonProperty("VisitDetailSourceConceptCS")
+  public Integer visitDetailSourceConceptCS;
 
   @JsonProperty("VisitDetailLength")
   public NumericRange visitDetailLength;
@@ -56,20 +56,20 @@ public class VisitDetail extends Criteria {
   @JsonProperty("Age")
   public NumericRange age;
   
-  @JsonProperty("Gender")
-  public Concept[] gender;
+  @JsonProperty("GenderCS")
+  public Integer genderCS;
   
-  @JsonProperty("ProviderSpecialty")
-  public Concept[] providerSpecialty;
+  @JsonProperty("ProviderSpecialtyCS")
+  public Integer providerSpecialtyCS;
 
-  @JsonProperty("PlaceOfService")
-  public Concept[] placeOfService;
+  @JsonProperty("PlaceOfServiceCS")
+  public Integer placeOfServiceCS;
 
-  @JsonProperty("DischargedToConcept")
-  public Concept[] dischargedToConcept;
+  @JsonProperty("DischargedToConceptCS")
+  public Integer dischargedToConceptCS;
 
-  @JsonProperty("AdmittedFromConcept")
-  public Concept[] admittedFromConcept;
+  @JsonProperty("AdmittedFromConceptCS")
+  public Integer admittedFromConceptCS;
 
   /**
    * ID of Codeset which defines Geo concepts.
@@ -77,8 +77,8 @@ public class VisitDetail extends Criteria {
    */
 
   @CdmVersion(range = ">=6.1")
-  @JsonProperty("PlaceOfServiceLocation")
-  public Integer placeOfServiceLocation;
+  @JsonProperty("PlaceOfServiceLocationCS")
+  public Integer placeOfServiceLocationCS;
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

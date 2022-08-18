@@ -190,19 +190,7 @@
       {
         "VisitDetail": {
           "CodesetId": 0,
-          "VisitDetailType": [
-            {
-              "CONCEPT_CODE": "10021000000106",
-              "CONCEPT_ID": 44787739,
-              "CONCEPT_NAME": "FP34D drugs supplied payment form",
-              "DOMAIN_ID": "Type Concept",
-              "INVALID_REASON_CAPTION": "Unknown",
-              "STANDARD_CONCEPT_CAPTION": "Unknown",
-              "VOCABULARY_ID": "SNOMED",
-              "CONCEPT_ID": 44787739,
-              "CONCEPT_ID": 44787739
-            }
-          ]
+          "VisitDetailTypeCS": 44787739
         }
       },
       {

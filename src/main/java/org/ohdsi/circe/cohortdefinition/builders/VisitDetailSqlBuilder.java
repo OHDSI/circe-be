@@ -41,7 +41,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     return StringUtils.replace(query, "@codesetClause",
             BuilderUtils.getCodesetJoinExpression(criteria.codesetId,
                     "vd.visit_detail_concept_id",
-                    criteria.visitDetailSourceConcept,
+                    criteria.visitDetailSourceConceptCS,
                     "vd.visit_detail_source_concept_id")
     );
   }
@@ -63,19 +63,32 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
     List<String> joinClauses = new ArrayList<>();
 
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) // join to PERSON
-    {
+    if (criteria.age != null || criteria.genderCS != null) { // join to PERSON
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
-    if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) || criteria.placeOfServiceLocation != null) {
-      joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
-    }
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
+
+    if (criteria.genderCS != null) {
+      addFiltering(joinClauses, criteria.genderCS, "P.gender_concept_id");
     }
 
-    if (criteria.placeOfServiceLocation != null) {
-      addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
+    if (criteria.placeOfServiceCS != null || criteria.placeOfServiceLocationCS != null) {
+      joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
+    }
+
+    if (criteria.placeOfServiceCS != null) {
+      addFiltering(joinClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
+    }
+
+    if (criteria.providerSpecialtyCS != null) {
+      addFilteringByProviderSpeciality(joinClauses, criteria.providerSpecialtyCS);
+    }
+
+    if (criteria.placeOfServiceLocationCS != null) {
+      addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocationCS);
+    }
+
+    if (criteria.visitDetailTypeCS != null) {
+      addFiltering(joinClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id", criteria.visitDetailTypeExclude);
     }
 
     return joinClauses;
@@ -96,12 +109,6 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_detail_end_date", criteria.visitDetailEndDate));
     }
 
-    // visitType
-    if (criteria.visitDetailType != null && criteria.visitDetailType.length > 0) {
-      ArrayList<Long> conceptIds = BuilderUtils.getConceptIdsFromConcepts(criteria.visitDetailType);
-      whereClauses.add(String.format("C.visit_detail_type_concept_id %s in (%s)", (criteria.visitDetailTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
-    }
-
     // visitLength
     if (criteria.visitDetailLength != null) {
       whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_detail_start_date, C.visit_detail_end_date)", criteria.visitDetailLength));
@@ -112,34 +119,33 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.visit_detail_start_date) - P.year_of_birth", criteria.age));
     }
 
-    // gender
-    if (criteria.gender != null && criteria.gender.length > 0) {
-      whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(BuilderUtils.getConceptIdsFromConcepts(criteria.gender), ",")));
-    }
-
-    // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-      whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(BuilderUtils.getConceptIdsFromConcepts(criteria.providerSpecialty), ",")));
-    }
-
-    // placeOfService
-    if (criteria.placeOfService != null && criteria.placeOfService.length > 0) {
-      whereClauses.add(String.format("CS.place_of_service_concept_id in (%s)", StringUtils.join(BuilderUtils.getConceptIdsFromConcepts(criteria.placeOfService), ",")));
-    }
-
     return whereClauses;
+  }
+
+  protected void addFilteringByProviderSpeciality(List<String> joinClauses, Integer codesetId) {
+    joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
+    addFiltering(joinClauses, codesetId, "CS.speciality_concept_id");
   }
 
   protected void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
 
     joinClauses.add(getLocationHistoryJoin("LH", "CARE_SITE", "C.care_site_id"));
     joinClauses.add("JOIN @cdm_database_schema.LOCATION LOC on LOC.location_id = LH.location_id");
+    addFiltering(joinClauses, codesetId, "LOC.region_concept_id");
+  }
+
+  private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn) {
+    addFiltering(joinClauses, codesetId, standardConceptColumn, false);
+  }
+
+  private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn, boolean exclude) {
     joinClauses.add(
             BuilderUtils.getCodesetJoinExpression(
                     codesetId,
-                    "LOC.region_concept_id",
+                    standardConceptColumn,
                     null,
-                    null
+                    null,
+                    exclude
             )
     );
   }

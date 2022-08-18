@@ -10,22 +10,29 @@ import java.util.ArrayList;
 
 public abstract class BuilderUtils {
 
-    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
+    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id %s %d)";
     private final static String STANARD_ALIAS = "cs";
     private final static String NON_STANARD_ALIAS = "cns";
-    
-    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
+
+    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn,
+                                                  Integer sourceCodesetId, String sourceConceptColumn) {
+        return getCodesetJoinExpression(standardCodesetId, standardConceptColumn, sourceCodesetId, sourceConceptColumn, false);
+    }
+
+    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn,
+                                                  Integer sourceCodesetId, String sourceConceptColumn, boolean exclude) {
 
         String joinExpression = "";
         ArrayList<String> codesetClauses = new ArrayList<>();
+        String excludeExpression = exclude ? "<>" : "=";
 
         if (standardCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, standardCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, excludeExpression, standardCodesetId));
         }
 
         // conditionSourceConcept
         if (sourceCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, sourceCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, excludeExpression, sourceCodesetId));
         }
 
         if (codesetClauses.size() > 0) {

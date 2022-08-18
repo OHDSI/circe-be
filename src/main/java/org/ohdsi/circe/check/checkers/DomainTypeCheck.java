@@ -84,7 +84,7 @@ public class DomainTypeCheck extends BaseCriteriaCheck {
                         .then(addWarning))
                 .isA(VisitDetail.class)
                 .then(c -> match((VisitDetail)c)
-                        .when(visitDetail -> Objects.isNull(visitDetail.visitDetailType))
+                        .when(visitDetail -> Objects.isNull(visitDetail.visitDetailTypeCS))
                         .then(addWarning));
     }
 
