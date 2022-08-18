@@ -47,8 +47,8 @@ public class VisitDetail extends Criteria {
   @JsonProperty("VisitDetailTypeExclude")
   public boolean visitDetailTypeExclude = false;
 
-  @JsonProperty("VisitDetailSourceConceptCS")
-  public Integer visitDetailSourceConceptCS;
+  @JsonProperty("VisitDetailSourceConcept")
+  public Integer visitDetailSourceConcept;
 
   @JsonProperty("VisitDetailLength")
   public NumericRange visitDetailLength;
@@ -65,11 +65,11 @@ public class VisitDetail extends Criteria {
   @JsonProperty("PlaceOfServiceCS")
   public Integer placeOfServiceCS;
 
-  @JsonProperty("DischargedToConceptCS")
-  public Integer dischargedToConceptCS;
+  @JsonProperty("DischargedToConcept")
+  public Integer dischargedToConcept;
 
-  @JsonProperty("AdmittedFromConceptCS")
-  public Integer admittedFromConceptCS;
+  @JsonProperty("AdmittedFromConcept")
+  public Integer admittedFromConcept;
 
   /**
    * ID of Codeset which defines Geo concepts.
@@ -77,8 +77,8 @@ public class VisitDetail extends Criteria {
    */
 
   @CdmVersion(range = ">=6.1")
-  @JsonProperty("PlaceOfServiceLocationCS")
-  public Integer placeOfServiceLocationCS;
+  @JsonProperty("PlaceOfServiceLocation")
+  public Integer placeOfServiceLocation;
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

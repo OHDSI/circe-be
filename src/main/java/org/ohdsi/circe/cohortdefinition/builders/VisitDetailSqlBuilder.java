@@ -41,7 +41,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     return StringUtils.replace(query, "@codesetClause",
             BuilderUtils.getCodesetJoinExpression(criteria.codesetId,
                     "vd.visit_detail_concept_id",
-                    criteria.visitDetailSourceConceptCS,
+                    criteria.visitDetailSourceConcept,
                     "vd.visit_detail_source_concept_id")
     );
   }
@@ -71,7 +71,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       addFiltering(joinClauses, criteria.genderCS, "P.gender_concept_id");
     }
 
-    if (criteria.placeOfServiceCS != null || criteria.placeOfServiceLocationCS != null) {
+    if (criteria.placeOfServiceCS != null || criteria.placeOfServiceLocation != null) {
       joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
     }
 
@@ -83,8 +83,8 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       addFilteringByProviderSpeciality(joinClauses, criteria.providerSpecialtyCS);
     }
 
-    if (criteria.placeOfServiceLocationCS != null) {
-      addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocationCS);
+    if (criteria.placeOfServiceLocation != null) {
+      addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
     }
 
     if (criteria.visitDetailTypeCS != null) {
