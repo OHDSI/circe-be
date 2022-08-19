@@ -124,7 +124,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
   protected void addFilteringByProviderSpeciality(List<String> joinClauses, Integer codesetId) {
     joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-    addFiltering(joinClauses, codesetId, "CS.speciality_concept_id");
+    addFiltering(joinClauses, codesetId, "PR.specialty_concept_id");
   }
 
   protected void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {

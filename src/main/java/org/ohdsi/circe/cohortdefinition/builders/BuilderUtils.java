@@ -7,6 +7,7 @@ import org.ohdsi.circe.cohortdefinition.TextFilter;
 import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public abstract class BuilderUtils {
 
@@ -25,14 +26,17 @@ public abstract class BuilderUtils {
         String joinExpression = "";
         ArrayList<String> codesetClauses = new ArrayList<>();
         String excludeExpression = exclude ? "<>" : "=";
+        String aliasPostfix = StringUtils.replaceAll(UUID.randomUUID().toString(), "-", "");
 
         if (standardCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, excludeExpression, standardCodesetId));
+            String alias = STANARD_ALIAS + aliasPostfix;
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, alias, standardConceptColumn, alias, alias, excludeExpression, standardCodesetId));
         }
 
         // conditionSourceConcept
         if (sourceCodesetId != null) {
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, excludeExpression, sourceCodesetId));
+            String alias = NON_STANARD_ALIAS + aliasPostfix;
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, alias, sourceConceptColumn, alias, alias, excludeExpression, sourceCodesetId));
         }
 
         if (codesetClauses.size() > 0) {
