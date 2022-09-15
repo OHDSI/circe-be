@@ -7,36 +7,25 @@ import org.ohdsi.circe.cohortdefinition.TextFilter;
 import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public abstract class BuilderUtils {
 
-    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id %s %d)";
+    private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
     private final static String STANARD_ALIAS = "cs";
     private final static String NON_STANARD_ALIAS = "cns";
 
-    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn,
-                                                  Integer sourceCodesetId, String sourceConceptColumn) {
-        return getCodesetJoinExpression(standardCodesetId, standardConceptColumn, sourceCodesetId, sourceConceptColumn, false);
-    }
-
-    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn,
-                                                  Integer sourceCodesetId, String sourceConceptColumn, boolean exclude) {
+    public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
 
         String joinExpression = "";
         ArrayList<String> codesetClauses = new ArrayList<>();
-        String excludeExpression = exclude ? "<>" : "=";
-        String aliasPostfix = StringUtils.replaceAll(UUID.randomUUID().toString(), "-", "");
 
         if (standardCodesetId != null) {
-            String alias = STANARD_ALIAS + aliasPostfix;
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, alias, standardConceptColumn, alias, alias, excludeExpression, standardCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, STANARD_ALIAS, standardConceptColumn, STANARD_ALIAS, STANARD_ALIAS, standardCodesetId));
         }
 
         // conditionSourceConcept
         if (sourceCodesetId != null) {
-            String alias = NON_STANARD_ALIAS + aliasPostfix;
-            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, alias, sourceConceptColumn, alias, alias, excludeExpression, sourceCodesetId));
+            codesetClauses.add(String.format(CODESET_JOIN_TEMPLATE, NON_STANARD_ALIAS, sourceConceptColumn, NON_STANARD_ALIAS, NON_STANARD_ALIAS, sourceCodesetId));
         }
 
         if (codesetClauses.size() > 0) {

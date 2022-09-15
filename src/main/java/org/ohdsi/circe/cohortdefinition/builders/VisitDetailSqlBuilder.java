@@ -63,32 +63,19 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
     List<String> joinClauses = new ArrayList<>();
 
-    if (criteria.age != null || criteria.genderCS != null) { // join to PERSON
+    if (criteria.age != null || criteria.genderCS != null) // join to PERSON
+    {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
-
-    if (criteria.genderCS != null) {
-      addFiltering(joinClauses, criteria.genderCS, "P.gender_concept_id");
-    }
-
     if (criteria.placeOfServiceCS != null || criteria.placeOfServiceLocation != null) {
       joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
     }
-
-    if (criteria.placeOfServiceCS != null) {
-      addFiltering(joinClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
-    }
-
     if (criteria.providerSpecialtyCS != null) {
-      addFilteringByProviderSpeciality(joinClauses, criteria.providerSpecialtyCS);
+      joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
 
     if (criteria.placeOfServiceLocation != null) {
       addFilteringByCareSiteLocationRegion(joinClauses, criteria.placeOfServiceLocation);
-    }
-
-    if (criteria.visitDetailTypeCS != null) {
-      addFiltering(joinClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id", criteria.visitDetailTypeExclude);
     }
 
     return joinClauses;
@@ -109,6 +96,12 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_detail_end_date", criteria.visitDetailEndDate));
     }
 
+    // visitType
+    if (criteria.visitDetailTypeCS != null ) {
+      addWhereClause(whereClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id",
+              criteria.visitDetailTypeExclude);
+    }
+
     // visitLength
     if (criteria.visitDetailLength != null) {
       whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_detail_start_date, C.visit_detail_end_date)", criteria.visitDetailLength));
@@ -119,12 +112,22 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.visit_detail_start_date) - P.year_of_birth", criteria.age));
     }
 
-    return whereClauses;
-  }
+    // gender
+    if (criteria.genderCS != null) {
+      addWhereClause(whereClauses, criteria.genderCS, "P.gender_concept_id");
+    }
 
-  protected void addFilteringByProviderSpeciality(List<String> joinClauses, Integer codesetId) {
-    joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
-    addFiltering(joinClauses, codesetId, "PR.specialty_concept_id");
+    // providerSpecialty
+    if (criteria.providerSpecialtyCS != null) {
+      addWhereClause(whereClauses, criteria.providerSpecialtyCS, "PR.specialty_concept_id");
+    }
+
+    // placeOfService
+    if (criteria.placeOfServiceCS != null) {
+      addWhereClause(whereClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
+    }
+
+    return whereClauses;
   }
 
   protected void addFilteringByCareSiteLocationRegion(List<String> joinClauses, Integer codesetId) {
@@ -134,18 +137,22 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     addFiltering(joinClauses, codesetId, "LOC.region_concept_id");
   }
 
-  private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn) {
-    addFiltering(joinClauses, codesetId, standardConceptColumn, false);
+  private void addWhereClause(List<String> whereClauses, Integer codesetId, String conceptColumn) {
+    addWhereClause(whereClauses, codesetId, conceptColumn, false);
   }
 
-  private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn, boolean exclude) {
+  private void addWhereClause(List<String> whereClauses, Integer codesetId, String conceptColumn, boolean exclude) {
+    whereClauses.add(String.format("%s %s in (select concept_id from #Codesets where codeset_id = %s)",
+            conceptColumn, (exclude ? "not" : ""), codesetId));
+  }
+
+  private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn) {
     joinClauses.add(
             BuilderUtils.getCodesetJoinExpression(
                     codesetId,
                     standardConceptColumn,
                     null,
-                    null,
-                    exclude
+                    null
             )
     );
   }
