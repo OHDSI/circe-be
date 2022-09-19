@@ -65,12 +65,6 @@ public class VisitDetail extends Criteria {
   @JsonProperty("PlaceOfServiceCS")
   public Integer placeOfServiceCS;
 
-  @JsonProperty("DischargedToConcept")
-  public Integer dischargedToConcept;
-
-  @JsonProperty("AdmittedFromConcept")
-  public Integer admittedFromConcept;
-
   /**
    * ID of Codeset which defines Geo concepts.
    * The care site's location.region_concept_id should match one of those.
