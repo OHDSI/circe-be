@@ -219,30 +219,6 @@ CREATE TABLE @schemaName.visit_occurrence
     ) 
 ;
 
-CREATE TABLE @schemaName.visit_detail
-    (
-     visit_detail_id integer NOT NULL,
-     person_id integer NOT NULL,
-     visit_detail_concept_id integer NOT NULL,
-     visit_detail_start_date date NOT NULL,
-     visit_detail_start_datetime TIMESTAMP NULL,
-     visit_detail_end_date date NOT NULL,
-     visit_detail_end_datetime TIMESTAMP NULL,
-     visit_detail_type_concept_id integer NOT NULL,
-     provider_id integer NULL,
-     care_site_id integer NULL,
-     visit_detail_source_value varchar(50) NULL,
-     visit_detail_source_concept_id Integer NULL,
-     admitting_source_value Varchar(50) NULL,
-     admitting_source_concept_id Integer NULL,
-     discharge_to_source_value Varchar(50) NULL,
-     discharge_to_concept_id integer NULL,
-     preceding_visit_detail_id integer NULL,
-     visit_detail_parent_id integer NULL,
-     visit_occurrence_id integer NOT NULL
-    );
-
-
 CREATE TABLE @schemaName.procedure_occurrence 
     ( 
      procedure_occurrence_id		INTEGER			NOT NULL , 
