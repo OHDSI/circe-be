@@ -413,6 +413,28 @@ public class PrintFriendlyTest {
     ));
   }
 
+@Test
+  public void visitDetailTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/visitDetail.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            // concept set name and first in history attribute
+            "1. visit detail of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
+            // age/gender criteria
+            "who are  between 18 and 64 years old, and who have gender concept in 'Concept Set 2' concept set;",
+            // start date/end date
+            "starting before January 1, 2010 and ending after January 7, 2010;",
+            // visit type 
+            "a visit detail type that is in 'Concept Set 2' concept set;",
+            //provider specialty
+            "a provider specialty that is in 'Concept Set 3' concept set;",
+            // visit length
+            "with length &gt; 12 days",
+            // nested criteria
+            "having at least 1 visit detail of 'Concept Set 3', starting anytime on or before 'Concept Set 1' start date."
+    ));
+  }
+
   @Test
   public void dateOffsetTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateOffset.json"));

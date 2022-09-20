@@ -42,10 +42,7 @@ public class VisitDetail extends Criteria {
   public DateRange visitDetailEndDate;
 
   @JsonProperty("VisitDetailTypeCS")
-  public Integer visitDetailTypeCS;
-
-  @JsonProperty("VisitDetailTypeExclude")
-  public boolean visitDetailTypeExclude = false;
+  public ConceptSetSelection  visitDetailTypeCS;
 
   @JsonProperty("VisitDetailSourceConcept")
   public Integer visitDetailSourceConcept;
@@ -57,13 +54,13 @@ public class VisitDetail extends Criteria {
   public NumericRange age;
   
   @JsonProperty("GenderCS")
-  public Integer genderCS;
+  public ConceptSetSelection genderCS;
   
   @JsonProperty("ProviderSpecialtyCS")
-  public Integer providerSpecialtyCS;
+  public ConceptSetSelection providerSpecialtyCS;
 
   @JsonProperty("PlaceOfServiceCS")
-  public Integer placeOfServiceCS;
+  public ConceptSetSelection placeOfServiceCS;
 
   /**
    * ID of Codeset which defines Geo concepts.

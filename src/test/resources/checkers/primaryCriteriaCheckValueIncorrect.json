@@ -567,18 +567,24 @@
                     "VisitDetailEndDate": {
                       "Op": "!bt"
                     },
-                    "VisitDetailTypeCS": 1000,
+                    "VisitDetailTypeCS": {
+                      "CodesetId": 1000
+                    },
                     "VisitDetailLength": {
                       "Op": "bt"
                     },
                     "Age": {
                       "Op": "!bt"
                     },
-                    "Gender": 1000,
-                    "ProviderSpecialty": 1000,
-                    "PlaceOfService": 1000,
-                    "DischargedToConcept": 1000,
-                    "AdmittedFromConcept": 1000
+                    "GenderCS": {
+                      "CodesetId": 1000
+                    },
+                    "ProviderSpecialtyCS": {
+                      "CodesetId": 1000
+                    },
+                    "PlaceOfServiceCS": {
+                      "CodesetId": 1000
+                    }
                   }
                 },
                 "StartWindow": {

@@ -39,3 +39,8 @@ CREATE TABLE @schemaName.cohort_censor_stats (
   cohort_definition_id int NOT NULL,
   lost_count BIGINT NOT NULL
 );
+
+CREATE TABLE @schemaName.codesets (
+  codeset_id int NOT NULL,
+  concept_id int NOT NULL
+);

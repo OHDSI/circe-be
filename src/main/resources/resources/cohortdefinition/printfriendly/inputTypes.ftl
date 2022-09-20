@@ -28,6 +28,9 @@ END Note!!!!
 <#macro ConceptList list quote="\""><#list list?map(item->(quote + item.conceptName?lower_case + quote)) as item><#if item?counter gt 1><#if 
   item?counter == list?size> or <#else>, </#if></#if>${item}</#list></#macro>
 
+<#-- ConceptSetSelection -->
+<#macro ConceptSetSelection selection defaultName="any"><#if selection.isExcluded!false>not </#if>in ${utils.codesetName(selection.codesetId!"", defaultName)}</#macro>
+
 <#-- NumericRange -->
 <#assign numericRangeOptions = [
   {"id": "lt", "name": "&lt;"}, 

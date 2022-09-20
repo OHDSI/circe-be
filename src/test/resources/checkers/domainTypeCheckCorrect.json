@@ -190,7 +190,9 @@
       {
         "VisitDetail": {
           "CodesetId": 0,
-          "VisitDetailTypeCS": 44787739
+          "VisitDetailTypeCS": {
+            "CodesetId": 44787739
+          }
         }
       },
       {

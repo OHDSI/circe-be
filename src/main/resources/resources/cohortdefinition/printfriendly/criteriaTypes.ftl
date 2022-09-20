@@ -218,10 +218,11 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 
 <#macro VisitDetail c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
-<#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@AgeGenderCSCriteria ageAtStart=c.age!{} genderCS=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.visitDetailStartDate!{} c.visitDetailEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
-c.visitDetailTypeCS??><#local temp>a visit detail type that<#if c.visitDetailTypeExclude!false> is not:<#else> is:</#if> ${utils.codesetName(c.visitDetailTypeCS, "any type")}</#local><#local attrs+=[temp]></#if><#if
-c.providerSpecialtyCS??><#local temp>a provider specialty that is: ${utils.codesetName(c.providerSpecialtyCS, "any provider specialty")}</#local><#local attrs+=[temp]></#if><#if
+c.visitDetailTypeCS?? && c.visitDetailTypeCS.codesetId??><#local temp>a visit detail type that is <@inputTypes.ConceptSetSelection selection=c.visitDetailTypeCS /> concept set</#local><#local attrs+=[temp]></#if><#if
+c.providerSpecialtyCS?? && c.providerSpecialtyCS.codesetId??><#local temp>a provider specialty that is <@inputTypes.ConceptSetSelection selection=c.providerSpecialtyCS /> concept set</#local><#local attrs+=[temp]></#if><#if
+c.placeOfServiceCS?? && c.placeOfServiceCS.codesetId??><#local temp>a place of service that is <@inputTypes.ConceptSetSelection selection=c.visitDetailTypeCS /> concept set</#local><#local attrs+=[temp]></#if><#if
 c.visitDetailLength??><#local temp>with length <@inputTypes.NumericRange range=c.visitDetailLength /> days</#local><#local attrs+=[temp]></#if>
 visit detail<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any visit detail")}<#if
 c.visitDetailSourceConcept??> (including ${utils.codesetName(c.visitDetailSourceConcept, "any visit")} source concepts)</#if><#if
@@ -238,6 +239,12 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 who are<#if gender?has_content> <@inputTypes.ConceptList list=gender quote=""/><#if (ageAtStart?has_content || ageAtEnd?has_content) && gender?size gt 1>,</#if></#if><#if 
 ageAtStart?has_content> <@inputTypes.NumericRange range=ageAtStart /> years old<#if ageAtEnd?has_content> at era start and</#if><#if 
 ageAtEnd?has_content> <@inputTypes.NumericRange range=ageAtEnd /> years old at era end</#if></#if></#if></#macro>
+
+<#macro AgeGenderCSCriteria ageAtStart genderCS ageAtEnd={}>
+<#if ageAtStart?has_content || ageAtEnd?has_content>who are <#if 
+ageAtStart?has_content> <@inputTypes.NumericRange range=ageAtStart /> years old<#if ageAtEnd?has_content> at era start and </#if></#if><#if 
+ageAtEnd?has_content><@inputTypes.NumericRange range=ageAtEnd /> years old at era end</#if><#if genderCS?has_content>, and </#if></#if><#if 
+genderCS?has_content>who have gender concept <@inputTypes.ConceptSetSelection selection=genderCS /> concept set</#if></#macro>
 
 <#macro EventDateCriteria startRange endRange><#if 
 startRange?has_content && endRange?has_content>starting <@inputTypes.DateRange range=startRange /> and ending <@inputTypes.DateRange range=endRange /><#else><#if 

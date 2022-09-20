@@ -48,7 +48,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class AbstractDatabaseTest {
 
   @ClassRule
-  public static PostgresSingletonRule pg = new PostgresSingletonRule();
+  public static PostgresSingletonRule pg = new PostgresSingletonRule(58915);
 
   protected static JdbcTemplate jdbcTemplate;
 

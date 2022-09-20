@@ -97,9 +97,8 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
 
     // visitType
-    if (criteria.visitDetailTypeCS != null ) {
-      addWhereClause(whereClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id",
-              criteria.visitDetailTypeExclude);
+    if (criteria.visitDetailTypeCS != null && criteria.visitDetailTypeCS.codesetId != null) {
+      addWhereClause(whereClauses, criteria.visitDetailTypeCS.codesetId, "C.visit_detail_type_concept_id", criteria.visitDetailTypeCS.isExclusion);
     }
 
     // visitLength
@@ -113,18 +112,18 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
 
     // gender
-    if (criteria.genderCS != null) {
-      addWhereClause(whereClauses, criteria.genderCS, "P.gender_concept_id");
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      addWhereClause(whereClauses, criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion);
     }
 
     // providerSpecialty
-    if (criteria.providerSpecialtyCS != null) {
-      addWhereClause(whereClauses, criteria.providerSpecialtyCS, "PR.specialty_concept_id");
+    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+      addWhereClause(whereClauses, criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion);
     }
 
     // placeOfService
-    if (criteria.placeOfServiceCS != null) {
-      addWhereClause(whereClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
+    if (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) {
+      addWhereClause(whereClauses, criteria.placeOfServiceCS.codesetId, "CS.place_of_service_concept_id", criteria.placeOfServiceCS.isExclusion);
     }
 
     return whereClauses;

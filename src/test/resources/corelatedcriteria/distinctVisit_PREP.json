@@ -22,7 +22,7 @@
       "condition_concept_id":2,
       "condition_start_date":"2000-01-01",
       "condition_type_concept_id":0,
-			"visit_occurrence_id": 1
+      "visit_occurrence_id": 1
     },
     {
       "condition_occurrence_id": 2,
@@ -30,7 +30,7 @@
       "condition_concept_id":2,
       "condition_start_date":"2005-01-01",
       "condition_type_concept_id":0,
-			"visit_occurrence_id": 2
+      "visit_occurrence_id": 2
     },
     {
       "condition_occurrence_id": 3,
@@ -38,7 +38,7 @@
       "condition_concept_id":2,
       "condition_start_date":"2005-01-02",
       "condition_type_concept_id":0,
-			"visit_occurrence_id": 2
+      "visit_occurrence_id": 2
     },
     {
       "condition_occurrence_id": 4,
@@ -46,7 +46,7 @@
       "condition_concept_id":2,
       "condition_start_date":"2005-01-01",
       "condition_type_concept_id":0,
-			"visit_occurrence_id": 3
+      "visit_occurrence_id": 3
     },
     {
       "condition_occurrence_id": 5,
@@ -54,7 +54,7 @@
       "condition_concept_id":2,
       "condition_start_date":"2005-01-01",
       "condition_type_concept_id":0,
-			"visit_occurrence_id": 4
+      "visit_occurrence_id": 4
     }
   ],
   "cdm.observation_period" : [

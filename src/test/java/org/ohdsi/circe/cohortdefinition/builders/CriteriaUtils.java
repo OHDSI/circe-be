@@ -68,6 +68,14 @@ public class CriteriaUtils {
     return exactly0;
   }
   
+    public static Occurrence getAtExactly1Occurrence() {
+    Occurrence exactly1 = new Occurrence();
+    exactly1.type = Occurrence.EXACTLY;
+    exactly1.count = 1;
+    
+    return exactly1;
+  }
+
   public static Occurrence getDistinctCount(CriteriaColumn countCol, int type, int count) {
     Occurrence o = new Occurrence();
     o.type=type;

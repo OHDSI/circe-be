@@ -1,0 +1,29 @@
+{
+  "visit_detail_codeset_criteria.gender_in_codeset": [
+    {
+      "index_id":0,
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "visit_detail_codeset_criteria.gender_not_in_codeset": [
+    {
+      "index_id":0,
+      "person_id":2,
+      "event_id":1
+    }
+  ],"visit_detail_codeset_criteria.provider_in_codeset": [
+    {
+      "index_id":0,
+      "person_id":1,
+      "event_id":1
+    }
+  ],
+  "visit_detail_codeset_criteria.provider_not_in_codeset": [
+    {
+      "index_id":0,
+      "person_id":2,
+      "event_id":1
+    }
+  ]
+}
