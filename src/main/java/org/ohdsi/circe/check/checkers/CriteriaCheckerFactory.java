@@ -18,8 +18,13 @@
 
 package org.ohdsi.circe.check.checkers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.ohdsi.circe.cohortdefinition.*;
 
@@ -64,10 +69,33 @@ class CriteriaCheckerFactory {
         } else if (criteria instanceof VisitOccurrence) {
             result = c -> Objects.equals(((VisitOccurrence) c).codesetId, conceptSet.id);
         } else if (criteria instanceof VisitDetail) {
-            result = c -> Objects.equals(((VisitDetail) c).codesetId, conceptSet.id);
+            result = c -> Objects.equals(((VisitDetail) c).codesetId, conceptSet.id) || checkConceptSetSelection(c);
         } else if (criteria instanceof LocationRegion) {
             result = c -> Objects.equals(((LocationRegion) c).codesetId, conceptSet.id);
         }
         return result;
+    }
+
+    private boolean checkConceptSetSelection(Criteria criteria) {
+        boolean result = false;
+        for (Supplier<ConceptSetSelection> supplier : getSuppliers(criteria)) {
+            ConceptSetSelection conceptSetSelection = supplier.get();
+            if (Objects.nonNull(conceptSetSelection)) {
+                result = result || Objects.equals(conceptSetSelection.codesetId, conceptSet.id);
+            }
+        }
+        return result;
+    }
+
+    private static <T extends Criteria> List<Supplier<ConceptSetSelection>> getSuppliers(T criteria) {
+        List<Supplier<ConceptSetSelection>> suppliers = new ArrayList<>();
+        if (criteria instanceof VisitDetail) {
+            suppliers.add(() -> ((VisitDetail) criteria).placeOfServiceCS);
+            suppliers.add(() -> ((VisitDetail) criteria).genderCS);
+            suppliers.add(() -> ((VisitDetail) criteria).providerSpecialtyCS);
+            suppliers.add(() -> ((VisitDetail) criteria).visitDetailTypeCS);
+        }
+
+        return suppliers;
     }
 }

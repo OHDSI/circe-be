@@ -107,6 +107,6 @@ public interface Constants {
         String VISIT_DETAIL_START_DATE_ATTR = "visit detail start date";
         String VISIT_DETAIL_END_DATE_ATTR = "visit detail end date";
         String VISIT_DETAIL_LENGTH_ATTR = "visit detail length";
-        String VISIT_DETAIL_TYPE_ATTR = "visit detail";
+        String VISIT_DETAIL_TYPE_ATTR = "visit detail type";
     }
 }

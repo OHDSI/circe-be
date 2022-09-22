@@ -1,6 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.ConceptSetSelection;
 import org.ohdsi.circe.cohortdefinition.VisitDetail;
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -98,7 +99,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
     // visitType
     if (criteria.visitDetailTypeCS != null && criteria.visitDetailTypeCS.codesetId != null) {
-      addWhereClause(whereClauses, criteria.visitDetailTypeCS.codesetId, "C.visit_detail_type_concept_id", criteria.visitDetailTypeCS.isExclusion);
+      addWhereClause(whereClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id");
     }
 
     // visitLength
@@ -113,17 +114,17 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
 
     // gender
     if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      addWhereClause(whereClauses, criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion);
+      addWhereClause(whereClauses, criteria.genderCS, "P.gender_concept_id");
     }
 
     // providerSpecialty
     if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      addWhereClause(whereClauses, criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion);
+      addWhereClause(whereClauses, criteria.providerSpecialtyCS, "PR.specialty_concept_id");
     }
 
     // placeOfService
     if (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) {
-      addWhereClause(whereClauses, criteria.placeOfServiceCS.codesetId, "CS.place_of_service_concept_id", criteria.placeOfServiceCS.isExclusion);
+      addWhereClause(whereClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
     }
 
     return whereClauses;
@@ -136,13 +137,9 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     addFiltering(joinClauses, codesetId, "LOC.region_concept_id");
   }
 
-  private void addWhereClause(List<String> whereClauses, Integer codesetId, String conceptColumn) {
-    addWhereClause(whereClauses, codesetId, conceptColumn, false);
-  }
-
-  private void addWhereClause(List<String> whereClauses, Integer codesetId, String conceptColumn, boolean exclude) {
+  private void addWhereClause(List<String> whereClauses, ConceptSetSelection conceptSetSelection, String conceptColumn) {
     whereClauses.add(String.format("%s %s in (select concept_id from #Codesets where codeset_id = %s)",
-            conceptColumn, (exclude ? "not" : ""), codesetId));
+            conceptColumn, (conceptSetSelection.isExclusion ? "not" : ""), conceptSetSelection.codesetId));
   }
 
   private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn) {
