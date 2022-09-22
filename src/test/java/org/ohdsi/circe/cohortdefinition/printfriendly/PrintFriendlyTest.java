@@ -429,7 +429,7 @@ public class PrintFriendlyTest {
     String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
-            "allowing 14 days between exposures, adding 1 day after exposure ends, and forcing drug exposure days suply to: 7 days."
+            "allowing 14 days between exposures, adding 1 day after exposure ends, and forcing drug exposure days supply to: 7 days."
     ));
     
   }
