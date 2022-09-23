@@ -53,7 +53,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static String ADDITIONAL_CRITERIA_LEFT_TEMPLATE = StringUtils.replace(ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/additionalCriteriaExclude.sql"), "@windowedCriteria", WINDOWED_CRITERIA_TEMPLATE);
   private final static String GROUP_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/groupQuery.sql");
 
-  private final static String PRIMARY_CRITERIA_EVENTS_TABLE = "primary_events";
   private final static String INCLUSION_RULE_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionrule.sql");
   private final static String INCLUSION_RULE_TEMP_TABLE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/inclusionRuleTempTable.sql");
   private final static String CENSORING_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/censoringInsert.sql");
@@ -275,7 +274,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String additionalCriteriaQuery = "";
     if (expression.additionalCriteria != null && !expression.additionalCriteria.isEmpty()) {
       CriteriaGroup acGroup = expression.additionalCriteria;
-      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, PRIMARY_CRITERIA_EVENTS_TABLE);//acGroup.accept(this);
+      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, String.format("(%s)", primaryEventsQuery));//acGroup.accept(this);
       acGroupQuery = StringUtils.replace(acGroupQuery, "@indexId", "" + 0);
       additionalCriteriaQuery = "\nJOIN (\n" + acGroupQuery + ") AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n";
     }
@@ -386,7 +385,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1" : "0");
 
       if (options.cohortIdFieldName != null) {
-        resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", options.cohortIdFieldName.toString());
+        resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", options.cohortIdFieldName);
       } else {
         resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", DEFAULT_COHORT_ID_FIELD_NAME);
       }
