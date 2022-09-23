@@ -34,7 +34,8 @@ public enum CriteriaColumn {
   START_DATE("start_date"),
   UNIT("unit_concept_id"),
   VALUE_AS_NUMBER("value_as_number"),
-  VISIT_ID("visit_occurrence_id");
+  VISIT_ID("visit_occurrence_id"),
+  VISIT_DETAIL_ID("visit_detail_id");
 
   private final String columnName;
 

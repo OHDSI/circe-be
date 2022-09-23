@@ -145,4 +145,13 @@ public class CriteriaColumn_5_0_0_Test {
       options.additionalColumns=Arrays.asList(CriteriaColumn.DAYS_SUPPLY);
       builder.getCriteriaSql(new VisitOccurrence(), options);
     }
+
+    @Test
+    public void invalidVisitDetail() {
+      exceptionRule.expect(IllegalArgumentException.class);
+      CriteriaSqlBuilder<VisitDetail> builder = new VisitDetailSqlBuilder<>();
+      BuilderOptions options = new BuilderOptions();
+      options.additionalColumns=Arrays.asList(CriteriaColumn.DAYS_SUPPLY);
+      builder.getCriteriaSql(new VisitDetail(), options);
+    }
 }

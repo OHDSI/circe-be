@@ -219,7 +219,6 @@ CREATE TABLE @schemaName.visit_occurrence
     ) 
 ;
 
-
 CREATE TABLE @schemaName.procedure_occurrence 
     ( 
      procedure_occurrence_id		INTEGER			NOT NULL , 

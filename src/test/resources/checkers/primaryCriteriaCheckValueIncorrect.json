@@ -560,6 +560,49 @@
               },
               {
                 "Criteria": {
+                  "VisitDetail": {
+                    "VisitDetailStartDate": {
+                      "Op": "bt"
+                    },
+                    "VisitDetailEndDate": {
+                      "Op": "!bt"
+                    },
+                    "VisitDetailTypeCS": {
+                      "CodesetId": 1000
+                    },
+                    "VisitDetailLength": {
+                      "Op": "bt"
+                    },
+                    "Age": {
+                      "Op": "!bt"
+                    },
+                    "GenderCS": {
+                      "CodesetId": 1000
+                    },
+                    "ProviderSpecialtyCS": {
+                      "CodesetId": 1000
+                    },
+                    "PlaceOfServiceCS": {
+                      "CodesetId": 1000
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
                   "LocationRegion": {}
                 },
                 "StartWindow": {

@@ -1089,6 +1089,48 @@
               },
               {
                 "Criteria": {
+                  "VisitDetail": {
+                    "OccurrenceStartDate": {
+                      "Value": "2019-12-31",
+                      "Extent": "2020-01-01",
+                      "Op": "bt"
+                    },
+                    "OccurrenceEndDate": {
+                      "Value": "2019-12-31",
+                      "Extent": "2020-01-01",
+                      "Op": "!bt"
+                    },
+                    "VisitType": 44787995,
+                    "VisitLength": {
+                      "Value": 1,
+                      "Extent": 2,
+                      "Op": "bt"
+                    },
+                    "Age": {
+                      "Value": 1,
+                      "Extent": 2,
+                      "Op": "!bt"
+                    },
+                    "Gender": 4251434,
+                    "ProviderSpecialty": 38003623
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "Type": 2,
+                  "Count": 1
+                }
+              },
+              {
+                "Criteria": {
                   "LocationRegion": {
                     "StartDate": {
                       "Value": "2019-12-31",

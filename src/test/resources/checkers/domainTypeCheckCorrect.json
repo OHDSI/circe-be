@@ -188,6 +188,14 @@
         }
       },
       {
+        "VisitDetail": {
+          "CodesetId": 0,
+          "VisitDetailTypeCS": {
+            "CodesetId": 44787739
+          }
+        }
+      },
+      {
         "PayerPlanPeriod": {}
       }
     ],

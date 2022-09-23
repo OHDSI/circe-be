@@ -13,7 +13,7 @@ public abstract class BuilderUtils {
     private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
     private final static String STANARD_ALIAS = "cs";
     private final static String NON_STANARD_ALIAS = "cns";
-    
+
     public static String getCodesetJoinExpression(Integer standardCodesetId, String standardConceptColumn, Integer sourceCodesetId, String sourceConceptColumn) {
 
         String joinExpression = "";

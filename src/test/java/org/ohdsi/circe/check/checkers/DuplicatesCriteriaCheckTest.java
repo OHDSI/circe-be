@@ -15,7 +15,7 @@ public class DuplicatesCriteriaCheckTest {
     private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/duplicatesCriteriaCheckCorrect.json"));
 
-    private static final int WARNING_COUNT = 16;
+    private static final int WARNING_COUNT = 17;
 
     private BaseCheck check = new DuplicatesCriteriaCheck();
 

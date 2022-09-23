@@ -54,7 +54,7 @@ public class CriteriaCheckValueTest {
   private static final CohortExpression NO_EXIT_CRITERIA_CHECK_EARLIEST_EVENT =
       CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheckEarliestEvent.json"));
 
-  private static final int RANGE_PRIMARY_WARNING_COUNT = 140;
+  private static final int RANGE_PRIMARY_WARNING_COUNT = 148;
   private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
   private static final int TEXT_PRIMARY_WARNING_COUNT = 5;
 

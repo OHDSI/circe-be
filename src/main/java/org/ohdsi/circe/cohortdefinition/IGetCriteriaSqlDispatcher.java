@@ -40,4 +40,5 @@ public interface IGetCriteriaSqlDispatcher {
   String getCriteriaSql(ProcedureOccurrence procedureOccurrenceCriteria, BuilderOptions options);
   String getCriteriaSql(Specimen specimenCriteria, BuilderOptions options);
   String getCriteriaSql(VisitOccurrence visitOccurrenceCriteria, BuilderOptions options);
+  String getCriteriaSql(VisitDetail visitDetailCriteria, BuilderOptions options);
 }

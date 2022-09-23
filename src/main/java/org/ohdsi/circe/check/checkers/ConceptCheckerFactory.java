@@ -19,22 +19,7 @@
 package org.ohdsi.circe.check.checkers;
 
 import org.ohdsi.circe.check.Constants;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DemographicCriteria;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.Objects;

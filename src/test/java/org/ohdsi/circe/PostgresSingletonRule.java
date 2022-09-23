@@ -34,21 +34,28 @@ import java.sql.SQLException;
 import org.junit.rules.ExternalResource;
 
 import com.opentable.db.postgres.embedded.EmbeddedPostgres;
+import com.opentable.db.postgres.embedded.EmbeddedPostgres.Builder;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Based off of com.opentable.db.postgres.junit.SingleInstancePostgresRule, but
- * instantiates a single instance of an EmbeddedPostgres that cleans up when JVM
- * shuts down.
+ * Based off of com.opentable.db.postgres.junit.SingleInstancePostgresRule, but instantiates a single instance of an
+ * EmbeddedPostgres that cleans up when JVM shuts down.
  */
 public class PostgresSingletonRule extends ExternalResource {
 
-  private static volatile EmbeddedPostgres epg;
-  private static volatile Connection postgresConnection;
+  private volatile EmbeddedPostgres epg;
+  private volatile Connection postgresConnection;
   private static final Logger LOG = LoggerFactory.getLogger(PostgresSingletonRule.class);
+  private Optional<Integer> port = Optional.empty();
 
-  PostgresSingletonRule() {}
+  PostgresSingletonRule() {
+  }
+
+  PostgresSingletonRule(int port) {
+    this.port = Optional.of(port);
+  }
 
   @Override
   protected void before() throws Throwable {
@@ -58,13 +65,17 @@ public class PostgresSingletonRule extends ExternalResource {
         LOG.info("Starting singleton Postgres instance...");
         epg = pg();
         postgresConnection = epg.getPostgresDatabase().getConnection();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));        
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
       }
     }
   }
 
   private EmbeddedPostgres pg() throws IOException {
-    return EmbeddedPostgres.builder().start();
+    Builder b = EmbeddedPostgres.builder();
+    if (this.port.isPresent()) {
+      b.setPort(port.get());
+    }
+    return b.start();
   }
 
   public EmbeddedPostgres getEmbeddedPostgres() {
@@ -75,7 +86,7 @@ public class PostgresSingletonRule extends ExternalResource {
     return epg;
   }
 
-  private static void shutdown() {
+  private void shutdown() {
     LOG.info("Shutdown singleton Postgres instance...");
     try {
       postgresConnection.close();

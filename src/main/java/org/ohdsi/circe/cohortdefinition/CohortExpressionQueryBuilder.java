@@ -26,23 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
-import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
-import org.ohdsi.circe.cohortdefinition.builders.CriteriaSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.ConditionEraSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.ConditionOccurrenceSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.DeathSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.DeviceExposureSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.DoseEraSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.DrugEraSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.DrugExposureSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.LocationRegionSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.MeasurementSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.ObservationPeriodSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.ObservationSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.PayerPlanPeriodSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.ProcedureOccurrenceSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.SpecimenSqlBuilder;
-import org.ohdsi.circe.cohortdefinition.builders.VisitOccurrenceSqlBuilder;
+import org.ohdsi.circe.cohortdefinition.builders.*;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
 
@@ -50,7 +34,6 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRa
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.dateStringToSql;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
-import org.ohdsi.circe.cohortdefinition.builders.CriteriaColumn;
 
 /**
  *
@@ -102,6 +85,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static ProcedureOccurrenceSqlBuilder<ProcedureOccurrence> procedureOccurrenceSqlBuilder = new ProcedureOccurrenceSqlBuilder<>();
   private final static SpecimenSqlBuilder<Specimen> specimenSqlBuilder = new SpecimenSqlBuilder<>();
   private final static VisitOccurrenceSqlBuilder<VisitOccurrence> visitOccurrenceSqlBuilder = new VisitOccurrenceSqlBuilder<>();
+  private final static VisitDetailSqlBuilder<VisitDetail> visitDetailSqlBuilder = new VisitDetailSqlBuilder<>();
   private final static ConditionEraSqlBuilder<ConditionEra> conditionEraSqlBuilder = new ConditionEraSqlBuilder<>();
   private final static String DEFAULT_COHORT_ID_FIELD_NAME = "cohort_definition_id";
 
@@ -753,6 +737,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getCriteriaSql(VisitOccurrence criteria, BuilderOptions options) {
     return getCriteriaSql(visitOccurrenceSqlBuilder, criteria, options);
+  }
+
+  @Override
+  public String getCriteriaSql(VisitDetail criteria, BuilderOptions options) {
+    return getCriteriaSql(visitDetailSqlBuilder, criteria, options);
   }
 
   @Override

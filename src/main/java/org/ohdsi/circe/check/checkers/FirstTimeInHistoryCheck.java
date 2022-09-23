@@ -24,20 +24,7 @@ import java.util.Objects;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.check.operations.Execution;
 import org.ohdsi.circe.check.utils.CriteriaNameHelper;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
-import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
+import org.ohdsi.circe.cohortdefinition.*;
 
 public class FirstTimeInHistoryCheck extends BaseCorelatedCriteriaCheck {
 
@@ -106,6 +93,10 @@ public class FirstTimeInHistoryCheck extends BaseCorelatedCriteriaCheck {
                         .isA(VisitOccurrence.class)
                         .then(c -> match((VisitOccurrence)c)
                                 .when(visitOccurrence -> Objects.isNull(visitOccurrence.first))
+                                .then(addWarning))
+                        .isA(VisitDetail.class)
+                        .then(c -> match((VisitDetail)c)
+                                .when(visitDetail -> Objects.isNull(visitDetail.first))
                                 .then(addWarning))
                         .isA(PayerPlanPeriod.class)
                         .then(c -> match((PayerPlanPeriod)c)

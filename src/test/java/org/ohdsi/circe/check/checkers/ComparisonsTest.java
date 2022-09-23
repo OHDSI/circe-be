@@ -1,25 +1,7 @@
 package org.ohdsi.circe.check.checkers;
 
 import org.junit.Test;
-import org.ohdsi.circe.cohortdefinition.ConceptSet;
-import org.ohdsi.circe.cohortdefinition.ConditionEra;
-import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
-import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.DateRange;
-import org.ohdsi.circe.cohortdefinition.Death;
-import org.ohdsi.circe.cohortdefinition.DeviceExposure;
-import org.ohdsi.circe.cohortdefinition.DoseEra;
-import org.ohdsi.circe.cohortdefinition.DrugEra;
-import org.ohdsi.circe.cohortdefinition.DrugExposure;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.NumericRange;
-import org.ohdsi.circe.cohortdefinition.Observation;
-import org.ohdsi.circe.cohortdefinition.ObservationFilter;
-import org.ohdsi.circe.cohortdefinition.Period;
-import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
-import org.ohdsi.circe.cohortdefinition.Specimen;
-import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
-import org.ohdsi.circe.cohortdefinition.Window;
+import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.circe.vocabulary.Concept;
 import org.ohdsi.circe.vocabulary.ConceptSetExpression;
@@ -247,6 +229,14 @@ public class ComparisonsTest {
         assertEquals(true, Comparisons.compare(visitOccurrence1, visitOccurrence2));
         visitOccurrence2.codesetId = 2;
         assertEquals(false, Comparisons.compare(visitOccurrence1, visitOccurrence2));
+
+        VisitDetail visitDetail1 = new VisitDetail();
+        VisitDetail visitDetail2 = new VisitDetail();
+        visitDetail1.codesetId = 1;
+        visitDetail2.codesetId = 1;
+        assertEquals(true, Comparisons.compare(visitDetail1, visitDetail2));
+        visitDetail2.codesetId = 2;
+        assertEquals(false, Comparisons.compare(visitDetail1, visitDetail2));
     }
 
     @Test

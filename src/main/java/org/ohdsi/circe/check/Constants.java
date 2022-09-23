@@ -34,6 +34,7 @@ public interface Constants {
         String PROCEDURE_OCCURRENCE = "procedure occurrence";
         String SPECIMEN = "specimen";
         String VISIT_OCCURRENCE = "visit occurrence";
+        String VISIT_DETAIL = "visit detail";
         String PAYER_PLAN_PERIOD = "payer plan period";
         String OBSERVATION_PERIOD = "observation period";
         String LOCATION_REGION = "location region";
@@ -94,6 +95,8 @@ public interface Constants {
         String ANATOMIC_SITE_ATTR = "anatomic site";
         String DISEASE_STATUS_ATTR = "disease status";
         String PLACE_OF_SERVICE_ATTR = "place of service";
+        String ADMITTED_FROM_ATTR = "admitted from";
+        String DISCHARGED_TO_ATTR = "discharged to";
         String LOCATION_REGION_START_DATE_ATTR = "location region start date";
         String LOCATION_REGION_END_DATE_ATTR = "location region end date";
         String STOP_REASON_ATTR = "stop reason";
@@ -101,5 +104,9 @@ public interface Constants {
         String LOT_NUMBER_ATTR = "lot number";
         String VALUE_AS_STRING_ATTR = "value as string";
         String SOURCE_ID_ATTR = "source id";
+        String VISIT_DETAIL_START_DATE_ATTR = "visit detail start date";
+        String VISIT_DETAIL_END_DATE_ATTR = "visit detail end date";
+        String VISIT_DETAIL_LENGTH_ATTR = "visit detail length";
+        String VISIT_DETAIL_TYPE_ATTR = "visit detail type";
     }
 }

@@ -21,6 +21,7 @@ package org.ohdsi.circe.check;
 import org.ohdsi.circe.check.checkers.AttributeCheck;
 import org.ohdsi.circe.check.checkers.ConceptCheck;
 import org.ohdsi.circe.check.checkers.ConceptSetCriteriaCheck;
+import org.ohdsi.circe.check.checkers.ConceptSetSelectionCheck;
 import org.ohdsi.circe.check.checkers.CriteriaContradictionsCheck;
 import org.ohdsi.circe.check.checkers.DeathTimeWindowCheck;
 import org.ohdsi.circe.check.checkers.DomainTypeCheck;
@@ -55,6 +56,7 @@ public class Checker implements Check {
         checks.add(new ExitCriteriaDaysOffsetCheck());
         checks.add(new RangeCheck());
         checks.add(new ConceptCheck());
+        checks.add(new ConceptSetSelectionCheck());
         checks.add(new AttributeCheck());
         checks.add(new TextCheck());
         checks.add(new IncompleteRuleCheck());

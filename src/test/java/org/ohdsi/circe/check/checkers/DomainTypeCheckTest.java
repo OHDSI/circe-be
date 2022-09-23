@@ -15,7 +15,7 @@ public class DomainTypeCheckTest {
     private static final CohortExpression CORRECT_EXPRESSION =
             CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/domainTypeCheckCorrect.json"));
 
-    private static final int WARNING_COUNT = 9;
+    private static final int WARNING_COUNT = 10;
 
     private BaseCheck check = new DomainTypeCheck();
 

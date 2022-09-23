@@ -177,7 +177,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
       new ProcedureOccurrence(),
       new Specimen(),
       new VisitOccurrence(),
-			new PayerPlanPeriod()
+      new PayerPlanPeriod()
     };
 
     // create and execute cohort for each test criteria
