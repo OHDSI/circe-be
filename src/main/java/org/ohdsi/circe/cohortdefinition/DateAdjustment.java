@@ -30,10 +30,14 @@ public class DateAdjustment {
     END_DATE
   };
 
+  @JsonProperty("StartWith")
   public DateType startWith = DateType.START_DATE;
+  @JsonProperty("StartOffset")
   public int startOffset = 0;
 
+  @JsonProperty("EndWith")
   public DateType endWith = DateType.END_DATE;
+ @JsonProperty("EndOffset")
   public int endOffset = 0;
 
 }
