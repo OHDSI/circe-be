@@ -72,9 +72,9 @@ public class PostgresSingletonRule extends ExternalResource {
 
   private EmbeddedPostgres pg() throws IOException {
     Builder b = EmbeddedPostgres.builder();
-//    if (this.port.isPresent()) {
-//      b.setServerConfig("port",port.get().toString());
-//    }
+    if (this.port.isPresent()) {
+      b.setPort(port.get());
+    }
     return b.start();
   }
 
