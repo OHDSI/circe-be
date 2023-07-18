@@ -1,0 +1,54 @@
+{
+	"visitDetail.simple": [
+		{
+			"person_id": 1,
+			"event_id": 1,
+			"start_date": "2000-01-01",
+			"end_date": "2000-01-01",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-01-01"
+		},
+		{
+			"person_id": 1,
+			"event_id": 2,
+			"start_date": "2000-06-01",
+			"end_date": "2000-07-01",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-06-01"
+		},
+		{
+			"person_id": 1,
+			"event_id": 3,
+			"start_date": "2000-12-31",
+			"end_date": "2000-12-31",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-12-31"
+		},
+		{
+			"person_id": 2,
+			"event_id": 4,
+			"start_date": "2000-01-01",
+			"end_date": "2000-01-01",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-01-01"
+		},
+		{
+			"person_id": 2,
+			"event_id": 5,
+			"start_date": "2000-12-31",
+			"end_date": "2000-12-31",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-12-31"
+		}
+	],
+	"visitDetail.date_adjust": [
+		{
+			"person_id": 1,
+			"event_id": 2,
+			"start_date": "2000-06-16",
+			"end_date": "2000-06-21",
+			"visit_occurrence_id": 0,
+			"sort_date": "2000-06-16"
+		}
+	]
+}

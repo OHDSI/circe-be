@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -22,6 +23,10 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.drug_exposure_id", "de.drug_concept_id", "de.visit_occurrence_id", 
+          "days_supply", "quantity", "refills"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -42,7 +47,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
       case DURATION:
-        return "DATEDIFF(d, C.drug_exposure_start_date, COALESCE(C.drug_exposure_end_date, DATEADD(day,C.days_supply,C.drug_exposure_start_date), DATEADD(day,1,C.drug_exposure_start_date)))";
+        return "DATEDIFF(d, C.start_date, C.end_date)";
       case QUANTITY:
         return "C.quantity";
       case REFILLS:
@@ -78,6 +83,59 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // drugType
+    if (criteria.drugType != null && criteria.drugType.length > 0) {
+      selectCols.add("de.drug_type_concept_id");
+    }
+
+    // Stop Reason
+    if (criteria.stopReason != null) {
+      selectCols.add("de.stop_reason");
+    }
+
+    // routeConcept
+    if (criteria.routeConcept != null && criteria.routeConcept.length > 0) {
+      selectCols.add("de.route_concept_id");
+    }
+
+    // effectiveDrugDose
+    if (criteria.effectiveDrugDose != null) {
+      selectCols.add("de.effective_drug_dose");
+    }
+
+    // doseUnit
+    if (criteria.doseUnit != null && criteria.doseUnit.length > 0) {
+      selectCols.add("de.dose_unit_concept_id");
+    }
+
+    // LotNumber
+    if (criteria.lotNumber != null) {
+      selectCols.add("de.lot_number");
+    }
+
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("de.provider_id");
+    }
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.drug_exposure_start_date" : 
+                      "COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date))",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.drug_exposure_start_date" : 
+                      "COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date))"));
+    } else {
+      selectCols.add("de.drug_exposure_start_date as start_date, COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date)) as end_date");
+    }
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -99,16 +157,16 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.drug_exposure_start_date", criteria.occurrenceStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // occurrenceEndDate
     if (criteria.occurrenceEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.drug_exposure_end_date", criteria.occurrenceEndDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.occurrenceEndDate));
     }
 
     // drugType
@@ -159,7 +217,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.drug_exposure_start_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

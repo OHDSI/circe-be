@@ -28,7 +28,6 @@ import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
  *
  * @author Chris Knoll <cknoll@ohdsi.org>
  */
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.WRAPPER_OBJECT)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = ConditionEra.class, name = "ConditionEra"),
@@ -49,13 +48,17 @@ import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
   @JsonSubTypes.Type(value = PayerPlanPeriod.class, name = "PayerPlanPeriod")
 })
 public abstract class Criteria {
+
   public String accept(IGetCriteriaSqlDispatcher dispatcher) {
     return this.accept(dispatcher, null);
   }
 
   public abstract String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options);
 
-  @JsonProperty("CorrelatedCriteria")  
+  @JsonProperty("CorrelatedCriteria")
   public CriteriaGroup CorrelatedCriteria;
-  
+
+  @JsonProperty("DateAdjustment")
+  public DateAdjustment dateAdjustment;
+
 }

@@ -1,0 +1,16 @@
+{
+  "temp.codesets": [
+    {
+      "codeset_id": 1,
+      "concept_id": 1
+		},
+    {
+      "codeset_id": 2,
+      "concept_id": 2
+		},
+    {
+      "codeset_id": 3,
+      "concept_id": 3
+		}		
+	]
+}

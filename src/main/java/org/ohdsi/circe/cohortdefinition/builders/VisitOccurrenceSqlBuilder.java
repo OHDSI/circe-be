@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends CriteriaSqlBuilder<T> {
 
@@ -16,6 +17,9 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
+
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("vo.person_id", "vo.visit_occurrence_id", "vo.visit_concept_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -33,7 +37,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
       case DOMAIN_CONCEPT:
         return "C.visit_concept_id";
       case DURATION:
-        return "DATEDIFF(d, C.visit_start_date, C.visit_end_date)";
+        return "DATEDIFF(d, C.start_date, C.end_date)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Visit Occurrence:" + column.toString());
     }
@@ -63,6 +67,38 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // visitType
+    if (criteria.visitType != null && criteria.visitType.length > 0) {
+      selectCols.add("vo.visit_type_concept_id");
+    }
+
+    // providerSpecialty
+    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+      selectCols.add("vo.provider_id");
+    }
+
+    // placeOfService
+    if (criteria.placeOfService != null && criteria.placeOfService.length > 0) {
+      selectCols.add("vo.care_site_id");
+    }
+
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date"));
+    } else {
+      selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
+    }
+
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -88,16 +124,16 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     // occurrenceStartDate
     if (criteria.occurrenceStartDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_start_date", criteria.occurrenceStartDate));
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.start_date", criteria.occurrenceStartDate));
     }
 
     // occurrenceEndDate
     if (criteria.occurrenceEndDate != null) {
-      whereClauses.add(BuilderUtils.buildDateRangeClause("C.visit_end_date", criteria.occurrenceEndDate));
+      whereClauses.add(BuilderUtils.buildDateRangeClause("C.end_date", criteria.occurrenceEndDate));
     }
 
     // visitType
@@ -108,12 +144,12 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
     // visitLength
     if (criteria.visitLength != null) {
-      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.visit_start_date, C.visit_end_date)", criteria.visitLength));
+      whereClauses.add(BuilderUtils.buildNumericRangeClause("DATEDIFF(d,C.start_date, C.end_date)", criteria.visitLength));
     }
 
     // age
     if (criteria.age != null) {
-      whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.visit_start_date) - P.year_of_birth", criteria.age));
+      whereClauses.add(BuilderUtils.buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
     }
 
     // gender

@@ -96,7 +96,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
 
 
 
-    @Test
+  @Test
   public void rawJsonTest() throws SQLException {
 
     final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");

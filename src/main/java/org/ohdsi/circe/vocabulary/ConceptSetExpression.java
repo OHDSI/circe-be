@@ -34,6 +34,7 @@ public class ConceptSetExpression {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
   public static class ConceptSetItem {
+
     public Concept concept;
     public boolean isExcluded;
     public boolean includeDescendants;
@@ -49,8 +50,8 @@ public class ConceptSetExpression {
       }
       ConceptSetItem other = (ConceptSetItem) o;
       return Objects.equals(concept, other.concept) && Objects.equals(isExcluded, other.isExcluded)
-          && Objects.equals(includeDescendants, other.includeDescendants)
-          && Objects.equals(includeMapped, other.includeMapped);
+              && Objects.equals(includeDescendants, other.includeDescendants)
+              && Objects.equals(includeMapped, other.includeMapped);
     }
 
     @Override
@@ -79,6 +80,6 @@ public class ConceptSetExpression {
 
   @Override
   public int hashCode() {
-    return Objects.hash(items);
+    return Objects.hash((Object[]) items);
   }
 }

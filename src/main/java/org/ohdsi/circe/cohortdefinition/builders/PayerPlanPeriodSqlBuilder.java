@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
@@ -22,6 +23,9 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   // default columns are those that are specified in the template, and dont' need to be added if specifeid in 'additionalColumns'
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
+  // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("ppp.person_id", "ppp.payer_plan_period_id"));
+
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
     return DEFAULT_COLUMNS;
@@ -33,12 +37,12 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
     String query = super.getCriteriaSql(criteria, options);
     String startDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.startDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.startDate)
-            : "C.payer_plan_period_start_date";
+            : "C.start_date";
     query = StringUtils.replace(query, "@startDateExpression", startDateExpression);
 
     String endDateExpression = (criteria.userDefinedPeriod != null && criteria.userDefinedPeriod.endDate != null)
             ? BuilderUtils.dateStringToSql(criteria.userDefinedPeriod.endDate)
-            : "C.payer_plan_period_end_date";
+            : "C.end_date";
     query = StringUtils.replace(query, "@endDateExpression", endDateExpression);
     return query;
   }
@@ -72,6 +76,61 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   }
 
   @Override
+  protected List<String> resolveSelectClauses(T criteria) {
+
+    ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
+
+    // payer concept
+    if (criteria.payerConcept != null) {
+      selectCols.add("ppp.payer_concept_id");
+    }
+
+    // plan concept
+    if (criteria.planConcept != null) {
+      selectCols.add("ppp.plan_concept_id");
+    }
+
+    // sponsor concept
+    if (criteria.sponsorConcept != null) {
+      selectCols.add("ppp.sponsor_concept_id");
+    }
+
+    // stop reason concept
+    if (criteria.stopReasonConcept != null) {
+      selectCols.add("ppp.stop_reason_concept_id");
+    }
+
+    // payer SourceConcept
+    if (criteria.payerSourceConcept != null) {
+      selectCols.add("ppp.payer_source_concept_id");
+    }
+
+    // plan SourceConcept
+    if (criteria.planSourceConcept != null) {
+      selectCols.add("ppp.plan_source_concept_id");
+    }
+
+    // sponsor SourceConcept
+    if (criteria.sponsorSourceConcept != null) {
+      selectCols.add("ppp.sponsor_source_concept_id");
+    }
+
+    // stop reason SourceConcept
+    if (criteria.stopReasonSourceConcept != null) {
+      selectCols.add("ppp.stop_reason_source_concept_id");
+    }
+    // dateAdjustment or default start/end dates
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "ppp.payer_plan_period_start_date" : "ppp.payer_plan_period_end_date",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "ppp.payer_plan_period_start_date" : "ppp.payer_plan_period_end_date"));
+    } else {
+      selectCols.add("ppp.payer_plan_period_start_date as start_date, ppp.payer_plan_period_end_date as end_date");
+    }
+    return selectCols;
+  }
+
+  @Override
   protected List<String> resolveJoinClauses(T criteria) {
 
     List<String> joinClauses = new ArrayList<>();
@@ -86,7 +145,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
 
-    List<String> whereClauses = new ArrayList<>();
+    List<String> whereClauses = super.resolveWhereClauses(criteria);
 
     //first
     if (criteria.first != null && criteria.first) {
@@ -99,38 +158,38 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
 
       if (userDefinedPeriod.startDate != null) {
         String startDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.startDate);
-        whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", startDateExpression, startDateExpression));
+        whereClauses.add(String.format("C.start_date <= %s and C.end_date >= %s", startDateExpression, startDateExpression));
       }
 
       if (userDefinedPeriod.endDate != null) {
         String endDateExpression = BuilderUtils.dateStringToSql(userDefinedPeriod.endDate);
-        whereClauses.add(String.format("C.PAYER_PLAN_PERIOD_START_DATE <= %s and C.PAYER_PLAN_PERIOD_END_DATE >= %s", endDateExpression, endDateExpression));
+        whereClauses.add(String.format("C.start_date <= %s and C.end_date >= %s", endDateExpression, endDateExpression));
       }
     }
 
     //periodStartDate
     if (criteria.periodStartDate != null) {
-      whereClauses.add(buildDateRangeClause("C.payer_plan_period_start_date", criteria.periodStartDate));
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.periodStartDate));
     }
 
     //periodEndDate
     if (criteria.periodEndDate != null) {
-      whereClauses.add(buildDateRangeClause("C.payer_plan_period_end_date", criteria.periodEndDate));
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.periodEndDate));
     }
 
     //periodLength
     if (criteria.periodLength != null) {
-      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.payer_plan_period_start_date, C.payer_plan_period_end_date)", criteria.periodLength));
+      whereClauses.add(buildNumericRangeClause("DATEDIFF(d,C.start_date, C.end_date)", criteria.periodLength));
     }
 
     //ageAtStart
     if (criteria.ageAtStart != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.payer_plan_period_start_date) - P.year_of_birth", criteria.ageAtStart));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.ageAtStart));
     }
 
     //ageAtEnd
     if (criteria.ageAtEnd != null) {
-      whereClauses.add(buildNumericRangeClause("YEAR(C.payer_plan_period_end_date) - P.year_of_birth", criteria.ageAtEnd));
+      whereClauses.add(buildNumericRangeClause("YEAR(C.end_date) - P.year_of_birth", criteria.ageAtEnd));
     }
 
     //gender
