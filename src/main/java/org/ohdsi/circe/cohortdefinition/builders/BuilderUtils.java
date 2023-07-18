@@ -7,6 +7,7 @@ import org.ohdsi.circe.cohortdefinition.NumericRange;
 import org.ohdsi.circe.cohortdefinition.TextFilter;
 import org.ohdsi.circe.vocabulary.Concept;
 
+import java.util.Locale;
 import java.util.ArrayList;
 
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -103,17 +104,16 @@ public abstract class BuilderUtils {
 
   // assumes decimal range
   public static String buildNumericRangeClause(String sqlExpression, NumericRange range, String format) {
-
     String clause;
     if (range.op.endsWith("bt")) {
-      clause = String.format("%s(%s >= %" + format + " and %s <= %" + format + ")",
+      clause = String.format("%s(%s >= %s and %s <= %s)",
               range.op.startsWith("!") ? "not " : "",
               sqlExpression,
-              range.value.doubleValue(),
+              formatDouble(range.value.doubleValue(), format),
               sqlExpression,
-              range.extent.doubleValue());
+              formatDouble(range.extent.doubleValue(), format));
     } else {
-      clause = String.format("%s %s %" + format, sqlExpression, getOperator(range), range.value.doubleValue());
+      clause = String.format("%s %s %s", sqlExpression, getOperator(range), formatDouble(range.value.doubleValue(), format));
     }
     return clause;
   }
@@ -161,4 +161,11 @@ public abstract class BuilderUtils {
     }
     return value.replaceAll("\\\\*\\'", "''");
   }
-}
+
+    private static String formatDouble(double d, String format) {
+        // Forces the US Locale formatting for all double values
+        // for Issue #184: https://github.com/OHDSI/circe-be/issues/184
+        String formatString = "%" + format;
+        return String.format(Locale.US, formatString, d);
+    }
+  }
