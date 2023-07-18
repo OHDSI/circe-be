@@ -5,3 +5,5 @@ CREATE TABLE #Codesets (
 ;
 
 @codesetInserts
+
+UPDATE STATISTICS #Codesets;
