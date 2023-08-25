@@ -171,9 +171,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String queryWithInsert = StringUtils.replace(
             CODESET_QUERY_TEMPLATE,
             "@codesetInserts",
-            "INSERT INTO #Codesets (codeset_id, concept_id)\n" + unionSelectsQuery
+            "INSERT INTO #Codesets (codeset_id, concept_id)\n" + unionSelectsQuery + ";"
     );
-    return queryWithInsert + ";";
+    return queryWithInsert;
 
   }
 

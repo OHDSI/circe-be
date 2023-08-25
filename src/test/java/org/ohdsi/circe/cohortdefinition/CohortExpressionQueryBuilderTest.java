@@ -42,7 +42,7 @@ public class CohortExpressionQueryBuilderTest {
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
                 "  concept_id bigint NOT NULL\n" +
-                ")\n;\n\n\n"));
+                ")\n;\n\n\n\nUPDATE STATISTICS #Codesets;\n"));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CohortExpressionQueryBuilderTest {
         assertThat(codesetQuery, equalTo("CREATE TABLE #Codesets (\n" +
                 "  codeset_id int NOT NULL,\n" +
                 "  concept_id bigint NOT NULL\n" +
-                ")\n;\n\n\n"));
+                ")\n;\n\n\n\nUPDATE STATISTICS #Codesets;\n"));
     }
 
     private ConceptSet createConceptSet(int id, String name) {
