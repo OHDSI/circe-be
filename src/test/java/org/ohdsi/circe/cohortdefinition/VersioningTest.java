@@ -41,7 +41,7 @@ public class VersioningTest extends BaseTest {
         CohortExpression cohortExpression = new CohortExpression();
         cohortExpression.additionalCriteria = getCriteriaGroupWithCriteriaList(getPayerPlanCriteria());
         String serialized = Utils.serialize(cohortExpression);
-        assertThat(serialized, containsString("\"cdmVersionRange\":\">=5.3.0\""));
+        assertThat(serialized, containsString("\"cdmVersionRange\":\">=5.3\""));
     }
 
     /**
@@ -84,7 +84,7 @@ public class VersioningTest extends BaseTest {
         String design = readResource("/versioning/payerPlanCohortExpression.json");
         CohortExpression cohortExpression = Utils.deserialize(design, new TypeReference<CohortExpression>() {});
         assertNotNull(cohortExpression);
-        assertEquals(cohortExpression.getCdmVersionRange(), ">=5.3.0");
+        assertEquals(cohortExpression.getCdmVersionRange(), ">=5.3");
     }
 
     private CorelatedCriteria getPayerPlanCriteria() {
