@@ -641,4 +641,35 @@ public class PrintFriendlyTest {
     pf.renderConceptSetList((ConceptSet[])null);
     
   }
+  
+  @Test
+  public void dateAdjustTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateAdjust.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "2. condition occurrences of 'Concept Set 1', starting 30 days after and ending 40 days after the event end date.",
+            "3. dose eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "4. drug eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "6. device exposures of 'Concept Set 1', starting on the event start date and ending 20 days after the event end date.",
+            "7. measurements of 'Concept Set 1', starting on and ending 20 days after the event end date.",
+            "8. observations of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "9. observation periods, starting 10 days after and ending 20 days after the event start date.",
+            "10. procedure occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "11. specimens of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "12. visit occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "13. visit details of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date."
+    ));
+    
+  }
+  
+  @Test
+  public void emptyConceptListTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/emptyConceptList.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. condition occurrences of 'Concept Set 1', a provider specialty that is: [none specified]; a visit occurrence that is: [none specified]."
+    ));
+    
+  }
 }
