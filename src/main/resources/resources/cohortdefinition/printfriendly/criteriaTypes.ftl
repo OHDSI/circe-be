@@ -33,6 +33,7 @@ END Note!!!!
 <#macro ConditionEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.eraLength??><#local temp>era length is <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if 
 c.occurrenceCount??><#local temp>containing <@inputTypes.NumericRange range=c.occurrenceCount /> occurrences</#local><#local attrs+=[temp]></#if>
@@ -43,6 +44,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro ConditionOccurrence c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.conditionType??><#local temp>a condition type that<#if c.conditionTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.conditionType/></#local><#local attrs+=[temp]></#if><#if c.stopReason??> 
 <#local temp>with a stop reason <@inputTypes.TextFilter filter=c.stopReason /></#local><#local attrs+=[temp]></#if><#if c.providerSpecialty??>
@@ -66,6 +68,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro DeviceExposure c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.deviceType??><#local temp>a device type that<#if c.deviceTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.deviceType/></#local><#local attrs+=[temp]></#if><#if c.uniqueDeviceId??> 
 <#local temp>unique device ID <@inputTypes.TextFilter filter=c.uniqueDeviceId /></#local><#local attrs+=[temp]></#if><#if c.quantity??>
@@ -80,6 +83,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro DoseEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if c.unit??>
 <#local temp>unit is: <@inputTypes.ConceptList list=c.unit/></#local><#local attrs+=[temp]></#if><#if c.eraLength??>
 <#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.doseValue??>
@@ -91,6 +95,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro DrugEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.eraStartDate!{} c.eraEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if c.eraLength??>
 <#local temp>with era length <@inputTypes.NumericRange range=c.eraLength /> days</#local><#local attrs+=[temp]></#if><#if c.occurrenceCount??>
 <#local temp>with occurrence count <@inputTypes.NumericRange range=c.occurrenceCount /></#local><#local attrs+=[temp]></#if><#if c.gapDays??>
@@ -102,6 +107,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro DrugExposure c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.drugType??><#local temp>a drug type that<#if c.drugTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.drugType/></#local><#local attrs+=[temp]></#if><#if c.refills??>
 <#local temp>with refills <@inputTypes.NumericRange range=c.refills /></#local><#local attrs+=[temp]></#if><#if c.quantity??>
@@ -128,6 +134,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro Measurement c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.measurementType??><#local temp>a measurement type that<#if c.measurementTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.measurementType/></#local><#local attrs+=[temp]></#if><#if 
 c.operator??><#local temp>with operator: <@inputTypes.ConceptList list=c.operator/></#local><#local attrs+=[temp]></#if><#if 
@@ -149,6 +156,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro Observation c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.observationType??><#local temp>an observation type that<#if c.observationTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.observationType/></#local><#local attrs+=[temp]></#if><#if 
 c.valueAsNumber??><#local temp>numeric value <@inputTypes.NumericRange range=c.valueAsNumber /></#local><#local attrs+=[temp]></#if><#if 
@@ -166,6 +174,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro ObservationPeriod c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} ageAtEnd=c.ageAtEnd!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.periodStartDate!{} c.periodEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
 c.userDefinedPeriod??><#local temp><@inputTypes.UserDefinedPeriod c.userDefinedPeriod /></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if><#if 
 c.periodType??><#local temp>period type is: <@inputTypes.ConceptList list=c.periodType/></#local><#local attrs+=[temp]></#if><#if 
@@ -177,6 +186,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro ProcedureOccurrence c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.procedureType??><#local temp>a procedure type that<#if c.procedureTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.procedureType/></#local><#local attrs+=[temp]></#if><#if 
 c.modifier??><#local temp>with modifier: <@inputTypes.ConceptList list=c.modifier/></#local><#local attrs+=[temp]></#if><#if 
@@ -191,6 +201,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro Specimen c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.specimenType??><#local temp>a specimen type that<#if c.specimenTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.specimenType/></#local><#local attrs+=[temp]></#if><#if 
 c.quantity??><#local temp>with quantity <@inputTypes.NumericRange range=c.quantity /></#local><#local attrs+=[temp]></#if><#if 
@@ -206,6 +217,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro VisitOccurrence c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.visitType??><#local temp>a visit type that<#if c.visitTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.visitType/></#local><#local attrs+=[temp]></#if><#if
 c.providerSpecialty??><#local temp>a provider specialty that is: <@inputTypes.ConceptList list=c.providerSpecialty/></#local><#local attrs+=[temp]></#if><#if
@@ -219,6 +231,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro VisitDetail c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCSCriteria ageAtStart=c.age!{} genderCS=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.visitDetailStartDate!{} c.visitDetailEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if
 c.visitDetailTypeCS?? && c.visitDetailTypeCS.codesetId??><#local temp>a visit detail type that is <@inputTypes.ConceptSetSelection selection=c.visitDetailTypeCS /> concept set</#local><#local attrs+=[temp]></#if><#if
 c.providerSpecialtyCS?? && c.providerSpecialtyCS.codesetId??><#local temp>a provider specialty that is <@inputTypes.ConceptSetSelection selection=c.providerSpecialtyCS /> concept set</#local><#local attrs+=[temp]></#if><#if
