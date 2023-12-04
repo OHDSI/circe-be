@@ -151,7 +151,9 @@ c.visitType??><#local temp>a visit occurrence that is: <@inputTypes.ConceptList 
 measurement<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any measurement")}<#if 
 c.measurementSourceConcept??> (including ${utils.codesetName(c.measurementSourceConcept, "any measurement")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
-c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any measurement") /><#else>.</#if></#macro>
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any measurement") /><#else>.</#if>
+<#if c.measurementOperand??>numeric value calculated as <@MeasurementOperand c=c.measurementOperand level=level+1 /></#if><#nested />
+</#macro>
 
 <#macro Observation c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -308,3 +310,14 @@ temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#lo
 c.race??><#local temp>race is: <@inputTypes.ConceptList list=c.race/></#local><#local attrs+=[temp]></#if><#if
 c.ethnicity??><#local temp>ethnicity is: <@inputTypes.ConceptList list=c.ethnicity/></#local><#local attrs+=[temp]></#if><#if 
 attrs?size gt 0>with the following event criteria: ${attrs?join("; ")}.<#else>any event (no demographic criteria specified).</#if></#macro>
+
+<#-- Calculation Criteria -->
+<#macro MeasurementOperand c level>primary measurement ${c.operator} <#local temp><@MeasurementLimit limit = c.limit /></#local> <#local temp><@Measurement c=c.measurement level=level+1> <#if c.sameVisit>in the same visit</#if> <#if c.valueAsNumber??>which are <@inputTypes.NumericRange range=c.valueAsNumber /></#if> </@Measurement></#local> ${temp}</#macro>
+
+<#-- Limits -->
+<#assign measurementLimitOptions = [
+{"id": "First", "name": "earliest event"},
+{"id": "Last", "name": "latest event"}
+]/>
+
+<#macro MeasurementLimit limit>${utils.optionName(measurementLimitOptions, limit)}</#macro>

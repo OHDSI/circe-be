@@ -85,6 +85,9 @@ public class Measurement extends Criteria {
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("MeasurementOperand")
+  public MeasurementOperand measurementOperand;
+
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)
   {
