@@ -69,7 +69,7 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     // first
     if (criteria.first != null && criteria.first == true) {
       whereClauses.add("C.ordinal = 1");
-      query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY co.person_id ORDER BY co.condition_start_date, co.condition_occurrence_id) as ordinal");
+      query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY co.person_id ORDER BY co.condition_start_datetime, co.condition_occurrence_id) as ordinal");
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
@@ -99,10 +99,10 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_datetime" : "COALESCE(co.condition_end_datetime, DATEADD(day,1,co.condition_start_datetime))",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_datetime" : "COALESCE(co.condition_end_datetime, DATEADD(day,1,co.condition_start_datetime))"));
     } else {
-      selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+      selectCols.add("co.condition_start_datetime as start_date, COALESCE(co.condition_end_datetime, DATEADD(day,1,co.condition_start_datetime)) as end_date");
     }
     return selectCols;
   }

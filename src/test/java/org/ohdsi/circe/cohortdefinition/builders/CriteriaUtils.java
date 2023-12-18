@@ -29,12 +29,12 @@ public class CriteriaUtils {
     // index starts between 365d before
     Window.Endpoint startPoint = new Window.Endpoint();
     startPoint.coeff = -1;
-    startPoint.days = 365;
+    startPoint.timeUnitValue = 365;
     prior365Window.start = startPoint;
     // ... and 0 days before
     Window.Endpoint endPoint = new Window.Endpoint();
     endPoint.coeff = -1;
-    endPoint.days = 0;
+    endPoint.timeUnitValue = 0;
     prior365Window.end = endPoint;
     return prior365Window;
   }

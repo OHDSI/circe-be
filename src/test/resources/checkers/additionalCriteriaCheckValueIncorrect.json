@@ -258,11 +258,13 @@
             },
             "StartWindow": {
               "Start": {
-                "Days": -3,
+                "TimeUnitValue": -3,
+                "TimeUnit": "day",
                 "Coeff": -1
               },
               "End": {
-                "Days": -2,
+                "TimeUnitValue": -2,
+                "TimeUnit": "day",
                 "Coeff": 1
               },
               "UseEventEnd": false
@@ -307,7 +309,8 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0
+    "EraPadUnit": "day",
+    "EraPadUnitValue": 0
   },
   "CensorWindow": {},
   "cdmVersionRange": ">=6.1.0"

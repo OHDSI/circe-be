@@ -28,7 +28,7 @@ import org.ohdsi.circe.cohortdefinition.DateOffsetStrategy;
 
 public class ExitCriteriaDaysOffsetCheck extends BaseCheck {
 
-    private static final String DAYS_OFFSET_WARNING = "Cohort Exit criteria: Days offset from start date should be greater than 0";
+    private static final String DAYS_OFFSET_WARNING = "Cohort Exit criteria: %ss offset from start date should be greater than 0";
 
     @Override
     protected WarningSeverity defineSeverity() {
@@ -42,7 +42,7 @@ public class ExitCriteriaDaysOffsetCheck extends BaseCheck {
         match(expression.endStrategy)
                 .isA(DateOffsetStrategy.class)
                 .then(s -> match((DateOffsetStrategy)s)
-                        .when(dateOffsetStrategy -> Objects.equals(StartDate, dateOffsetStrategy.dateField) && 0 == dateOffsetStrategy.offset)
-                        .then(() -> reporter.add(DAYS_OFFSET_WARNING)));
+                        .when(dateOffsetStrategy -> Objects.equals(StartDate, dateOffsetStrategy.dateField) && 0 == dateOffsetStrategy.offsetUnitValue)
+                        .then(dateOffsetStrategy -> reporter.add(String.format(DAYS_OFFSET_WARNING, dateOffsetStrategy.offsetUnit))));
     }
 }

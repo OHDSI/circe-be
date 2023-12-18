@@ -103,17 +103,29 @@ public class Comparisons {
     }
 
     public static int compareTo(ObservationFilter filter, Window window) {
-
-        int range1 = filter.postDays + filter.priorDays;
-        int range2Start = 0, range2End = 0;
-        if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days)) {
-            range2Start = window.start.coeff * window.start.days;
-        }
-        if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days)) {
-            range2End = window.end.coeff * window.end.days;
-        }
+        int range1 = (filter.postDays + filter.priorDays) * 24 * 60 * 60;
+        int range2Start = getTimeInSeconds(window.start);
+        int range2End = getTimeInSeconds(window.end);
         return range1 - (range2End - range2Start);
     }
+
+    private static int getTimeInSeconds(Window.Endpoint endpoint) {
+        if (Objects.isNull(endpoint)) {
+            return 0;
+        }
+        int convertRate;
+        if (endpoint.timeUnit.equals(IntervalUnit.DAY.getName())) {
+            convertRate = 24 * 60 * 60;
+        } else if (endpoint.timeUnit.equals(IntervalUnit.HOUR.getName())) {
+            convertRate = 60 * 60;
+        } else if (endpoint.timeUnit.equals(IntervalUnit.MINUTE.getName())) {
+            convertRate = 60;
+        } else convertRate = 1;
+        return Objects.nonNull(endpoint.timeUnitValue)
+            ? endpoint.coeff * endpoint.timeUnitValue * convertRate
+            : 0;
+    }
+
 
     public static boolean compare(Criteria c1, Criteria c2) {
 

@@ -64,7 +64,7 @@ ${cc?counter}. <@ct.Criteria c=cc/>
 
 ### Cohort Eras
 
-Entry events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
+Entry events will be combined into cohort eras if they are within ${collapseSettings.eraPadUnitValue} ${collapseSettings.eraPadUnit}s of each other.
 
 <#-- main template: end -->
 
