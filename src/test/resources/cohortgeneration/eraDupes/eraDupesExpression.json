@@ -23,13 +23,15 @@
   "EndStrategy": {
     "DateOffset": {
       "DateField": "EndDate",
-      "Offset": 0
+      "OffsetUnit": "hour",
+      "OffsetUnitValue": 0
     }
   },
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 30
+    "EraPadUnit": "minute",
+    "EraPadUnitValue": 0
   },
   "CensorWindow": {}
 }

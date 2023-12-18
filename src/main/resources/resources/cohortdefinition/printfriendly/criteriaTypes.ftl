@@ -293,8 +293,8 @@ group.demographicCriteriaList?size == 1><@DemographicCriteria c=group.demographi
 --><#if countCriteria.occurrence.isDistinct> distinct <@utils.countColumn countCriteria.occurrence.countColumn!"DOMAIN_CONCEPT" /> from</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1) countCriteria=countCriteria indexLabel=indexLabel /></#macro>
 
 <#macro WindowCriteria countCriteria indexLabel="cohort entry" level=0><#local windowParts=[] restrictParts=[]><#if 
-countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??><#local temp><@inputTypes.Window countCriteria.startWindow indexLabel /></#local><#local windowParts+=[temp]></#if><#if 
-countCriteria.endWindow?? && (countCriteria.endWindow.start.days?? || countCriteria.endWindow.end.days??)>
+countCriteria.startWindow.start.timeUnitValue?? || countCriteria.startWindow.end.timeUnitValue??><#local temp><@inputTypes.Window countCriteria.startWindow indexLabel /></#local><#local windowParts+=[temp]></#if><#if 
+countCriteria.endWindow?? && (countCriteria.endWindow.start.timeUnitValue?? || countCriteria.endWindow.end.timeUnitValue??)>
 <#local temp><@inputTypes.Window countCriteria.endWindow indexLabel /></#local><#local windowParts+=[temp]></#if>
 <#if countCriteria.restrictVisit!false><#local temp>at same visit as ${indexLabel}</#local><#local restrictParts+=[temp]></#if>
 <#if countCriteria.ignoreObservationPeriod!false><#local temp>allow events outside observation period</#local><#local restrictParts+=[temp]></#if><#if 

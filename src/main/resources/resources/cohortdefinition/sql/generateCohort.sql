@@ -2,7 +2,7 @@
 
 SELECT event_id, person_id, start_date, end_date, op_start_date, op_end_date, visit_occurrence_id
 INTO #qualified_events
-FROM 
+FROM
 (
   select pe.event_id, pe.person_id, pe.start_date, pe.end_date, pe.op_start_date, pe.op_end_date, row_number() over (partition by pe.person_id order by pe.start_date @QualifiedEventSort) as ordinal, cast(pe.visit_occurrence_id as bigint) as visit_occurrence_id
   FROM (@primaryEventsQuery) pe
@@ -63,7 +63,7 @@ from ( --cteEnds
 	JOIN ( -- cteEndDates
     SELECT
       person_id
-      , DATEADD(day,-1 * @eraconstructorpad, event_date)  as end_date
+      , DATEADD(@era_pad_unit, -1 * @era_pad, event_date)  as end_date
     FROM
     (
       SELECT
@@ -84,7 +84,7 @@ from ( --cteEnds
 
         SELECT
           person_id
-          , DATEADD(day,@eraconstructorpad,end_date) as end_date
+          , DATEADD(@era_pad_unit, @era_pad, end_date) as end_date
           , 1 AS event_type
         FROM #cohort_rows
       ) RAWDATA

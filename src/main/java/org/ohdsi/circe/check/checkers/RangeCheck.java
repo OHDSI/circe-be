@@ -54,17 +54,16 @@ public class RangeCheck extends BaseValueCheck {
     private void checkWindow(Window window, WarningReporter reporter, String name) {
 
         if (Objects.nonNull(window)) {
-            if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days) && window.start.days < 0) {
-                reporter.add(NEGATIVE_VALUE_ERROR, name, window.start.days, "start");
+            if (Objects.nonNull(window.start) && Objects.nonNull(window.start.timeUnitValue) && window.start.timeUnitValue < 0) {
+                reporter.add(NEGATIVE_VALUE_ERROR, name, window.start.timeUnitValue, "start");
             }
-            if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days) && window.end.days < 0) {
-                reporter.add(NEGATIVE_VALUE_ERROR, name, window.end.days, "end");
+            if (Objects.nonNull(window.end) && Objects.nonNull(window.end.timeUnitValue) && window.end.timeUnitValue < 0) {
+                reporter.add(NEGATIVE_VALUE_ERROR, name, window.end.timeUnitValue, "end");
             }
         }
     }
 
     private void checkObservationFilter(ObservationFilter filter, WarningReporter reporter, String name) {
-
         if (Objects.nonNull(filter)) {
             if (filter.priorDays < 0) {
                 reporter.add(NEGATIVE_VALUE_ERROR, name, filter.priorDays, "prior days");

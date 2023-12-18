@@ -27,12 +27,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Window {
 
   public static class Endpoint {
-    @JsonProperty("Days")
-    public Integer days;
-
+    @JsonProperty("TimeUnitValue")
+    public Integer timeUnitValue;
+    @JsonProperty("TimeUnit")
+    public String timeUnit = IntervalUnit.DAY.getName();
     @JsonProperty("Coeff")
     public int coeff;
-	}
+  }
   
   @JsonProperty("Start")
   public Endpoint start;  

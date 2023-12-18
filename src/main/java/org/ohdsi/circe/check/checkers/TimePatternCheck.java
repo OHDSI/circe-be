@@ -83,7 +83,7 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
     }
 
     private String formatDays(Window.Endpoint endpoint) {
-        return Objects.nonNull(endpoint.days) ? String.valueOf(endpoint.days) : "all";
+        return Objects.nonNull(endpoint.timeUnitValue) ? String.valueOf(endpoint.timeUnitValue) : "all";
     }
 
     private String formatCoeff(Window.Endpoint endpoint) {
@@ -92,7 +92,7 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
 
     private Integer startDays(Window window) {
         return Objects.nonNull(window) && Objects.nonNull(window.start) ?
-                (Objects.nonNull(window.start.days) ? window.start.days : 0) * window.start.coeff : 0;
+                (Objects.nonNull(window.start.timeUnitValue) ? window.start.timeUnitValue : 0) * window.start.coeff : 0;
     }
 
     class TimeWindowInfo {

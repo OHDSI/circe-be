@@ -27,6 +27,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ObservationFilter {
   @JsonProperty("PriorDays")
   public int priorDays;
-  @JsonProperty("PostDays")      
+  @JsonProperty("PostDays")
   public int postDays;
 }

@@ -39,7 +39,8 @@
                 },
                 "StartWindow": {
                   "Start": {
-                    "Days": 7,
+                    "TimeUnitValue": 7,
+                "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "End": {
@@ -83,7 +84,8 @@
                   },
                   "StartWindow": {
                     "Start": {
-                      "Days": 7,
+                      "TimeUnitValue": 7,
+                "TimeUnit": "day",
                       "Coeff": -1
                     },
                     "End": {
@@ -104,7 +106,8 @@
         },
         "StartWindow": {
           "Start": {
-            "Days": 14,
+            "TimeUnitValue": 14,
+                "TimeUnit": "day",
             "Coeff": -1
           },
           "End": {
@@ -131,7 +134,8 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0
+    "EraPadUnit": "day",
+    "EraPadUnitValue": 0
   },
   "CensorWindow": {},
   "cdmVersionRange": ">=5.3.0"
