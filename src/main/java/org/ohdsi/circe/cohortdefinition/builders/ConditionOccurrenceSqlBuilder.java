@@ -4,12 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
 import org.ohdsi.circe.helper.ResourceHelper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -65,7 +62,6 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
 
   @Override
   protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
-
     // first
     if (criteria.first != null && criteria.first == true) {
       whereClauses.add("C.ordinal = 1");

@@ -20,9 +20,8 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
@@ -351,10 +350,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects, "\nUNION ALL\n"));
 
-//    resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
-    resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
-    resultSql = StringUtils.replace(resultSql, "@era_pad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
-
+    if(!StringUtils.isEmpty(Integer.toString(expression.collapseSettings.eraPad)) && expression.collapseSettings.eraPad != 0){
+        resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
+    }else{
+        resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+        resultSql = StringUtils.replace(resultSql, "@era_pad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
+    }
     resultSql = StringUtils.replace(resultSql, "@inclusionRuleTable", getInclusionRuleTableSql(expression));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
@@ -548,20 +549,25 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     Window startWindow = criteria.startWindow;
     String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
     String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-    if (startWindow.start.timeUnitValue != null) {
-      startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
+    if (startWindow.start.days != null) {
+          startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+    } else if (startWindow.start.timeUnitValue != null) {
+          startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
     } else {
-      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+          startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (startExpression != null) {
       clauses.add(String.format("%s >= %s", startEventDateExpression, startExpression));
     }
 
-    if (startWindow.end.timeUnitValue != null) {
-      endExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.end.coeff * startWindow.end.timeUnitValue, startIndexDateExpression);
+    if (startWindow.end.days != null) {
+          endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
+    }
+    else if (startWindow.end.timeUnitValue != null) {
+          endExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.end.coeff * startWindow.end.timeUnitValue, startIndexDateExpression);
     } else {
-      endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+          endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (endExpression != null) {
@@ -575,20 +581,24 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
       // for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
       String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-      if (endWindow.start.timeUnitValue != null) {
-        startExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.start.coeff * endWindow.start.timeUnitValue, endIndexDateExpression);
+      if (endWindow.start.days != null) {
+          startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression);
+      } else if (endWindow.start.timeUnitValue != null) {
+          startExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.start.coeff * endWindow.start.timeUnitValue, endIndexDateExpression);
       } else {
-        startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+          startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
       }
 
       if (startExpression != null) {
         clauses.add(String.format("%s >= %s", endEventDateExpression, startExpression));
       }
 
-      if (endWindow.end.timeUnitValue != null) {
-        endExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.end.coeff * endWindow.end.timeUnitValue, endIndexDateExpression);
+      if (endWindow.end.days != null) {
+            endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
+      } else if (endWindow.end.timeUnitValue != null) {
+            endExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.end.coeff * endWindow.end.timeUnitValue, endIndexDateExpression);
       } else {
-        endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+            endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
       }
 
       if (endExpression != null) {
@@ -765,10 +775,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getStrategySql(DateOffsetStrategy strat, String eventTable) {
     String strategySql = StringUtils.replace(DATE_OFFSET_STRATEGY_TEMPLATE, "@eventTable", eventTable);
-    strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
-    strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
+    if(strat.offset  != 0){
+        strategySql = StringUtils.replace(strategySql, "@offset", Integer.toString(strat.offset));
+    }else {
+        strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
+        strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
+    }
     strategySql = StringUtils.replace(strategySql, "@dateField", getDateFieldForOffsetStrategy(strat.dateField));
-
     return strategySql;
   }
 
@@ -793,4 +806,5 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // </editor-fold>
+
 }

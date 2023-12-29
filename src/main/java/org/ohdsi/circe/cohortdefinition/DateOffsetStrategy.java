@@ -30,14 +30,15 @@ public class DateOffsetStrategy extends EndStrategy {
     StartDate,
     EndDate
   }
-
+  @JsonProperty("Offset")
+  public int offset = 0;
   @JsonProperty("DateField")
   public DateField dateField = DateField.StartDate;
 
   @JsonProperty("OffsetUnitValue")
   public int offsetUnitValue = 0;
   @JsonProperty("OffsetUnit")
-  public String offsetUnit = IntervalUnit.DAY.getName();
+  public String offsetUnit;
 
   @Override
   public String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable) {
