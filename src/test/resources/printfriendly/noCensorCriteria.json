@@ -398,6 +398,7 @@
   ],
   "CollapseSettings":{
     "CollapseType":"ERA",
+    "EraPad":0,
     "EraPadUnit": "days",
     "EraPadUnitValue": 0
   }

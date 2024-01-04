@@ -102,7 +102,7 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
                         .orElse(0));
             })
             .orElse(0);
-}
+    }
 
     class TimeWindowInfo {
         private String name;

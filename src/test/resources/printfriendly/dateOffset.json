@@ -42,6 +42,7 @@
   "EndStrategy": {
     "DateOffset": {
       "DateField": "EndDate",
+      "Offset": 7,
       "OffsetUnit": "day",
       "OffsetUnitValue": 7
     }
@@ -49,6 +50,7 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
+    "EraPad": 0,
     "EraPadUnit": "day",
     "EraPadUnitValue": 0
   },

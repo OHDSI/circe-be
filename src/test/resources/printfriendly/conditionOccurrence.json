@@ -52,8 +52,9 @@
                 },
                 "StartWindow": {
                   "Start": {
+                    "Days": 1,
                     "TimeUnitValue": 1,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": 1
                   },
                   "End": {
@@ -205,8 +206,9 @@
             "Coeff": -1
           },
           "End": {
+            "Days": 0,
             "TimeUnitValue": 0,
-                "TimeUnit": "day",
+            "TimeUnit": "day",
             "Coeff": -1
           },
           "UseEventEnd": true
@@ -244,6 +246,7 @@
                 "Coeff": -1
               },
               "End": {
+                "Days": 1,
                 "TimeUnitValue": 1,
                 "TimeUnit": "day",
                 "Coeff": 1

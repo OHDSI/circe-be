@@ -29,7 +29,8 @@ public class CriteriaUtils {
     // index starts between 365d before
     Window.Endpoint startPoint = new Window.Endpoint();
     startPoint.coeff = -1;
-    startPoint.timeUnitValue = 365;
+    startPoint.days = 365;
+    startPoint.timeUnitValue = null;
     prior365Window.start = startPoint;
     // ... and 0 days before
     Window.Endpoint endPoint = new Window.Endpoint();

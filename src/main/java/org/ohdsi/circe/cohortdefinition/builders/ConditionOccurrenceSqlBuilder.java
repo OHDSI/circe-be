@@ -94,7 +94,8 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     }
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
-      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+      selectCols.add(
+          BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_datetime" : "COALESCE(co.condition_end_datetime, DATEADD(day,1,co.condition_start_datetime))",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_datetime" : "COALESCE(co.condition_end_datetime, DATEADD(day,1,co.condition_start_datetime))"));
     } else {

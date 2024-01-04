@@ -625,21 +625,21 @@ public class PrintFriendlyTest {
   public void nullCohortTest() {
     exceptionRule.expect(RuntimeException.class);
     pf.renderCohort((CohortExpression)null);
-    
+
   }
 
   @Test
   public void nullConceptSetTest() {
     exceptionRule.expect(RuntimeException.class);
     pf.renderConceptSet((ConceptSet)null);
-    
+
   }
 
   @Test
   public void nullConceptSetListTest() {
     exceptionRule.expect(RuntimeException.class);
     pf.renderConceptSetList((ConceptSet[])null);
-    
+
   }
   
   @Test

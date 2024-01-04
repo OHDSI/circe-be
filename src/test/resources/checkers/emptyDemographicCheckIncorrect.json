@@ -452,14 +452,17 @@
     "CustomEra": {
       "DrugCodesetId": 0,
       "GapDays": 30,
-      "Offset": 0
+      "GapUnit": "day",
+      "GapUnitValue": 30,
+      "Offset": 0,
+      "OffsetUnit": "day",
+      "OffsetUnitValue": 0
     }
   },
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPadUnit": "day",
-    "EraPadUnitValue": 0
+    "EraPad": 0
   },
   "CensorWindow": {},
   "cdmVersionRange": ">=5.0.0"

@@ -18,16 +18,18 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CollapseSettings {
 
     @JsonProperty("CollapseType")
     public CollapseType collapseType = CollapseType.ERA;
     @JsonProperty("EraPad")
-    public int eraPad  = 0;
+    public int eraPad = 0;
     @JsonProperty("EraPadUnit")
-    public String eraPadUnit;
+    public String eraPadUnit = "day";
     @JsonProperty("EraPadUnitValue")
     public int eraPadUnitValue = 0;
 
