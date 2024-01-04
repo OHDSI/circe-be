@@ -70,21 +70,24 @@
                 },
                 "StartWindow": {
                   "Start": {
+                    "Days": 90,
                     "TimeUnitValue": 90,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 30,
                     "TimeUnitValue": 30,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
                 },
                 "EndWindow": {
                   "Start": {
+                    "Days": 90,
                     "TimeUnitValue": 90,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": 1
                   },
                   "End": {
@@ -144,8 +147,9 @@
                         "Coeff": -1
                       },
                       "End": {
+                        "Days": 0,
                         "TimeUnitValue": 0,
-                "TimeUnit": "day",
+                        "TimeUnit": "day",
                         "Coeff": 1
                       },
                       "UseEventEnd": false
@@ -177,8 +181,9 @@
                         "Coeff": -1
                       },
                       "End": {
+                        "Days": 1,
                         "TimeUnitValue": 1,
-                "TimeUnit": "day",
+                        "TimeUnit": "day",
                         "Coeff": -1
                       },
                       "UseEventEnd": false
@@ -323,8 +328,9 @@
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 30,
                     "TimeUnitValue": 30,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
@@ -357,8 +363,9 @@
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 0,
                     "TimeUnitValue": 0,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
@@ -380,8 +387,9 @@
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 1,
                     "TimeUnitValue": 1,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
@@ -462,8 +470,9 @@
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 1,
                     "TimeUnitValue": 1,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
@@ -552,8 +561,9 @@
             "Coeff": -1
           },
           "End": {
+            "Days": 90,
             "TimeUnitValue": 90,
-                "TimeUnit": "day",
+            "TimeUnit": "day",
             "Coeff": 1
           },
           "UseEventEnd": false
@@ -575,8 +585,9 @@
             "Coeff": -1
           },
           "End": {
+            "Days": 30,
             "TimeUnitValue": 30,
-                "TimeUnit": "day",
+            "TimeUnit": "day",
             "Coeff": -1
           },
           "UseEventEnd": false
@@ -683,11 +694,13 @@
             },
             "StartWindow": {
               "Start": {
+                "Days": 60,
                 "TimeUnitValue": 60,
                 "TimeUnit": "day",
                 "Coeff": -1
               },
               "End": {
+                "Days": 1,
                 "TimeUnitValue": 1,
                 "TimeUnit": "day",
                 "Coeff": -1
@@ -724,6 +737,7 @@
                 "Coeff": -1
               },
               "End": {
+                "Days": 0,
                 "TimeUnitValue": 0,
                 "TimeUnit": "day",
                 "Coeff": -1
@@ -810,7 +824,7 @@
                   },
                   "End": {
                     "TimeUnitValue": 1,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "UseEventEnd": false
@@ -831,6 +845,7 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
+    "EraPad": 0,
     "EraPadUnit": "day",
     "EraPadUnitValue": 0
   },

@@ -539,8 +539,7 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPadUnit": "day",
-    "EraPadUnitValue": 0
+    "EraPad": 1
   },
   "CensorWindow": {},
   "cdmVersionRange": ">=6.1.0"

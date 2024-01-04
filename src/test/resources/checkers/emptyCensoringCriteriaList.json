@@ -49,8 +49,7 @@
   "InclusionRules": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPadUnit": "day",
-    "EraPadUnitValue": 0
+    "EraPad": 0
   },
   "CensorWindow": {},
   "cdmVersionRange": ">=5.0.0"

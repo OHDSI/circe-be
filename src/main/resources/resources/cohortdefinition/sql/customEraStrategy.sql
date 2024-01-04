@@ -26,7 +26,7 @@ INTO #strategy_ends
 from @eventTable et
 JOIN 
 (
-  select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, DATEADD(day,@offset, ENDS.era_end_date) as era_end_date
+  select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, DATEADD(@offsetUnit, @offsetUnitValue, ENDS.era_end_date) as era_end_date
   from
   (
     select de.person_id, de.drug_exposure_start_date, MIN(e.END_DATE) as era_end_date
@@ -34,7 +34,7 @@ JOIN
     JOIN 
     (
       --cteEndDates
-      select PERSON_ID, DATEADD(day,-1 * @gapDays,EVENT_DATE) as END_DATE -- unpad the end date by @gapDays
+      select PERSON_ID, DATEADD(@gapUnit,-1 * @gapUnitValue,EVENT_DATE) as END_DATE -- unpad the end date by @gapDays
       FROM
       (
 				select PERSON_ID, EVENT_DATE, EVENT_TYPE, 
@@ -49,7 +49,7 @@ JOIN
 					UNION ALL
 
 					-- add the end dates with NULL as the row number, padding the end dates by @gapDays to allow a grace period for overlapping ranges.
-					select PERSON_ID, DATEADD(day,@gapDays,DRUG_EXPOSURE_END_DATE), 1 as EVENT_TYPE, NULL
+					select PERSON_ID, DATEADD(@gapUnit,@gapUnitValue,DRUG_EXPOSURE_END_DATE), 1 as EVENT_TYPE, NULL
 					FROM #drugTarget D
 				) RAWDATA
       ) E

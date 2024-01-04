@@ -37,26 +37,30 @@
                 },
                 "StartWindow": {
                   "Start": {
+                    "Days": 90,
                     "TimeUnitValue": 90,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": -1
                   },
                   "End": {
+                    "Days": 30,
                     "TimeUnitValue": 30,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": 1
                   },
                   "UseEventEnd": false
                 },
                 "EndWindow": {
                   "Start": {
+                    "Days": 7,
                     "TimeUnitValue": 7,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": 1
                   },
                   "End": {
+                    "Days": 90,
                     "TimeUnitValue": 90,
-                "TimeUnit": "day",
+                    "TimeUnit": "day",
                     "Coeff": 1
                   },
                   "UseEventEnd": true
@@ -140,11 +144,13 @@
             },
             "StartWindow": {
               "Start": {
+                "Days": 90,
                 "TimeUnitValue": 90,
                 "TimeUnit": "day",
                 "Coeff": -1
               },
               "End": {
+                "Days": 0,
                 "TimeUnitValue": 0,
                 "TimeUnit": "day",
                 "Coeff": -1
@@ -165,6 +171,7 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
+    "EraPad": 0,
     "EraPadUnit": "day",
     "EraPadUnitValue": 0
   },

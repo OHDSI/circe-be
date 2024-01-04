@@ -113,23 +113,94 @@ public class ComparisonsTest {
 
         Window window = new Window();
         window.start = new Window.Endpoint();
-        window.start.timeUnitValue = 10;
-        window.start.timeUnit = IntervalUnit.DAY.getName();
+        window.start.days = 10;
+        window.start.timeUnitValue = null;
+        window.start.timeUnit = null;
         window.start.coeff = -1;
 
         window.end = new Window.Endpoint();
-        window.end.timeUnitValue = 5;
-        window.end.timeUnit = IntervalUnit.DAY.getName();
+        window.end.days = 5;
+        window.end.timeUnitValue = null;
+        window.end.timeUnit = null;
         window.end.coeff = 1;
 
         assertEquals(0, Comparisons.compareTo(filter, window));
 
-        window.start.timeUnitValue = 5;
-        window.start.timeUnit = IntervalUnit.DAY.getName();
-        window.end.timeUnitValue = 5;
-        window.end.timeUnit = IntervalUnit.DAY.getName();
 
-        assertEquals(432000, Comparisons.compareTo(filter, window));
+        window.start.days = 5;
+        window.end.days = 5;
+
+        window.start.timeUnitValue = null;
+        window.start.timeUnit = null;
+        window.end.timeUnitValue = null;
+        window.end.timeUnit = null;
+
+        assertEquals(5, Comparisons.compareTo(filter, window));
+    }
+
+    @Test
+    public void compareToHours() {
+        ObservationFilter filter = new ObservationFilter();
+        filter.postDays = 10;
+        filter.priorDays = 5;
+
+        Window window = new Window();
+        window.start = new Window.Endpoint();
+        window.end = new Window.Endpoint();
+        window.start.days = 0;
+        window.start.timeUnit = "hour";
+        window.start.timeUnitValue = 72;
+        window.start.coeff = -1;
+
+        window.end.days = 0;
+        window.end.timeUnit = "hour";
+        window.end.timeUnitValue = 120;
+        window.end.coeff = 1;
+
+        assertEquals(604800, Comparisons.compareTo(filter, window));
+    }
+    @Test
+    public void compareToMinute() {
+        ObservationFilter filter = new ObservationFilter();
+        filter.postDays = 10;
+        filter.priorDays = 5;
+
+        Window window = new Window();
+        window.start = new Window.Endpoint();
+        window.end = new Window.Endpoint();
+        window.start.days = 0;
+        window.start.timeUnit = "minute";
+        window.start.timeUnitValue = 30;
+        window.start.coeff = -1;
+
+        window.end.days = 0;
+        window.end.timeUnit = "minute";
+        window.end.timeUnitValue = 75;
+        window.end.coeff = 1;
+
+        assertEquals(1289700, Comparisons.compareTo(filter, window));
+    }
+
+    @Test
+    public void compareToSecond() {
+        ObservationFilter filter = new ObservationFilter();
+        filter.postDays = 10;
+        filter.priorDays = 5;
+
+        Window window = new Window();
+        window.start = new Window.Endpoint();
+        window.end = new Window.Endpoint();
+        window.start.days = 0;
+        window.start.timeUnit = "second";
+        window.start.timeUnitValue = 30;
+        window.start.coeff = -1;
+
+        window.end.days = 0;
+        window.end.timeUnit = "second";
+        window.end.timeUnitValue = 75;
+        window.end.coeff = 1;
+
+        assertEquals(1295895, Comparisons.compareTo(filter, window));
     }
 
     @Test
@@ -243,10 +314,12 @@ public class ComparisonsTest {
     public void isBefore() {
         Window window = new Window();
         window.start = new Window.Endpoint();
-        window.start.timeUnitValue = 1;
+        window.start.days = 1;
+        window.start.timeUnitValue = null;
         window.start.coeff = -1;
         window.end = new Window.Endpoint();
-        window.end.timeUnitValue = 1;
+        window.end.days = 1;
+        window.end.timeUnitValue = null;
         window.end.coeff = 1;
         assertEquals(false, Comparisons.isBefore(window));
 

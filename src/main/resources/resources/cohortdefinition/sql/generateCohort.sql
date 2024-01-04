@@ -63,13 +63,7 @@ from ( --cteEnds
 	JOIN ( -- cteEndDates
     SELECT
       person_id,
-        CASE
-        WHEN
-            @eraconstructorpad IS NOT NULL
-            THEN
-                DATEADD(day, -1 * @eraconstructorpad, event_date)
-        ELSE
-            DATEADD(@era_pad_unit, -1 * @era_pad, event_date) END AS end_date
+      DATEADD(@era_pad_unit, -1 * @eraconstructorpad, event_date)  as end_date
     FROM
     (
       SELECT
@@ -87,10 +81,9 @@ from ( --cteEnds
 
         UNION ALL
 
-
         SELECT
           person_id
-          , DATEADD(@era_pad_unit, @era_pad, end_date) as end_date
+          , DATEADD(@era_pad_unit, -1 * @eraconstructorpad, end_date)  as end_date
           , 1 AS event_type
         FROM #cohort_rows
       ) RAWDATA

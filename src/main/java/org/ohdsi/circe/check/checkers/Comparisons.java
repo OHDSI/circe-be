@@ -23,6 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
@@ -105,16 +106,17 @@ public class Comparisons {
                 .append(concept.vocabularyId, source.vocabularyId)
                 .build();
     }
+
     public static int compareTo(ObservationFilter filter, Window window) {
-        int range1 , range2Start , range2End;
-        if(Objects.nonNull(window.start) && Objects.nonNull(window.start.days)){
-                range1 = filter.postDays + filter.priorDays;
-                range2Start = window.start.coeff * window.start.days;
-                range2End = Objects.nonNull(window.end) && Objects.nonNull(window.end.days) ? window.end.coeff * window.end.days : 0;
-        }else {
-                range1 = (filter.postDays + filter.priorDays) * 24 * 60 * 60;
-                range2Start = getTimeInSeconds(window.start);
-                range2End = getTimeInSeconds(window.end);
+        int range1, range2Start, range2End;
+        if (Objects.nonNull(window.start) && (Objects.nonNull(window.start.days) && window.start.days != 0)) {
+            range1 = filter.postDays + filter.priorDays;
+            range2Start = window.start.coeff * window.start.days;
+            range2End = Objects.nonNull(window.end) && Objects.nonNull(window.end.days) ? window.end.coeff * window.end.days : 0;
+        } else {
+            range1 = (filter.postDays + filter.priorDays) * 24 * 60 * 60;
+            range2Start = getTimeInSeconds(window.start);
+            range2End = getTimeInSeconds(window.end);
         }
         return range1 - (range2End - range2Start);
     }

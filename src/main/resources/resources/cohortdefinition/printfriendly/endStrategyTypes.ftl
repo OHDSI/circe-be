@@ -24,12 +24,7 @@ The person exits the cohort at the end of continuous observation.
 <#assign dateOffsetFieldOptions = [{"id": "StartDate", "name": "start date"}, {"id": "EndDate", "name": "end date"}]>
 
 <#macro DateOffsetStrategy s>
-    <#if s.offset?? && s.offset == "day" >
-            The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offset "day"/>.
-        <#else >
-            The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offsetUnitValue s.offsetUnit/>.
-    </#if>
-
+    The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offsetUnitValue s.offsetUnit/>.
 </#macro>
 
 <#macro CustomEraStrategy s>

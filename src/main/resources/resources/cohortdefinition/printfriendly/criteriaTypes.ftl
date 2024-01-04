@@ -279,46 +279,14 @@ group.demographicCriteriaList?size == 1><@DemographicCriteria c=group.demographi
 <#macro CountCriteria countCriteria level=0 indexLabel="cohort entry">having <#if countCriteria.occurrence.type == 0 && countCriteria.occurrence.count == 0>no<#else>${inputTypes.getCountType(countCriteria)} ${countCriteria.occurrence.count}</#if><#--
 --><#if countCriteria.occurrence.isDistinct> distinct <@utils.countColumn countCriteria.occurrence.countColumn!"DOMAIN_CONCEPT" /> from</#if> <@Criteria c=countCriteria.criteria level=level isPlural=(countCriteria.occurrence.count != 1) countCriteria=countCriteria indexLabel=indexLabel /></#macro>
 
-<#macro WindowCriteria countCriteria indexLabel="cohort entry" level=0><#local windowParts=[] restrictParts=[]>
-    <#if countCriteria.startWindow.start.days?? || countCriteria.startWindow.end.days??>
-        <#local temp>
-            <@inputTypes.Window countCriteria.startWindow indexLabel />
-        </#local>
-        <#local windowParts+=[temp]>
-        </#if>
-    <#if countCriteria.endWindow?? && (countCriteria.endWindow.start.days?? || countCriteria.endWindow.end.days??)>
-<#local temp>
-    <@inputTypes.Window countCriteria.endWindow indexLabel />
-</#local>
-        <#local windowParts+=[temp]>
-        </#if>
-    <#if countCriteria.startWindow.start.timeUnitValue?? || countCriteria.startWindow.end.timeUnitValue??>
-        <#local temp>
-            <@inputTypes.Window countCriteria.startWindow indexLabel />
-        </#local>
-        <#local windowParts+=[temp]>
-    </#if>
-    <#if countCriteria.endWindow?? && (countCriteria.endWindow.start.timeUnitValue?? || countCriteria.endWindow.end.timeUnitValue??)>
-        <#local temp>
-            <@inputTypes.Window countCriteria.endWindow indexLabel />
-        </#local>
-        <#local windowParts+=[temp]>
-    </#if>
-<#if countCriteria.restrictVisit!false>
-    <#local temp>at same visit as ${indexLabel}
-    </#local>
-    <#local restrictParts+=[temp]>
-    </#if>
-<#if countCriteria.ignoreObservationPeriod!false>
-    <#local temp>allow events outside observation period</#local>
-    <#local restrictParts+=[temp]>
-    </#if>
-    <#if windowParts?size gt 0>${windowParts?join(" and ")}
-        <#if restrictParts?size gt 0>; </#if>
-        </#if>
-    <#if restrictParts?size gt 0>${restrictParts?join(" and ")}</#if>
-
-    </#macro>
+<#macro WindowCriteria countCriteria indexLabel="cohort entry" level=0><#local windowParts=[] restrictParts=[]><#if
+countCriteria.startWindow.start.timeUnitValue?? || countCriteria.startWindow.end.timeUnitValue??><#local temp><@inputTypes.Window countCriteria.startWindow indexLabel /></#local><#local windowParts+=[temp]></#if><#if
+countCriteria.endWindow?? && (countCriteria.endWindow.start.timeUnitValue?? || countCriteria.endWindow.end.timeUnitValue??)>
+    <#local temp><@inputTypes.Window countCriteria.endWindow indexLabel /></#local><#local windowParts+=[temp]></#if>
+    <#if countCriteria.restrictVisit!false><#local temp>at same visit as ${indexLabel}</#local><#local restrictParts+=[temp]></#if>
+    <#if countCriteria.ignoreObservationPeriod!false><#local temp>allow events outside observation period</#local><#local restrictParts+=[temp]></#if><#if
+windowParts?size gt 0>${windowParts?join(" and ")}<#if restrictParts?size gt 0>; </#if></#if><#if
+restrictParts?size gt 0>${restrictParts?join(" and ")}</#if></#macro>
 <#-- Demographic Criteria -->
 <#macro DemographicCriteria c level=0 indexLabel = "cohort entry"><#local attrs = []><#local 
 temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#local 

@@ -53,25 +53,22 @@ public class RangeCheck extends BaseValueCheck {
     }
 
     private void checkWindow(Window window, WarningReporter reporter, String name) {
-        Optional.ofNullable(window)
-            .map(w -> checkEndpoint(w, name, "start"))
-            .ifPresent(reporter::add);
+        if (Objects.isNull(window)) {
+            return;
+        }
+        checkAndReportIfNegative(window.start, reporter, name, "start");
+        checkAndReportIfNegative(window.end, reporter, name, "end");
 
-        Optional.ofNullable(window)
-            .map(w -> checkEndpoint(w, name, "end"))
-            .ifPresent(reporter::add);
     }
 
-    private String checkEndpoint(Window window, String name, String endpointType) {
-        boolean hasValid = Objects.nonNull(window.start) && Objects.nonNull(window.start.days < 0 ? window.start.days : window.start.timeUnitValue) && window.start.days < 0 ? window.start.days < 0 : window.start.timeUnitValue < 0;
-        return Optional.of(window)
-            .filter(w -> hasValid)
-            .map(w -> String.format(NEGATIVE_VALUE_ERROR, name, getEndpointValue(w.start), endpointType))
-            .orElse(null);
+    private void checkAndReportIfNegative(Window.Endpoint windowDetails, WarningReporter reporter, String name, String type) {
+        if (Objects.nonNull(windowDetails) && Objects.nonNull(windowDetails.days) && windowDetails.days < 0) {
+            reporter.add(NEGATIVE_VALUE_ERROR, name, windowDetails.days, type);
+        } else if (Objects.nonNull(windowDetails) && Objects.nonNull(windowDetails.timeUnitValue) && windowDetails.timeUnitValue < 0) {
+            reporter.add(NEGATIVE_VALUE_ERROR, name, windowDetails.timeUnitValue, type);
+        }
     }
-    private Object getEndpointValue(Window.Endpoint endpoint) {
-        return Objects.nonNull(endpoint.days) ? endpoint.days : endpoint.timeUnitValue;
-    }
+
 
     private void checkObservationFilter(ObservationFilter filter, WarningReporter reporter, String name) {
         if (Objects.nonNull(filter)) {
