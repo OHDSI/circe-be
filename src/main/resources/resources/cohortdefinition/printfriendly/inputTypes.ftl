@@ -118,7 +118,7 @@ item?counter == list?size> or <#else>, </#if></#if>${item}</#list></#macro>
 
 <#-- User Defined Period -->
 
-<#macro UserDefinedPeriod p><#if 
+<#macro UserDefinedPeriod p><#if
 p.startDate?has_content>a user defiend start date of ${utils.formatDate(p.startDate)}<#if p.endDate?has_content> and</#if></#if><#if
 p.endDate?has_content><#if !p.startDate?has_content>a user defined</#if> end date of ${utils.formatDate(p.endDate)}</#if>
 

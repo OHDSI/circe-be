@@ -16,7 +16,7 @@
       "observation_period_end_date":"2001-01-01",
       "period_type_concept_id": 0
     }
-  ],  
+  ],
   "cdm.drug_exposure": [
     {
       "drug_exposure_id": 1,
@@ -66,6 +66,6 @@
       "drug_concept_id":2,
       "drug_exposure_start_date":"2000-10-01",
       "drug_type_concept_id":0
-    }   
+    }
   ]
 }
