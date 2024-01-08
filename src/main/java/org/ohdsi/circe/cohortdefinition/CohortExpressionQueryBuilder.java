@@ -350,12 +350,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects, "\nUNION ALL\n"));
 
-    if(!StringUtils.isEmpty(Integer.toString(expression.collapseSettings.eraPad)) && expression.collapseSettings.eraPad != 0){
-        resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
-        resultSql = StringUtils.replace(resultSql, "@era_pad_unit", "day");
-    }else{
-        resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
-        resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+    if (!StringUtils.isEmpty(Integer.toString(expression.collapseSettings.eraPad)) && (expression.collapseSettings.eraPadUnit == null || IntervalUnit.DAY.getName().equals(expression.collapseSettings.eraPadUnit))) {
+      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
+      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+    } else {
+      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
+      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
     }
     resultSql = StringUtils.replace(resultSql, "@inclusionRuleTable", getInclusionRuleTableSql(expression));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
@@ -550,7 +550,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     Window startWindow = criteria.startWindow;
     String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
     String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-    if (startWindow.start.days != null) {
+    if (startWindow.start.days != null && (startWindow.start.timeUnit == null || startWindow.start.timeUnit.equals(IntervalUnit.DAY.getName()))) {
           startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
     } else if (startWindow.start.timeUnitValue != null) {
           startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
@@ -776,12 +776,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getStrategySql(DateOffsetStrategy strat, String eventTable) {
     String strategySql = StringUtils.replace(DATE_OFFSET_STRATEGY_TEMPLATE, "@eventTable", eventTable);
-    if(strat.offset != 0){
-        strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
-        strategySql = StringUtils.replace(strategySql, "@offsetUnit", "day");
-    }else {
-        strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
-        strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
+    if (strat.offsetUnit == null || strat.offsetUnit.equals(IntervalUnit.DAY.getName())) {
+      strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
+      strategySql = StringUtils.replace(strategySql, "@offsetUnit", "day");
+    } else {
+      strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
+      strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
     }
     strategySql = StringUtils.replace(strategySql, "@dateField", getDateFieldForOffsetStrategy(strat.dateField));
 
@@ -802,15 +802,15 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
     strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
     if (IntervalUnit.DAY.getName().equals(strat.gapUnit)) {
-        strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapDays));
+      strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapDays));
     } else {
-        strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapUnitValue));
+      strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapUnitValue));
     }
     strategySql = StringUtils.replace(strategySql, "@gapUnit", strat.gapUnit);
     if (IntervalUnit.DAY.getName().equals(strat.offsetUnit)) {
-        strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
+      strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
     } else {
-        strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
+      strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
     }
     strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
     strategySql = StringUtils.replace(strategySql, "@drugExposureEndDateExpression", drugExposureEndDateExpression);

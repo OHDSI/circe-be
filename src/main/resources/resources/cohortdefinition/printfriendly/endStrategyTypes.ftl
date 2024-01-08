@@ -28,7 +28,13 @@ The person exits the cohort at the end of continuous observation.
 </#macro>
 
 <#macro CustomEraStrategy s>
+    <#if s.offsetUnit == "day">
 The cohort end date will be based on a continuous exposure to ${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}:
 allowing ${s.gapDays} days between exposures, adding <@utils.formatValue s.offset "day"/> after exposure ends, and <#if 
 s.daysSupplyOverride??>forcing drug exposure days supply to: <@utils.formatValue s.daysSupplyOverride "day"/>.<#else>using days supply and exposure end date for exposure duration.</#if>
+    <#else >
+The cohort end date will be based on a continuous exposure to ${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}:
+allowing ${s.gapUnitValue} ${s.offsetUnit} between exposures, adding <@utils.formatValue s.offsetUnitValue s.offsetUnit/> after exposure ends, and <#if
+s.daysSupplyOverride??>forcing drug exposure ${s.offsetUnit} supply to: <@utils.formatValue s.daysSupplyOverride s.offsetUnit/>.<#else>using ${s.offsetUnit} supply and exposure end date for exposure duration.</#if>
+    </#if>
 </#macro>

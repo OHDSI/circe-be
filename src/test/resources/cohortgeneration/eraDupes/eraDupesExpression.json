@@ -31,7 +31,7 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 30,
+    "EraPad": 43200,
     "EraPadUnit": "minute",
     "EraPadUnitValue": 0
   },

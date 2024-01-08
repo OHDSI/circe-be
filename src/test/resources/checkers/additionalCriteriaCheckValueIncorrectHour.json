@@ -111,9 +111,13 @@
                                 },
                                 "StartWindow": {
                                   "Start": {
+                                    "TimeUnitValue": 24,
+                                    "TimeUnit": "hour",
                                     "Coeff": -1
                                   },
                                   "End": {
+                                    "TimeUnitValue": 0,
+                                    "TimeUnit": "hour",
                                     "Coeff": 1
                                   },
                                   "UseEventEnd": false
@@ -162,9 +166,13 @@
                       },
                       "StartWindow": {
                         "Start": {
+                          "TimeUnitValue": 24,
+                          "TimeUnit": "hour",
                           "Coeff": -1
                         },
                         "End": {
+                          "TimeUnitValue": 0,
+                          "TimeUnit": "hour",
                           "Coeff": 1
                         },
                         "UseEventEnd": false
@@ -201,9 +209,13 @@
                       },
                       "StartWindow": {
                         "Start": {
+                          "TimeUnitValue": 12,
+                          "TimeUnit": "hour",
                           "Coeff": -1
                         },
                         "End": {
+                          "TimeUnitValue": 0,
+                          "TimeUnit": "hour",
                           "Coeff": 1
                         },
                         "UseEventEnd": false
@@ -258,13 +270,13 @@
             },
             "StartWindow": {
               "Start": {
-                "TimeUnitValue": -3,
-                "TimeUnit": "day",
+                "TimeUnitValue": -72,
+                "timeUnit": "hour",
                 "Coeff": -1
               },
               "End": {
-                "TimeUnitValue": -2,
-                "TimeUnit": "day",
+                "TimeUnitValue": -48,
+                "timeUnit": "hour",
                 "Coeff": 1
               },
               "UseEventEnd": false

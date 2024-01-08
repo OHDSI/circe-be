@@ -22,11 +22,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * @author cknoll1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Window {
+
+  @JsonProperty("Start")
+  public Endpoint start;
+  @JsonProperty("End")
+  public Endpoint end;
+  @JsonProperty("UseIndexEnd")
+  public Boolean useIndexEnd;
+  @JsonProperty("UseEventEnd")
+  public Boolean useEventEnd;
 
   public static class Endpoint {
 
@@ -35,22 +43,9 @@ public class Window {
     @JsonProperty("TimeUnitValue")
     public Integer timeUnitValue;
     @JsonProperty("TimeUnit")
-    public String timeUnit="day";
+    public String timeUnit = "day";
 
     @JsonProperty("Coeff")
     public int coeff;
   }
-  
-  @JsonProperty("Start")
-  public Endpoint start;  
-
-  @JsonProperty("End")
-  public Endpoint end;  
-
-	@JsonProperty("UseIndexEnd")
-	public Boolean useIndexEnd;
-
-	@JsonProperty("UseEventEnd")
-	public Boolean useEventEnd;
-	
 }

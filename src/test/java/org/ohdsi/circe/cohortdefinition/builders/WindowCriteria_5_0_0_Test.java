@@ -176,6 +176,22 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
 
   }
 
+    @Test
+    public void windowDoseEraTestHour() throws Exception {
+
+        final String resultsSchema = "window_dose_era";
+        final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+            "/windowcriteria/windowDoseEra_PREP.json"};
+        final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowDoseEra_VERIFY.json"};
+        WindowedCriteria wc = new WindowedCriteria();
+        wc.criteria = new DoseEra(); // find any dose era
+        wc.startWindow = CriteriaUtils.getPriorHoursWindow();
+        List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT,
+            CriteriaColumn.VALUE_AS_NUMBER, CriteriaColumn.UNIT, CriteriaColumn.DURATION);
+        this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+    }
+
   @Test
   public void windowDrugEraTest() throws Exception {
 

@@ -147,12 +147,10 @@ public class ComparisonsTest {
         Window window = new Window();
         window.start = new Window.Endpoint();
         window.end = new Window.Endpoint();
-        window.start.days = 0;
         window.start.timeUnit = "hour";
         window.start.timeUnitValue = 72;
         window.start.coeff = -1;
 
-        window.end.days = 0;
         window.end.timeUnit = "hour";
         window.end.timeUnitValue = 120;
         window.end.coeff = 1;
@@ -168,12 +166,10 @@ public class ComparisonsTest {
         Window window = new Window();
         window.start = new Window.Endpoint();
         window.end = new Window.Endpoint();
-        window.start.days = 0;
         window.start.timeUnit = "minute";
         window.start.timeUnitValue = 30;
         window.start.coeff = -1;
 
-        window.end.days = 0;
         window.end.timeUnit = "minute";
         window.end.timeUnitValue = 75;
         window.end.coeff = 1;
@@ -190,12 +186,10 @@ public class ComparisonsTest {
         Window window = new Window();
         window.start = new Window.Endpoint();
         window.end = new Window.Endpoint();
-        window.start.days = 0;
         window.start.timeUnit = "second";
         window.start.timeUnitValue = 30;
         window.start.coeff = -1;
 
-        window.end.days = 0;
         window.end.timeUnit = "second";
         window.end.timeUnitValue = 75;
         window.end.coeff = 1;

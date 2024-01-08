@@ -50,10 +50,8 @@
   "EndStrategy": {
     "CustomEra": {
       "DrugCodesetId": 0,
-      "GapDays": 60,
       "GapUnit": "day",
       "GapUnitValue": 60,
-      "Offset": 0,
       "OffsetUnit": "day",
       "OffsetUnitValue": 0
     }
@@ -61,7 +59,6 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0,
     "EraPadUnit": "day",
     "EraPadUnitValue": 0
   },
