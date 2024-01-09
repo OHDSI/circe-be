@@ -104,20 +104,6 @@ END Note!!!!
 --><#else>between ${w.start.timeUnitValue!"all"} ${w.start.timeUnit} ${temporalDirection(w.start.coeff)} and ${w.end.timeUnitValue!"all"} ${w.start.timeUnit} ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if><#--
 --></#if></#macro>
 
-<#--<#function getTimeValue(days, timeUnitValue)><#if days?? && days?has_content><#return days><#elseif timeUnitValue && timeUnitValue?has_content><#return timeUnitValue></#if></#function>-->
-
-<#--<#macro Window w indexLabel="cohort entry">${whichEventPart(w.useEventEnd!false)} &lt;#&ndash;-->
-<#--&ndash;&gt;<#assign startTime = getTimeValue((w.start.days)!, (w.start.timeUnitValue)!)>&lt;#&ndash;-->
-<#--&ndash;&gt;<#assign endTime = getTimeValue((w.end.days)!, (w.end.timeUnitValue)!)>&lt;#&ndash;-->
-<#--&ndash;&gt;<#if !startTime?? && endTime == 0 && w.start.coeff == -1 >anytime on or before ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}&lt;#&ndash;-->
-<#--&ndash;&gt;<#elseif (endTime!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if startTime??>in the ${startTime} days<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}&lt;#&ndash;-->
-<#--&ndash;&gt;<#elseif !startTime?? && (endTime!0) gt 1 && w.start.coeff == -1>anytime up to ${endTime} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}&lt;#&ndash;-->
-<#--&ndash;&gt;<#elseif !endTime?? && (startTime!0) gt 0 && w.end.coeff ==1> ${startTime} days ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}&lt;#&ndash;-->
-<#--&ndash;&gt;<#else>between ${startTime!"all"} ${w.start.timeUnit!"day"}s ${temporalDirection(w.start.coeff)} and ${endTime!"all"} ${w.end.timeUnit!"day"}s ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if></#macro>-->
-
-
-
-
 <#macro UserDefinedPeriod p><#if 
 p.startDate?has_content>a user defiend start date of ${utils.formatDate(p.startDate)}<#if p.endDate?has_content> and</#if></#if><#if
 p.endDate?has_content><#if !p.startDate?has_content>a user defined</#if> end date of ${utils.formatDate(p.endDate)}</#if></#macro>

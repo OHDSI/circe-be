@@ -354,7 +354,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPad));
       resultSql = StringUtils.replace(resultSql, "@eraPadUnit", "day");
     }else {
-      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPadValue));
+      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPadUnitValue));
       resultSql = StringUtils.replace(resultSql, "@eraPadUnit", expression.collapseSettings.eraPadUnit);
     }
 
