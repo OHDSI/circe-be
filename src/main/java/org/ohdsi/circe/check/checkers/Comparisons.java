@@ -20,9 +20,7 @@ package org.ohdsi.circe.check.checkers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -30,6 +28,11 @@ import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
 
 public class Comparisons {
+  private static final Map<String, Integer> TIME_UNIT_CONVERSION = new HashMap<>();
+  static {
+    TIME_UNIT_CONVERSION.put(IntervalUnit.HOUR.getName(), 60 * 60);
+    TIME_UNIT_CONVERSION.put(IntervalUnit.MINUTE.getName(), 60);
+  }
 
     public static Boolean startIsGreaterThanEnd(NumericRange r) {
 
@@ -102,18 +105,27 @@ public class Comparisons {
                 .build();
     }
 
-    public static int compareTo(ObservationFilter filter, Window window) {
-
-        int range1 = filter.postDays + filter.priorDays;
-        int range2Start = 0, range2End = 0;
-        if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days)) {
-            range2Start = window.start.coeff * window.start.days;
-        }
-        if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days)) {
-            range2End = window.end.coeff * window.end.days;
-        }
-        return range1 - (range2End - range2Start);
+  public static int compareTo(ObservationFilter filter, Window window) {
+    int range1, range2Start, range2End;
+    if (Objects.nonNull(window.start) && (Objects.nonNull(window.start.days) || IntervalUnit.DAY.getName().equals(window.start.timeUnit))) {
+      range1 = filter.postDays + filter.priorDays;
+      range2Start = window.start.coeff * window.start.days;
+      range2End = Objects.nonNull(window.end) && Objects.nonNull(window.end.days) ? window.end.coeff * window.end.days : 0;
+    } else {
+      range1 = (filter.postDays + filter.priorDays) * 24 * 60 * 60;
+      range2Start = getTimeInSeconds(window.start);
+      range2End = getTimeInSeconds(window.end);
     }
+    return range1 - (range2End - range2Start);
+  }
+  private static int getTimeInSeconds(Window.Endpoint endpoint) {
+    return Optional.ofNullable(endpoint)
+      .map(ep -> {
+        int convertRate = TIME_UNIT_CONVERSION.getOrDefault(ep.timeUnit, 1);
+        return Objects.nonNull(ep.timeUnitValue) ? ep.coeff * ep.timeUnitValue * convertRate : 0;
+      }).orElse(0);
+  }
+
 
     public static boolean compare(Criteria c1, Criteria c2) {
 

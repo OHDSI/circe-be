@@ -18,20 +18,28 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author cknoll1
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Window {
 
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class Endpoint {
     @JsonProperty("Days")
     public Integer days;
 
     @JsonProperty("Coeff")
     public int coeff;
+    @JsonProperty("TimeUnitValue")
+    public Integer timeUnitValue;
+
+    @JsonProperty("TimeUnit")
+    public String timeUnit = IntervalUnit.DAY.getName();
 	}
   
   @JsonProperty("Start")

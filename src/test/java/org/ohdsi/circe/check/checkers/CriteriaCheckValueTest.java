@@ -18,9 +18,11 @@ public class CriteriaCheckValueTest {
 
   private static final CohortExpression WRONG_ADDITIONAL_EXPRESSION =
       CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueIncorrect.json"));
+
   private static final CohortExpression CORRECT_ADDITIONAL_EXPRESSION =
       CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueCorrect.json"));
-
+  private static final CohortExpression CORRECT_ADDITIONAL_EXPRESSION_MINUTE =
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueCorrectMinute.json"));
   private static final CohortExpression WRONG_INCLUSION_EXPRESSION =
       CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/inclusionRulesCheckValueIncorrect.json"));
   private static final CohortExpression CORRECT_INCLUSION_EXPRESSION =
@@ -119,10 +121,14 @@ public class CriteriaCheckValueTest {
     List<Warning> warnings = rangeCheck.check(WRONG_ADDITIONAL_EXPRESSION);
     assertEquals(RANGE_ADDITIONAL_WARNING_COUNT, warnings.size());
   }
-
   @Test
   public void checkAdditionalRangeCorrect() {
     List<Warning> warnings = rangeCheck.check(CORRECT_ADDITIONAL_EXPRESSION);
+    assertEquals(Collections.emptyList(), warnings);
+  }
+  @Test
+  public void checkAdditionalRangeCorrectMinute() {
+    List<Warning> warnings = rangeCheck.check(CORRECT_ADDITIONAL_EXPRESSION_MINUTE);
     assertEquals(Collections.emptyList(), warnings);
   }
 

@@ -38,6 +38,7 @@ public class CriteriaUtils {
     prior365Window.end = endPoint;
     return prior365Window;
   }
+
   
   public static Window getAnyTimeWindow() {
     Window anytimeWindow = new Window();  
