@@ -485,7 +485,7 @@ public class PrintFriendlyTest {
         ));
 
     }
-  
+
   @Test
   public void conceptSetSimpleTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/conceptSet_simple.json"));
@@ -671,7 +671,7 @@ public class PrintFriendlyTest {
     pf.renderConceptSetList((ConceptSet[])null);
     
   }
-  
+
   @Test
   public void dateAdjustTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/dateAdjust.json"));
@@ -690,9 +690,9 @@ public class PrintFriendlyTest {
             "12. visit occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
             "13. visit details of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date."
     ));
-    
+
   }
-  
+
   @Test
   public void emptyConceptListTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/emptyConceptList.json"));
@@ -700,6 +700,6 @@ public class PrintFriendlyTest {
     assertThat(markdown, stringContainsInOrder(
             "1. condition occurrences of 'Concept Set 1', a provider specialty that is: [none specified]; a visit occurrence that is: [none specified]."
     ));
-    
+
   }
 }

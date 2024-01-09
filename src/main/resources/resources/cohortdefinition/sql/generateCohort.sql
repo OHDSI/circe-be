@@ -62,8 +62,8 @@ from ( --cteEnds
 	FROM #cohort_rows c
 	JOIN ( -- cteEndDates
     SELECT
-      person_id,
-      DATEADD(@era_pad_unit, -1 * @eraconstructorpad, event_date)  as end_date
+      person_id
+      , DATEADD(@eraPadUnit,-1 * @eraPadValue, event_date)  as end_date
     FROM
     (
       SELECT
@@ -83,7 +83,7 @@ from ( --cteEnds
 
         SELECT
           person_id
-          , DATEADD(@era_pad_unit, -1 * @eraconstructorpad, end_date)  as end_date
+          , DATEADD(@eraPadUnit,@eraPadValue,end_date) as end_date
           , 1 AS event_type
         FROM #cohort_rows
       ) RAWDATA

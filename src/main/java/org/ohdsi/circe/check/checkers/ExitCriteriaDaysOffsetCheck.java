@@ -22,8 +22,6 @@ import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.DateOffsetStrategy;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import static org.ohdsi.circe.check.operations.Operations.match;
@@ -43,9 +41,9 @@ public class ExitCriteriaDaysOffsetCheck extends BaseCheck {
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
         match(expression.endStrategy)
-            .isA(DateOffsetStrategy.class)
-            .then(s -> match((DateOffsetStrategy)s)
-                .when(dateOffsetStrategy -> Objects.equals(StartDate, dateOffsetStrategy.dateField) &&  0 == dateOffsetStrategy.offsetUnitValue)
-                .then(dateOffsetStrategy -> reporter.add(String.format(DAYS_OFFSET_WARNING, dateOffsetStrategy.offsetUnit))));
+                .isA(DateOffsetStrategy.class)
+                .then(s -> match((DateOffsetStrategy)s)
+                  .when(dateOffsetStrategy -> Objects.equals(StartDate, dateOffsetStrategy.dateField) &&  (0 == dateOffsetStrategy.offsetUnitValue || 0 == dateOffsetStrategy.offset))
+                  .then(dateOffsetStrategy -> reporter.add(String.format(DAYS_OFFSET_WARNING, dateOffsetStrategy.offsetUnit))));
     }
 }
