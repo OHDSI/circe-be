@@ -18,12 +18,14 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Chris Knoll <cknoll@ohdsi.org>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomEraStrategy  extends EndStrategy {
   
   @JsonProperty("DrugCodesetId")
@@ -32,16 +34,18 @@ public class CustomEraStrategy  extends EndStrategy {
   @JsonProperty("GapDays")
   public int gapDays = 0;
   @JsonProperty("GapUnit")
-  public String gapUnit = "day";
+  public String gapUnit = IntervalUnit.DAY.getName();;
   @JsonProperty("GapUnitValue")
-  public int gapUnitValue = 0;
+  public Integer gapUnitValue = null;
 
   @JsonProperty("Offset")
   public int offset = 0;
   @JsonProperty("OffsetUnit")
-  public String offsetUnit = "day";
+  public String offsetUnit = IntervalUnit.DAY.getName();;
   @JsonProperty("OffsetUnitValue")
   public int offsetUnitValue = 0;
+
+
 
   @JsonProperty("DaysSupplyOverride")
   public Integer daysSupplyOverride = null;

@@ -20,8 +20,9 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
@@ -349,14 +350,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     resultSql = StringUtils.replace(resultSql, "@finalCohortQuery", getFinalCohortQuery(expression.censorWindow));
 
     resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects, "\nUNION ALL\n"));
-
-    if (!StringUtils.isEmpty(Integer.toString(expression.collapseSettings.eraPad)) && (expression.collapseSettings.eraPadUnit == null || IntervalUnit.DAY.getName().equals(expression.collapseSettings.eraPadUnit))) {
-      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
-      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
-    } else {
-      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
-      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+    if(expression.collapseSettings.eraPadUnit == null || expression.collapseSettings.eraPadUnit.equals("day")){
+      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPad));
+      resultSql = StringUtils.replace(resultSql, "@eraPadUnit", "day");
+    }else {
+      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPadValue));
+      resultSql = StringUtils.replace(resultSql, "@eraPadUnit", expression.collapseSettings.eraPadUnit);
     }
+
     resultSql = StringUtils.replace(resultSql, "@inclusionRuleTable", getInclusionRuleTableSql(expression));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
@@ -550,61 +551,64 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     Window startWindow = criteria.startWindow;
     String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
     String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-    if (startWindow.start.days != null && (startWindow.start.timeUnit == null || startWindow.start.timeUnit.equals(IntervalUnit.DAY.getName()))) {
-          startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+    if (startWindow.start.days != null && (startWindow.start.timeUnit == null || IntervalUnit.DAY.getName().equals(startWindow.start.timeUnit))) {
+      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
     } else if (startWindow.start.timeUnitValue != null) {
-          startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
+      startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
     } else {
-          startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (startExpression != null) {
       clauses.add(String.format("%s >= %s", startEventDateExpression, startExpression));
     }
 
-    if (startWindow.end.days != null) {
-          endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
+    if (startWindow.end.days != null && (startWindow.end.timeUnit == null || IntervalUnit.DAY.getName().equals(startWindow.end.timeUnit))) {
+      endExpression = String.format("DATEADD(day,%d,%s)", startWindow.end.coeff * startWindow.end.days, startIndexDateExpression);
+    }else if(startWindow.end.timeUnitValue != null){
+      endExpression = String.format("DATEADD(%s,%d,%s)", startWindow.end.timeUnit, startWindow.end.coeff * startWindow.end.timeUnitValue, startIndexDateExpression);
     }
-    else if (startWindow.end.timeUnitValue != null) {
-          endExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.end.coeff * startWindow.end.timeUnitValue, startIndexDateExpression);
-    } else {
-          endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+    else {
+      endExpression = checkObservationPeriod ? (startWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (endExpression != null) {
       clauses.add(String.format("%s <= %s", startEventDateExpression, endExpression));
     }
 
-      // EndWindow
+    // EndWindow
     Window endWindow = criteria.endWindow;
 
     if (endWindow != null) {
       String endIndexDateExpression = (endWindow.useIndexEnd != null && endWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
       // for backwards compatability, having a null endWindow.useIndexEnd means they SHOULD use the index end date.
       String endEventDateExpression = (endWindow.useEventEnd == null || endWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-      if (endWindow.start.days != null) {
-          startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression);
-      } else if (endWindow.start.timeUnitValue != null) {
-             startExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.start.coeff * endWindow.start.timeUnitValue, endIndexDateExpression);
-         } else {
-             startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
-         }
+      if (endWindow.start.days != null && (endWindow.start.timeUnit == null || IntervalUnit.DAY.getName().equals(endWindow.start.timeUnit))) {
+        startExpression = String.format("DATEADD(day,%d,%s)", endWindow.start.coeff * endWindow.start.days, endIndexDateExpression);
+      }else if(endWindow.start.timeUnitValue != null){
+        startExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.start.coeff * endWindow.start.timeUnitValue, endIndexDateExpression);
+      }
+      else {
+        startExpression = checkObservationPeriod ? (endWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      }
 
-        if (startExpression != null) {
-          clauses.add(String.format("%s >= %s", endEventDateExpression, startExpression));
-        }
+      if (startExpression != null) {
+        clauses.add(String.format("%s >= %s", endEventDateExpression, startExpression));
+      }
 
-      if (endWindow.end.days != null) {
-            endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
-      } else if (endWindow.end.timeUnitValue != null) {
-              endExpression = String.format("DATEADD(%s,%d,%s)", endWindow.start.timeUnit, endWindow.end.coeff * endWindow.end.timeUnitValue, endIndexDateExpression);
-        } else {
-              endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
-        }
+      if (endWindow.end.days != null && (endWindow.end.timeUnit == null || IntervalUnit.DAY.getName().equals(endWindow.end.timeUnit))) {
+        endExpression = String.format("DATEADD(day,%d,%s)", endWindow.end.coeff * endWindow.end.days, endIndexDateExpression);
+      }
+      else if(endWindow.end.timeUnitValue != null){
+        endExpression = String.format("DATEADD(%s,%d,%s)", endWindow.end.timeUnit, endWindow.end.coeff * endWindow.end.timeUnitValue, endIndexDateExpression);
+      }
+      else {
+        endExpression = checkObservationPeriod ? (endWindow.end.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      }
 
-        if (endExpression != null) {
-          clauses.add(String.format("%s <= %s", endEventDateExpression, endExpression));
-        }
+      if (endExpression != null) {
+        clauses.add(String.format("%s <= %s", endEventDateExpression, endExpression));
+      }
     }
 
     // RestrictVisit
@@ -618,7 +622,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-    public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
+  public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
     String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable, null);
     return query;
   }
@@ -776,7 +780,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getStrategySql(DateOffsetStrategy strat, String eventTable) {
     String strategySql = StringUtils.replace(DATE_OFFSET_STRATEGY_TEMPLATE, "@eventTable", eventTable);
-    if (strat.offsetUnit == null || strat.offsetUnit.equals(IntervalUnit.DAY.getName())) {
+    if (strat.offsetUnit == null || IntervalUnit.DAY.getName().equals(strat.offsetUnit)) {
       strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
       strategySql = StringUtils.replace(strategySql, "@offsetUnit", "day");
     } else {
@@ -796,28 +800,37 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     String drugExposureEndDateExpression = DEFAULT_DRUG_EXPOSURE_END_DATE_EXPRESSION;
-    if (strat.daysSupplyOverride != null) {
+    if (strat.daysSupplyOverride != null && IntervalUnit.DAY.getName().equals(strat.gapUnit)) {
       drugExposureEndDateExpression = String.format("DATEADD(day,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
+    }else if(strat.daysSupplyOverride != null && IntervalUnit.HOUR.getName().equals(strat.gapUnit)){
+      drugExposureEndDateExpression = String.format("DATEADD(hour,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
+    }else if(strat.daysSupplyOverride != null && IntervalUnit.MINUTE.getName().equals(strat.gapUnit)){
+      drugExposureEndDateExpression = String.format("DATEADD(minute,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
+    }else if(strat.daysSupplyOverride != null && IntervalUnit.SECOND.getName().equals(strat.gapUnit)){
+      drugExposureEndDateExpression = String.format("DATEADD(second,%d,DRUG_EXPOSURE_START_DATE)", strat.daysSupplyOverride);
     }
     String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
     strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
-    if (IntervalUnit.DAY.getName().equals(strat.gapUnit)) {
+    if ("day".equals(strat.gapUnit) || strat.gapUnit == null) {
       strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapDays));
-    } else {
+      strategySql = StringUtils.replace(strategySql, "@gapUnit", "day");
+    }else {
       strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapUnitValue));
+      strategySql = StringUtils.replace(strategySql, "@gapUnit", strat.gapUnit);
+
     }
-    strategySql = StringUtils.replace(strategySql, "@gapUnit", strat.gapUnit);
-    if (IntervalUnit.DAY.getName().equals(strat.offsetUnit)) {
+    if("day".equals(strat.offsetUnit) || strat.offsetUnit == null){
       strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
-    } else {
+      strategySql = StringUtils.replace(strategySql, "@offsetUnit", "day");
+    }else {
       strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offsetUnitValue));
+      strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
     }
-    strategySql = StringUtils.replace(strategySql, "@offsetUnit", strat.offsetUnit);
+
     strategySql = StringUtils.replace(strategySql, "@drugExposureEndDateExpression", drugExposureEndDateExpression);
 
     return strategySql;
   }
 
 // </editor-fold>
-
 }

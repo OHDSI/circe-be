@@ -460,31 +460,31 @@ public class PrintFriendlyTest {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExitHour.json"));
     String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
-            "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
-            "allowing 336 hour between exposures, adding 24 hours after exposure ends, and forcing drug exposure hour supply to: 168 hours."
+      "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
+      "allowing 336 hour between exposures, adding 24 hours after exposure ends, and forcing drug exposure hour supply to: 168 hours."
     ));
 
   }
-    @Test
-    public void customEraExitTestMinute() {
-        CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExitMinute.json"));
-        String markdown = pf.renderCohort(expression);
-        assertThat(markdown, stringContainsInOrder(
-            "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
-            "allowing 20,160 minute between exposures, adding 1,440 minutes after exposure ends, and forcing drug exposure minute supply to: 10,080 minutes."
-        ));
+  @Test
+  public void customEraExitTestSecond() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExitSecond.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+      "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
+      "allowing 1,209,600 second between exposures, adding 86,400 seconds after exposure ends, and forcing drug exposure second supply to: 604,800 seconds."
+    ));
 
-    }
-    @Test
-    public void customEraExitTestSecond() {
-        CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExitSecond.json"));
-        String markdown = pf.renderCohort(expression);
-        assertThat(markdown, stringContainsInOrder(
-            "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
-            "allowing 1,209,600 second between exposures, adding 86,400 seconds after exposure ends, and forcing drug exposure second supply to: 604,800 seconds."
-        ));
+  }
+  @Test
+  public void customEraExitTestMinute() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEraExitMinute.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+      "The cohort end date will be based on a continuous exposure to 'Concept Set 1':",
+      "allowing 20,160 minute between exposures, adding 1,440 minutes after exposure ends, and forcing drug exposure minute supply to: 10,080 minutes."
+    ));
 
-    }
+  }
   
   @Test
   public void conceptSetSimpleTest() {

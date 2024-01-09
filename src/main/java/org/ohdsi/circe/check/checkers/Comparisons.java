@@ -23,18 +23,16 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
 
 public class Comparisons {
-
-    private static final Map<String, Integer> TIME_UNIT_CONVERSION = new HashMap<>();
-    static {
-        TIME_UNIT_CONVERSION.put(IntervalUnit.HOUR.getName(), 60 * 60);
-        TIME_UNIT_CONVERSION.put(IntervalUnit.MINUTE.getName(), 60);
-    }
+  private static final Map<String, Integer> TIME_UNIT_CONVERSION = new HashMap<>();
+  static {
+    TIME_UNIT_CONVERSION.put(IntervalUnit.HOUR.getName(), 60 * 60);
+    TIME_UNIT_CONVERSION.put(IntervalUnit.MINUTE.getName(), 60);
+  }
 
     public static Boolean startIsGreaterThanEnd(NumericRange r) {
 
@@ -120,13 +118,14 @@ public class Comparisons {
     }
     return range1 - (range2End - range2Start);
   }
-    private static int getTimeInSeconds(Window.Endpoint endpoint) {
-        return Optional.ofNullable(endpoint)
-                .map(ep -> {
-                    int convertRate = TIME_UNIT_CONVERSION.getOrDefault(ep.timeUnit, 1);
-                    return Objects.nonNull(ep.timeUnitValue) ? ep.coeff * ep.timeUnitValue * convertRate : 0;
-                }).orElse(0);
-        }
+  private static int getTimeInSeconds(Window.Endpoint endpoint) {
+    return Optional.ofNullable(endpoint)
+      .map(ep -> {
+        int convertRate = TIME_UNIT_CONVERSION.getOrDefault(ep.timeUnit, 1);
+        return Objects.nonNull(ep.timeUnitValue) ? ep.coeff * ep.timeUnitValue * convertRate : 0;
+      }).orElse(0);
+  }
+
 
     public static boolean compare(Criteria c1, Criteria c2) {
 
