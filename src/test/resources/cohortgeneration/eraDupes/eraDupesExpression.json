@@ -2,8 +2,8 @@
   "ConceptSets": [],
   "PrimaryCriteria": {
     "CriteriaList": [{
-        "ConditionOccurrence": {
-        }
+      "ConditionOccurrence": {
+      }
     }],
     "ObservationWindow": {
       "PriorDays": 0,
@@ -23,17 +23,13 @@
   "EndStrategy": {
     "DateOffset": {
       "DateField": "EndDate",
-      "Offset": 0,
-      "OffsetUnit": "hour",
-      "OffsetUnitValue": 0
+      "Offset": 0
     }
   },
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 43200,
-    "EraPadUnit": "minute",
-    "EraPadUnitValue": 0
+    "EraPad": 30
   },
   "CensorWindow": {}
 }
