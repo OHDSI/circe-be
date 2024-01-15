@@ -1,0 +1,177 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionEra": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "DateAdjustment": {
+            "StartWith": "END_DATE",
+            "StartOffset": 30,
+            "EndWith": "END_DATE",
+            "EndOffset": 40
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "DoseEra": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "DrugEra": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "DrugExposure": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 0,
+            "EndWith": "END_DATE",
+            "EndOffset": 0
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "DeviceExposure": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 0,
+            "EndWith": "END_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "Measurement": {
+          "DateAdjustment": {
+            "StartWith": "END_DATE",
+            "StartOffset": 0,
+            "EndWith": "END_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "Observation": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "ObservationPeriod": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          }
+        }
+      },
+      {
+        "ProcedureOccurrence": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "Specimen": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "VisitOccurrence": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      },
+      {
+        "VisitDetail": {
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 10,
+            "EndWith": "START_DATE",
+            "EndOffset": 20
+          },
+          "CodesetId": 0
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {}
+}

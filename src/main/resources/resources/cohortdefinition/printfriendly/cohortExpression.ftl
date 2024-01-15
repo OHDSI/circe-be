@@ -42,7 +42,7 @@ Limit these restricted entry events to the <@inputTypes.Limit limit=qualifiedLim
 ### Inclusion Criteria
 <#list inclusionRules as rule>
 
-#### ${rule?counter}. ${rule.name}<#if rule.description??>: ${rule.description}  </#if>
+#### ${rule?counter}. ${(rule.name)!"Unnamed Rule"}<#if rule.description??>: ${rule.description}  </#if>
 
 Entry events <@ct.Group group=rule.expression />
 </#list>
@@ -64,7 +64,7 @@ ${cc?counter}. <@ct.Criteria c=cc/>
 
 ### Cohort Eras
 
-Entry events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
+Remaining events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
 
 <#-- main template: end -->
 
