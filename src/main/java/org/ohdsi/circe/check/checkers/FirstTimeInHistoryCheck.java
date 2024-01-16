@@ -42,10 +42,10 @@ public class FirstTimeInHistoryCheck extends BaseCorelatedCriteriaCheck {
         String name = CriteriaNameHelper.getCriteriaName(criteria.criteria) + " at " + groupName;
         Execution addWarning = () -> reporter.add(WARNING, name);
         match(criteria)
-                .when(c -> c.startWindow != null && ((c.startWindow.start != null && c.startWindow.start.days != null)
-                        || (c.startWindow.end != null && c.startWindow.end.days != null))
-                        || c.startWindow != null && ((c.startWindow.start != null && c.startWindow.start.timeUnitValue != null)
-                        || (c.startWindow.end != null) && c.startWindow.end.timeUnitValue != null))
+            .when(c -> c.startWindow != null && ((c.startWindow.start != null && c.startWindow.start.days  != null)
+                || (c.startWindow.end != null && c.startWindow.end.days  != null))
+                || c.startWindow != null && (( c.startWindow.start != null && c.startWindow.start.timeUnitValue != null)
+                || (c.startWindow.end != null) && c.startWindow.end.timeUnitValue != null))
                 .then(cc -> match(cc.criteria)
                         .isA(ConditionEra.class)
                         .then(c -> match((ConditionEra)c)
