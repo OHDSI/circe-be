@@ -26,7 +26,7 @@ INTO #strategy_ends
 from @eventTable et
 JOIN 
 (
-  select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, DATEADD(@offsetUnit,@offsetUnitValue, ENDS.era_end_date) as era_end_date
+  select ENDS.person_id, min(drug_exposure_start_date) as era_start_date, DATEADD(day, @offsetUnitValue, ENDS.era_end_date) as era_end_date
   from
   (
     select de.person_id, de.drug_exposure_start_date, MIN(e.END_DATE) as era_end_date

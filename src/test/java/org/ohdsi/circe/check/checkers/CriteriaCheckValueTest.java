@@ -12,49 +12,51 @@ import static org.junit.Assert.assertEquals;
 
 public class CriteriaCheckValueTest {
   private static final CohortExpression WRONG_PRIMARY_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/primaryCriteriaCheckValueIncorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/primaryCriteriaCheckValueIncorrect.json"));
   private static final CohortExpression CORRECT_PRIMARY_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/primaryCriteriaCheckValueCorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/primaryCriteriaCheckValueCorrect.json"));
 
   private static final CohortExpression WRONG_ADDITIONAL_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueIncorrect.json"));
-
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueIncorrect.json"));
+  private static final CohortExpression WRONG_ADDITIONAL_EXPRESSION_HOUR =
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueIncorrectHour.json"));
   private static final CohortExpression CORRECT_ADDITIONAL_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueCorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueCorrect.json"));
   private static final CohortExpression CORRECT_ADDITIONAL_EXPRESSION_MINUTE =
     CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/additionalCriteriaCheckValueCorrectMinute.json"));
+
   private static final CohortExpression WRONG_INCLUSION_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/inclusionRulesCheckValueIncorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/inclusionRulesCheckValueIncorrect.json"));
   private static final CohortExpression CORRECT_INCLUSION_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/inclusionRulesCheckValueCorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/inclusionRulesCheckValueCorrect.json"));
 
   private static final CohortExpression WRONG_CENSORING_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/censoringEventCheckValueIncorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/censoringEventCheckValueIncorrect.json"));
   private static final CohortExpression CORRECT_CENSORING_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/censoringEventCheckValueCorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/censoringEventCheckValueCorrect.json"));
 
   private static final CohortExpression WRONG_EMPTY_CRITERIA_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckIncorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckIncorrect.json"));
   private static final CohortExpression CORRECT_EMPTY_CRITERIA_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckCorrect.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyDemographicCheckCorrect.json"));
 
   private static final CohortExpression EMPTY_CENSORING_CRITERIA_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCensoringCriteriaList.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCensoringCriteriaList.json"));
 
   private static final CohortExpression EMPTY_PRIMARY_CRITERIA_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyPrimaryCriteriaList.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyPrimaryCriteriaList.json"));
 
   private static final CohortExpression EMPTY_INCLUSION_RULES_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyInclusionRules.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyInclusionRules.json"));
 
   private static final CohortExpression EMPTY_CORRELATED_CRITERIA_EXPRESSION =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCorrelatedCriteria.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/emptyCorrelatedCriteria.json"));
 
   private static final CohortExpression NO_EXIT_CRITERIA_CHECK =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheck.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheck.json"));
 
   private static final CohortExpression NO_EXIT_CRITERIA_CHECK_EARLIEST_EVENT =
-      CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheckEarliestEvent.json"));
+    CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/checkers/noExitCriteriaCheckEarliestEvent.json"));
 
   private static final int RANGE_PRIMARY_WARNING_COUNT = 148;
   private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
@@ -121,6 +123,12 @@ public class CriteriaCheckValueTest {
     List<Warning> warnings = rangeCheck.check(WRONG_ADDITIONAL_EXPRESSION);
     assertEquals(RANGE_ADDITIONAL_WARNING_COUNT, warnings.size());
   }
+  @Test
+  public void checkAdditionalRangeIncorrectHour() {
+    List<Warning> warnings = rangeCheck.check(WRONG_ADDITIONAL_EXPRESSION_HOUR);
+    assertEquals(RANGE_ADDITIONAL_WARNING_COUNT, warnings.size());
+  }
+
   @Test
   public void checkAdditionalRangeCorrect() {
     List<Warning> warnings = rangeCheck.check(CORRECT_ADDITIONAL_EXPRESSION);

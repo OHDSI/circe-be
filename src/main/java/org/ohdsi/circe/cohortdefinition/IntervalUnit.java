@@ -1,17 +1,18 @@
 package org.ohdsi.circe.cohortdefinition;
 
 public enum IntervalUnit {
-  DAY("day"),
-  HOUR("hour"),
-  MINUTE("minute"),
-  SECOND("second");
-  private final String name;
+    DAY("day"),
+    HOUR("hour"),
+    MINUTE("minute"),
+    SECOND("second");
 
-  IntervalUnit(String name) {
-    this.name = name;
-  }
+    private final String name;
 
-  public String getName() {
-    return name;
-  }
+    IntervalUnit(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

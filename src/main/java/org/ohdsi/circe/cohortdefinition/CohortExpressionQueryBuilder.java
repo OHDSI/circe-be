@@ -350,14 +350,14 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     resultSql = StringUtils.replace(resultSql, "@finalCohortQuery", getFinalCohortQuery(expression.censorWindow));
 
     resultSql = StringUtils.replace(resultSql, "@cohort_end_unions", StringUtils.join(endDateSelects, "\nUNION ALL\n"));
-    if(expression.collapseSettings.eraPadUnit == null || expression.collapseSettings.eraPadUnit.equals("day")){
-      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPad));
-      resultSql = StringUtils.replace(resultSql, "@eraPadUnit", "day");
-    }else {
-      resultSql = StringUtils.replace(resultSql, "@eraPadValue", Integer.toString(expression.collapseSettings.eraPadUnitValue));
-      resultSql = StringUtils.replace(resultSql, "@eraPadUnit", expression.collapseSettings.eraPadUnit);
-    }
 
+    if (!StringUtils.isEmpty(Integer.toString(expression.collapseSettings.eraPad)) && (expression.collapseSettings.eraPadUnit == null || IntervalUnit.DAY.getName().equals(expression.collapseSettings.eraPadUnit))) {
+      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPad));
+      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+    } else {
+      resultSql = StringUtils.replace(resultSql, "@eraconstructorpad", Integer.toString(expression.collapseSettings.eraPadUnitValue));
+      resultSql = StringUtils.replace(resultSql, "@era_pad_unit", expression.collapseSettings.eraPadUnit);
+    }
     resultSql = StringUtils.replace(resultSql, "@inclusionRuleTable", getInclusionRuleTableSql(expression));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByEventQuery", getInclusionAnalysisQuery("#qualified_events", 0));
     resultSql = StringUtils.replace(resultSql, "@inclusionImpactAnalysisByPersonQuery", getInclusionAnalysisQuery("#best_events", 1));
@@ -551,12 +551,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     Window startWindow = criteria.startWindow;
     String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
     String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
-    if (startWindow.start.days != null && (startWindow.start.timeUnit == null || IntervalUnit.DAY.getName().equals(startWindow.start.timeUnit))) {
-      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+    if (startWindow.start.days != null && (startWindow.start.timeUnit == null || startWindow.start.timeUnit.equals(IntervalUnit.DAY.getName()))) {
+          startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
     } else if (startWindow.start.timeUnitValue != null) {
-      startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
+          startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
     } else {
-      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+          startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (startExpression != null) {
@@ -576,7 +576,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       clauses.add(String.format("%s <= %s", startEventDateExpression, endExpression));
     }
 
-    // EndWindow
+      // EndWindow
     Window endWindow = criteria.endWindow;
 
     if (endWindow != null) {
@@ -622,7 +622,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-  public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
+    public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
     String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable, null);
     return query;
   }
@@ -811,7 +811,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     String strategySql = StringUtils.replace(CUSTOM_ERA_STRATEGY_TEMPLATE, "@eventTable", eventTable);
     strategySql = StringUtils.replace(strategySql, "@drugCodesetId", strat.drugCodesetId.toString());
-    if ("day".equals(strat.gapUnit) || strat.gapUnit == null) {
+    if (IntervalUnit.DAY.getName().equals(strat.gapUnit)) {
       strategySql = StringUtils.replace(strategySql, "@gapUnitValue", Integer.toString(strat.gapDays));
       strategySql = StringUtils.replace(strategySql, "@gapUnit", "day");
     }else {
@@ -819,7 +819,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       strategySql = StringUtils.replace(strategySql, "@gapUnit", strat.gapUnit);
 
     }
-    if("day".equals(strat.offsetUnit) || strat.offsetUnit == null){
+    if(IntervalUnit.DAY.getName().equals(strat.offsetUnit) || strat.offsetUnit == null){
       strategySql = StringUtils.replace(strategySql, "@offsetUnitValue", Integer.toString(strat.offset));
       strategySql = StringUtils.replace(strategySql, "@offsetUnit", "day");
     }else {
@@ -833,4 +833,5 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // </editor-fold>
+
 }
