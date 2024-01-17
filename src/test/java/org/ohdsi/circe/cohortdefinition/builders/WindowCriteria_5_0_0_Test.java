@@ -116,6 +116,22 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
   }
 
   @Test
+  public void windowConditionEraTestInHourInterval() throws Exception {
+
+    final String resultsSchema = "window_condition_era";
+    final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+      "/windowcriteria/windowConditionEra_PREP.json"};
+    final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowConditionEra_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new ConditionEra(); // find any condition era
+    wc.startWindow = CriteriaUtils.getPrior365WindowTimeUnitInterval(IntervalUnit.HOUR.getName());
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT,
+      CriteriaColumn.ERA_OCCURRENCES, CriteriaColumn.DURATION);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
   public void windowConditionOccurrenceTest() throws Exception {
 
     final String resultsSchema = "window_condition_occurrence";
@@ -131,6 +147,21 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
   }
 
   @Test
+  public void windowConditionOccurrenceTestInMinuteInterval() throws Exception {
+
+    final String resultsSchema = "window_condition_occurrence";
+    final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+      "/windowcriteria/windowConditionOccurrence_PREP.json"};
+    final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowConditionOccurrence_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new ConditionOccurrence(); // find any condition occurence
+    wc.startWindow = CriteriaUtils.getPrior365WindowTimeUnitInterval(IntervalUnit.MINUTE.getName());
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
   public void windowDeathTest() throws Exception {
 
     final String resultsSchema = "window_death";
@@ -140,6 +171,21 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
     WindowedCriteria wc = new WindowedCriteria();
     wc.criteria = new Death(); // find any death
     wc.startWindow = CriteriaUtils.getPrior365Window();
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+
+  }
+
+  @Test
+  public void windowDeathTestInSecondInterval() throws Exception {
+
+    final String resultsSchema = "window_death";
+    final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+      "/windowcriteria/windowDeath_PREP.json"};
+    final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowDeath_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new Death(); // find any death
+    wc.startWindow = CriteriaUtils.getPrior365WindowTimeUnitInterval(IntervalUnit.SECOND.getName());
     List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
     this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
 

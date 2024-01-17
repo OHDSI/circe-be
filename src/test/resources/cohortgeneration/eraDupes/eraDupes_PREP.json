@@ -15,7 +15,6 @@
       "condition_concept_id":2,
       "condition_start_date":"2009-06-16",
       "condition_end_date":"2009-06-19",
-      "condition_start_datetime": "2009-06-19 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -24,7 +23,6 @@
       "condition_concept_id":2,
       "condition_start_date":"2009-07-01",
       "condition_end_date":"2009-07-04",
-      "condition_start_datetime": "2009-06-19 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -33,7 +31,6 @@
       "condition_concept_id":3,
       "condition_start_date":"2009-07-27",
       "condition_end_date":"2009-07-30",
-      "condition_start_datetime": "2009-06-19 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -42,7 +39,6 @@
       "condition_concept_id":4,
       "condition_start_date":"2009-07-27",
       "condition_end_date":"2009-07-30",
-      "condition_start_datetime": "2009-06-19 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -51,7 +47,6 @@
       "condition_concept_id":5,
       "condition_start_date":"2009-07-27",
       "condition_end_date":"2009-07-30",
-      "condition_start_datetime": "2009-06-19 00:00:00",
       "condition_type_concept_id":0
     }
   ],

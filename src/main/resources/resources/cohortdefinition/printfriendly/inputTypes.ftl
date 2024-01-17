@@ -25,8 +25,8 @@ END Note!!!!
 --><#if range.op?ends_with("bt")> and <#if range.extent?has_content>${utils.formatDate(range.extent)}<#else>_empty_</#if></#if></#macro>
 
 <#-- ConceptList -->
-<#macro ConceptList list quote="\""><#list list?map(item->(quote + item.conceptName?lower_case + quote)) as item><#if item?counter gt 1><#if
-item?counter == list?size> or <#else>, </#if></#if>${item}</#list></#macro>
+<#macro ConceptList list quote="\""><#if (list?size > 0)><#list list?map(item->(quote + item.conceptName?lower_case + quote)) as item><#if
+item?counter gt 1><#if item?counter == list?size> or <#else>, </#if></#if>${item}</#list><#else>[none specified]</#if></#macro>
 
 <#-- ConceptSetSelection -->
 <#macro ConceptSetSelection selection defaultName="any"><#if selection.isExcluded!false>not </#if>in ${utils.codesetName(selection.codesetId!"", defaultName)}</#macro>
@@ -89,40 +89,26 @@ item?counter == list?size> or <#else>, </#if></#if>${item}</#list></#macro>
 <#function whichIndexPart useEnd><#if useEnd><#return "end date"><#else><#return "start date"></#if></#function>
 <#function temporalDirection coeff><#if coeff lt 0><#return "before"><#else><#return "after"></#if></#function>
 
-<#macro Window w indexLabel="cohort entry">${whichEventPart(w.useEventEnd!false)}
-<#---->
-<#if !w.start.days?? && w.end.days == 0 && w.start.coeff == -1 >
-        anytime on or before ${indexLabel}
-        ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif (w.end.days!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1>
-<#if w.start.days??>in the ${w.start.days} days
-<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif !w.start.days?? && (w.end.days!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.days} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif !w.end.days?? && (w.start.days!0) gt 0 && w.end.coeff ==1> ${w.start.days} days ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#else>between ${w.start.days!"all"} days ${temporalDirection(w.start.coeff)} and ${w.end.days!"all"} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if>
-<#---->
-<#if !w.start.timeUnitValue?? && w.end.timeUnitValue == 0 && w.start.coeff == -1 >anytime on or before ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif (w.end.timeUnitValue!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if w.start.timeUnitValue??>in the ${w.start.timeUnitValue} ${w.start.timeUnit}s<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif !w.start.timeUnitValue?? && (w.end.timeUnitValue!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.timeUnitValue} ${w.end.timeUnit}s ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#elseif !w.end.timeUnitValue?? && (w.start.timeUnitValue!0) gt 0 && w.end.coeff ==1> ${w.start.timeUnitValue} ${w.start.timeUnit}s ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}
-<#---->
-<#else>between ${w.start.timeUnitValue!"all"} ${w.start.timeUnit}s ${temporalDirection(w.start.coeff)} and ${w.end.timeUnitValue!"all"} ${w.end.timeUnit}s ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if>
-</#macro>
+<#macro Window w indexLabel="cohort entry">${whichEventPart(w.useEventEnd!false)} <#--
+--><#if (w.start.timeUnit == "day" && w.end.timeUnit == "day") || (!w.start.timeUnit?? && !w.end.timeUnit??)><#--
+--><#if !w.start.days?? && w.end.days == 0 && w.start.coeff == -1 >anytime on or before ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif (w.end.days!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if w.start.days??>in the ${w.start.days} days<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.start.days?? && (w.end.days!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.days} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.end.days?? && (w.start.days!0) gt 0 && w.end.coeff ==1> ${w.start.days} days ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#else>between ${w.start.days!"all"} days ${temporalDirection(w.start.coeff)} and ${w.end.days!"all"} days ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if><#--
+--><#else><#--
+--><#if !w.start.timeUnitValue?? && w.end.timeUnitValue == 0 && w.start.coeff == -1 >anytime on or before ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif (w.end.timeUnitValue!0) == 1 && w.start.coeff == -1 && w.end.coeff == -1><#if w.start.timeUnitValue??>in the ${w.start.timeUnitValue} ${w.start.timeUnit}<#else>anytime</#if> prior to ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.start.timeUnitValue?? && (w.end.timeUnitValue!0) gt 1 && w.start.coeff == -1>anytime up to ${w.end.timeUnitValue} ${w.start.timeUnit} ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#elseif !w.end.timeUnitValue?? && (w.start.timeUnitValue!0) gt 0 && w.end.coeff ==1> ${w.start.timeUnitValue} ${w.start.timeUnit} ${temporalDirection(w.start.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}<#--
+--><#else>between ${w.start.timeUnitValue!"all"} ${w.start.timeUnit} ${temporalDirection(w.start.coeff)} and ${w.end.timeUnitValue!"all"} ${w.start.timeUnit} ${temporalDirection(w.end.coeff)} ${indexLabel} ${whichIndexPart(w.useIndexEnd!false)}</#if><#--
+--></#if></#macro>
 
 <#-- User Defined Period -->
 
 <#macro UserDefinedPeriod p><#if
 p.startDate?has_content>a user defiend start date of ${utils.formatDate(p.startDate)}<#if p.endDate?has_content> and</#if></#if><#if
-p.endDate?has_content><#if !p.startDate?has_content>a user defined</#if> end date of ${utils.formatDate(p.endDate)}</#if>
-
-</#macro>
+p.endDate?has_content><#if !p.startDate?has_content>a user defined</#if> end date of ${utils.formatDate(p.endDate)}</#if></#macro>
 
 <#-- Date Adjustment -->
 

@@ -136,6 +136,25 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
   }
 
+  @Test
+  public void allCriteriaTestWithTimeUnitInterval() throws SQLException {
+
+    final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");
+
+    // prepare results schema
+    prepareSchema(options.resultSchema, RESULTS_DDL_PATH);
+
+    // load 'all' criteria json
+    final CohortExpression expression = CohortExpression
+      .fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/allCriteria/allCriteriaExpressionWithTimeUnitInterval.json"));
+
+    // build Sql
+    final String cohortSql = buildExpressionSql(expression, options);
+
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+  }
+
   /* first occurrence tests */
   private void setFirstOccurrenceCriteria(final Criteria c) throws Exception {
     final Field first = c.getClass().getDeclaredField("first");

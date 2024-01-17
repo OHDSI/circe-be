@@ -33,7 +33,7 @@ public class CollapseSettings {
   @JsonProperty("EraPadUnit")
   public String eraPadUnit = IntervalUnit.DAY.getName();
 
-  @JsonProperty("EraPadValue")
+  @JsonProperty("EraPadUnitValue")
   public int eraPadUnitValue = 0;
 
 }
