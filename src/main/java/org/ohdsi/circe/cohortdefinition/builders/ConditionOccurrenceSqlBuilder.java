@@ -4,8 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
 import org.ohdsi.circe.helper.ResourceHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
@@ -62,6 +66,7 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
 
   @Override
   protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+
     // first
     if (criteria.first != null && criteria.first == true) {
       whereClauses.add("C.ordinal = 1");
@@ -93,13 +98,13 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       selectCols.add("co.condition_status_concept_id");
     }
     // dateAdjustment or default start/end dates
-      if (criteria.dateAdjustment != null) {
-          selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+    if (criteria.dateAdjustment != null) {
+      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
-      } else {
-          selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
-      }
+    } else {
+      selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+    }
     return selectCols;
   }
 

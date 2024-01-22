@@ -27,8 +27,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DateOffsetStrategy extends EndStrategy {
 
-  @JsonProperty("Offset")
-  public int offset = 0;
+  public enum DateField {
+    StartDate,
+    EndDate
+  }
+
   @JsonProperty("DateField")
   public DateField dateField = DateField.StartDate;
   @JsonProperty("OffsetUnitValue")
@@ -36,13 +39,11 @@ public class DateOffsetStrategy extends EndStrategy {
   @JsonProperty("OffsetUnit")
   public String offsetUnit = "day";
 
+  @JsonProperty("Offset")
+  public int offset = 0;
+
   @Override
   public String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable) {
     return dispatcher.getStrategySql(this, eventTable);
-  }
-
-  public enum DateField {
-    StartDate,
-    EndDate
   }
 }

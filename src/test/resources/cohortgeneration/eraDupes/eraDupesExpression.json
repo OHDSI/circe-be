@@ -2,8 +2,8 @@
   "ConceptSets": [],
   "PrimaryCriteria": {
     "CriteriaList": [{
-      "ConditionOccurrence": {
-      }
+        "ConditionOccurrence": {
+        }
     }],
     "ObservationWindow": {
       "PriorDays": 0,

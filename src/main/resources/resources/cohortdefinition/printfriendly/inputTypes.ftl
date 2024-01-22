@@ -11,13 +11,13 @@ END Note!!!!
 <#import "./utils.ftl" as utils>
 <#-- DateRange -->
 <#assign dateRangeOptions = [
-{"id": "lt", "name": "before"},
-{"id": "lte", "name": "on or Before"},
-{"id": "eq", "name": "on"},
-{"id": "gt", "name": "after"},
-{"id": "gte", "name": "on or after"},
-{"id": "bt","name": "between"},
-{"id": "!bt", "name": "not between"}
+  {"id": "lt", "name": "before"},
+  {"id": "lte", "name": "on or Before"},
+  {"id": "eq", "name": "on"},
+  {"id": "gt", "name": "after"},
+  {"id": "gte", "name": "on or after"},
+  {"id": "bt","name": "between"},
+  {"id": "!bt", "name": "not between"}
 ]>
 
 <#macro DateRange range>${utils.optionName(dateRangeOptions, range.op)} <#--
@@ -33,56 +33,56 @@ item?counter gt 1><#if item?counter == list?size> or <#else>, </#if></#if>${item
 
 <#-- NumericRange -->
 <#assign numericRangeOptions = [
-{"id": "lt", "name": "&lt;"},
-{"id": "lte", "name": "&lt;="},
-{"id": "eq", "name": "="},
-{"id": "gt", "name": "&gt;"},
-{"id": "gte", "name": "&gt;="},
-{"id": "bt", "name": "between"},
-{"id": "!bt", "name": "not Between"}
+  {"id": "lt", "name": "&lt;"},
+  {"id": "lte", "name": "&lt;="},
+  {"id": "eq", "name": "="},
+  {"id": "gt", "name": "&gt;"},
+  {"id": "gte", "name": "&gt;="},
+  {"id": "bt", "name": "between"},
+  {"id": "!bt", "name": "not Between"}
 ]>
 
 <#macro NumericRange range>${utils.optionName(numericRangeOptions, range.op)} ${range.value!""}<#if range.op?ends_with("bt")> and ${range.extent!""}</#if></#macro>
 
 <#-- TextFilter -->
 <#assign textFilterOptions = [
-{"id": 'startsWith', "name": 'starting with'},
-{"id": 'contains', "name": 'containing'},
-{"id": 'endsWith', "name": 'ending with'},
-{"id": '!startsWith', "name": 'not starting with'},
-{"id": '!contains',"name": 'not containing'},
-{"id": '!endsWith',"name": 'not ending with'}
+  {"id": 'startsWith', "name": 'starting with'},
+  {"id": 'contains', "name": 'containing'},
+  {"id": 'endsWith', "name": 'ending with'},
+  {"id": '!startsWith', "name": 'not starting with'},
+  {"id": '!contains',"name": 'not containing'},
+  {"id": '!endsWith',"name": 'not ending with'}
 ]/>
 
 <#macro TextFilter filter>${utils.optionName(textFilterOptions, filter.op)} "${filter.text!""}"</#macro>
 
 <#-- Limits -->
 <#assign resultLimitOptions = [
-{"id": "All", "name": "all events"},
-{"id": "First", "name": "earliest event"},
-{"id": "Last", "name": "latest event"}
+  {"id": "All", "name": "all events"},
+  {"id": "First", "name": "earliest event"},
+  {"id": "Last", "name": "latest event"}
 ]/>
 
 <#macro Limit limit>${utils.optionName(resultLimitOptions, limit.type)}</#macro>
 
 <#-- Group -->
 <#assign groupTypeOptions = [
-{"id": 'ALL', "name": 'all'},
-{"id": 'ANY', "name": 'any'},
-{"id": 'AT_LEAST', "name": 'at least'},
-{"id": 'AT_MOST', "name": 'at most'}
+  {"id": 'ALL', "name": 'all'},
+  {"id": 'ANY', "name": 'any'},
+  {"id": 'AT_LEAST', "name": 'at least'},
+  {"id": 'AT_MOST', "name": 'at most'}
 ]>
 
 <#-- Count (with Window) -->
 
 <#assign countTypeOptions = [
-{"id": 1, "name": 'at most'},
-{"id": 0, "name": 'exactly'},
-{"id": 2, "name": 'at least'}
+  {"id": 1, "name": 'at most'},
+  {"id": 0, "name": 'exactly'},
+  {"id": 2, "name": 'at least'}
 ]>
 
 <#function getCountType(countCriteria)>
-    <#return utils.optionName(countTypeOptions, countCriteria.occurrence.type)>
+  <#return utils.optionName(countTypeOptions, countCriteria.occurrence.type)>
 </#function>
 
 <#function whichEventPart useEnd><#if useEnd><#return "ending"><#else><#return "starting"></#if></#function>

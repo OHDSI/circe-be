@@ -221,6 +221,7 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
     this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
 
   }
+
   @Test
   public void windowDrugEraTest() throws Exception {
 

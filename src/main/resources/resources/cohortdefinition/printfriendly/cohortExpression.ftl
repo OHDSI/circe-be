@@ -64,7 +64,7 @@ ${cc?counter}. <@ct.Criteria c=cc/>
 
 ### Cohort Eras
 
-<#if collapseSettings.eraPad?has_content && collapseSettings.eraPad != 0>
+<#if collapseSettings.eraPad?has_content && (collapseSettings.eraPad != 0 || collapseSettings.eraPadUnit = "day")>
 Remaining events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
 <#else >
 Remaining events will be combined into cohort eras if they are within ${collapseSettings.eraPadUnitValue} ${collapseSettings.eraPadUnit}s of each other.

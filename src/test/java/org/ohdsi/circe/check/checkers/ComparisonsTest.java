@@ -114,26 +114,16 @@ public class ComparisonsTest {
         Window window = new Window();
         window.start = new Window.Endpoint();
         window.start.days = 10;
-        window.start.timeUnitValue = null;
-        window.start.timeUnit = null;
         window.start.coeff = -1;
 
         window.end = new Window.Endpoint();
         window.end.days = 5;
-        window.end.timeUnitValue = null;
-        window.end.timeUnit = null;
         window.end.coeff = 1;
 
         assertEquals(0, Comparisons.compareTo(filter, window));
 
-
         window.start.days = 5;
         window.end.days = 5;
-
-        window.start.timeUnitValue = null;
-        window.start.timeUnit = null;
-        window.end.timeUnitValue = null;
-        window.end.timeUnit = null;
 
         assertEquals(5, Comparisons.compareTo(filter, window));
     }
@@ -309,11 +299,9 @@ public class ComparisonsTest {
         Window window = new Window();
         window.start = new Window.Endpoint();
         window.start.days = 1;
-        window.start.timeUnitValue = null;
         window.start.coeff = -1;
         window.end = new Window.Endpoint();
         window.end.days = 1;
-        window.end.timeUnitValue = null;
         window.end.coeff = 1;
         assertEquals(false, Comparisons.isBefore(window));
 

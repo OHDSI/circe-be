@@ -51,16 +51,13 @@
     "DateOffset": {
       "DateField": "EndDate",
       "Offset": 99999,
-      "OffsetUnit": "day",
-      "OffsetUnitValue": 99999
+      "OffsetUnit": "day"
     }
   },
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0,
-    "EraPadUnit": "day",
-    "EraPadUnitValue": 0
+    "EraPad": 0
   },
   "CensorWindow": {}
 }

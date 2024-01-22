@@ -54,15 +54,13 @@
       "GapUnit": "day",
       "GapUnitValue": 60,
       "Offset": 9999,
-      "OffsetUnit": "day",
-      "OffsetUnitValue": 9999
+      "OffsetUnit": "day"
     }
   },
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPadUnit": "day",
-    "EraPadUnitValue": 0
+    "EraPad": 0
   },
   "CensorWindow": {}
 }

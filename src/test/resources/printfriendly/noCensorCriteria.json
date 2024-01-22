@@ -37,8 +37,8 @@
       }
     ],
     "ObservationWindow":{
-      "PriorDays": 0,
-      "PostDays": 0
+      "PriorDays":0,
+      "PostDays":0
     },
     "PrimaryCriteriaLimit":{
       "Type":"First"
@@ -74,10 +74,10 @@
       }
     ],
     "DemographicCriteriaList":[
-      
+
     ],
     "Groups":[
-      
+
     ]
   },
   "ConceptSets":[
@@ -394,12 +394,10 @@
     "Type":"First"
   },
   "InclusionRules":[
-    
+
   ],
   "CollapseSettings":{
     "CollapseType":"ERA",
-    "EraPad":0,
-    "EraPadUnit": "days",
-    "EraPadUnitValue": 0
+    "EraPad":0
   }
 }
