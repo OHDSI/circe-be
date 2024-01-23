@@ -1,6 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -118,7 +120,13 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
     } else {
-      selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {    	
+        selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if measurement_datetime is empty it should be added accordingly
+        selectCols.add("m.measurement_datetime as start_date, m.measurement_datetime as end_date");
+      }
     }
     return selectCols;
   }
