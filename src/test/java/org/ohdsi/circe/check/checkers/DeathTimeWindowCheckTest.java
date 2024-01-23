@@ -26,6 +26,7 @@ public class DeathTimeWindowCheckTest {
         List<Warning> warnings = check.check(INCORRECT_EXPRESSION);
         assertEquals(WARNING_COUNT, warnings.size());
     }
+
     @Test
     public void checkCorrect() {
         List<Warning> warnings = check.check(CORRECT_EXPRESSION);

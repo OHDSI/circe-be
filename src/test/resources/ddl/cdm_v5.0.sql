@@ -295,7 +295,8 @@ CREATE TABLE @schemaName.condition_occurrence
      visit_occurrence_id			INTEGER			NULL ,
      condition_source_value			VARCHAR(50)		NULL ,
      condition_source_concept_id	INTEGER			NULL
-    );
+    )
+;
 
 
 CREATE TABLE @schemaName.measurement

@@ -18,16 +18,13 @@
 
 package org.ohdsi.circe.check.checkers;
 
+import static org.ohdsi.circe.check.operations.Operations.match;
+import static org.ohdsi.circe.cohortdefinition.DateOffsetStrategy.DateField.StartDate;
+
+import java.util.Objects;
 import org.ohdsi.circe.check.WarningSeverity;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.DateOffsetStrategy;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
-import static org.ohdsi.circe.check.operations.Operations.match;
-import static org.ohdsi.circe.cohortdefinition.DateOffsetStrategy.DateField.StartDate;
 
 public class ExitCriteriaDaysOffsetCheck extends BaseCheck {
 

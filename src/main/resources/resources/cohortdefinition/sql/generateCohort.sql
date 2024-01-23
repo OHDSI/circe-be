@@ -81,6 +81,7 @@ from ( --cteEnds
 
         UNION ALL
 
+
         SELECT
           person_id
           , DATEADD(@era_pad_unit, @eraconstructorpad, end_date)  as end_date

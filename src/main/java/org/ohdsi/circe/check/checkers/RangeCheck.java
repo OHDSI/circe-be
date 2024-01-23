@@ -25,7 +25,6 @@ import org.ohdsi.circe.cohortdefinition.ObservationFilter;
 import org.ohdsi.circe.cohortdefinition.Window;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class RangeCheck extends BaseValueCheck {
     private static final String NEGATIVE_VALUE_ERROR = "Time window in criteria \"%s\" has negative value %d at %s";
@@ -71,6 +70,7 @@ public class RangeCheck extends BaseValueCheck {
 
 
     private void checkObservationFilter(ObservationFilter filter, WarningReporter reporter, String name) {
+
         if (Objects.nonNull(filter)) {
             if (filter.priorDays < 0) {
                 reporter.add(NEGATIVE_VALUE_ERROR, name, filter.priorDays, "prior days");

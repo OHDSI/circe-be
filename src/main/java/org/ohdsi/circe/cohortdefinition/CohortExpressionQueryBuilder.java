@@ -552,11 +552,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String startIndexDateExpression = (startWindow.useIndexEnd != null && startWindow.useIndexEnd) ? "P.END_DATE" : "P.START_DATE";
     String startEventDateExpression = (startWindow.useEventEnd != null && startWindow.useEventEnd) ? "A.END_DATE" : "A.START_DATE";
     if (startWindow.start.days != null && (startWindow.start.timeUnit == null || startWindow.start.timeUnit.equals(IntervalUnit.DAY.getName()))) {
-          startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
+      startExpression = String.format("DATEADD(day,%d,%s)", startWindow.start.coeff * startWindow.start.days, startIndexDateExpression);
     } else if (startWindow.start.timeUnitValue != null) {
-          startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
+      startExpression = String.format("DATEADD(%s,%d,%s)", startWindow.start.timeUnit, startWindow.start.coeff * startWindow.start.timeUnitValue, startIndexDateExpression);
     } else {
-          startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
+      startExpression = checkObservationPeriod ? (startWindow.start.coeff == -1 ? "P.OP_START_DATE" : "P.OP_END_DATE") : null;
     }
 
     if (startExpression != null) {
@@ -576,7 +576,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       clauses.add(String.format("%s <= %s", startEventDateExpression, endExpression));
     }
 
-      // EndWindow
+    // EndWindow
     Window endWindow = criteria.endWindow;
 
     if (endWindow != null) {
@@ -622,7 +622,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-    public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
+  public String getWindowedCriteriaQuery(WindowedCriteria criteria, String eventTable) {
     String query = getWindowedCriteriaQuery(WINDOWED_CRITERIA_TEMPLATE, criteria, eventTable, null);
     return query;
   }
@@ -833,5 +833,4 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 // </editor-fold>
-
 }

@@ -135,7 +135,6 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // execute on database, expect no errors
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
   }
-
   @Test
   public void allCriteriaTestWithTimeUnitInterval() throws SQLException {
 
@@ -154,7 +153,6 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // execute on database, expect no errors
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
   }
-
   /* first occurrence tests */
   private void setFirstOccurrenceCriteria(final Criteria c) throws Exception {
     final Field first = c.getClass().getDeclaredField("first");
@@ -375,84 +373,84 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
 
     // Assert actual database table match expected table
-    Assertion.assertEquals(expectedTable, actualTable);    
+    Assertion.assertEquals(expectedTable, actualTable);
   }
-    @Test
-    public void testGroupsHour() throws Exception  {
-        final String RESULTS_SCHEMA = "groupsTest";
-        final String[] testDataSetsPrep = new String[] {
-            "/datasets/vocabulary.json",
-            "/cohortgeneration/correlatedCriteria/groupTest_PREP.json"
-        };
-        final IDatabaseConnection dbUnitCon = getConnection();
+  @Test
+  public void testGroupsHour() throws Exception  {
+    final String RESULTS_SCHEMA = "groupsTest";
+    final String[] testDataSetsPrep = new String[] {
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/correlatedCriteria/groupTest_PREP.json"
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
 
-        // prepare results schema for the specified options.resultSchema
-        prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
 
-        // load test data into DB.
-        final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
-        DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
 
-        CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
-        CohortExpression expression;
-        String cohortSql;
+    CohortExpressionQueryBuilder.BuildExpressionQueryOptions options;
+    CohortExpression expression;
+    String cohortSql;
 
-        // this expression has groups defined as: (A OR B OR (C AND D))
-        // Cohort 1: Persons 1,2,3 satisfy these criteria through different branches
-        expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/correlatedCriteria/groupExpressionHour.json"));
-        options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
-        cohortSql = buildExpressionSql(expression, options);
-        // execute on database, expect no errors
-        jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+    // this expression has groups defined as: (A OR B OR (C AND D))
+    // Cohort 1: Persons 1,2,3 satisfy these criteria through different branches
+    expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/correlatedCriteria/groupExpressionHour.json"));
+    options = buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
-        // Cohort 2: Change outer group to 'at least 2'
-        // person 1 satisfies A, B and (C AND D)
-        expression.additionalCriteria.type = "AT_LEAST";
-        expression.additionalCriteria.count = 2;
-        options.cohortId = 2;
-        cohortSql = buildExpressionSql(expression, options);
-        // execute on database, expect no errors
-        jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+    // Cohort 2: Change outer group to 'at least 2'
+    // person 1 satisfies A, B and (C AND D)
+    expression.additionalCriteria.type = "AT_LEAST";
+    expression.additionalCriteria.count = 2;
+    options.cohortId = 2;
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
-        // cohort 3: change outer group to 'at most 1'
-        // person 2 and 3 only have 1: 2 has A and 3 has (C AND D)
-        expression.additionalCriteria.type = "AT_MOST";
-        expression.additionalCriteria.count = 2;
-        options.cohortId = 3;
-        cohortSql = buildExpressionSql(expression, options);
-        // execute on database, expect no errors
-        jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+    // cohort 3: change outer group to 'at most 1'
+    // person 2 and 3 only have 1: 2 has A and 3 has (C AND D)
+    expression.additionalCriteria.type = "AT_MOST";
+    expression.additionalCriteria.count = 2;
+    options.cohortId = 3;
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
 
-        // cohort 4: outer group 'ALL', change inner group to 'at most 0'
-        // No one passes, since that arrangement is a contradiction
-        expression.additionalCriteria.type = "ALL";
-        expression.additionalCriteria.groups[0].type = "AT_MOST";
-        expression.additionalCriteria.groups[0].count = 0;
-        options.cohortId = 4;
-        cohortSql = buildExpressionSql(expression, options);
-        // execute on database, expect no errors
-        jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+    // cohort 4: outer group 'ALL', change inner group to 'at most 0'
+    // No one passes, since that arrangement is a contradiction
+    expression.additionalCriteria.type = "ALL";
+    expression.additionalCriteria.groups[0].type = "AT_MOST";
+    expression.additionalCriteria.groups[0].count = 0;
+    options.cohortId = 4;
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
-        // cohort 5: remove inner group, an empty group should have no impact
-        // Person 1 has both A and B
-        expression.additionalCriteria.groups = new CriteriaGroup[0];
-        options.cohortId = 5;
-        cohortSql = buildExpressionSql(expression, options);
-        // execute on database, expect no errors
-        jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+    // cohort 5: remove inner group, an empty group should have no impact
+    // Person 1 has both A and B
+    expression.additionalCriteria.groups = new CriteriaGroup[0];
+    options.cohortId = 5;
+    cohortSql = buildExpressionSql(expression, options);
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
-        // Validate results
-        // Load actual records from cohort table
-        final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
-        // Load expected data from an XML dataset
-        final String[] testDataSetsVerify = new String[] {"/cohortgeneration/correlatedCriteria/groupTest_VERIFY.json"};
-        final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
-        final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
+    // Validate results
+    // Load actual records from cohort table
+    final ITable actualTable = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".cohort", String.format("SELECT * from %s ORDER BY cohort_definition_id, subject_id, cohort_start_date", RESULTS_SCHEMA + ".cohort"));
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/cohortgeneration/correlatedCriteria/groupTest_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+    final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
 
-        // Assert actual database table match expected table
-        Assertion.assertEquals(expectedTable, actualTable);
-    }
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedTable, actualTable);
+  }
   
 
   /**

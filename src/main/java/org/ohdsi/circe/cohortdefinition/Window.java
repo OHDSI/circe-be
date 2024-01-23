@@ -27,19 +27,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Window {
 
-  @JsonProperty("Start")
-  public Endpoint start;
-  @JsonProperty("End")
-  public Endpoint end;
-  @JsonProperty("UseIndexEnd")
-  public Boolean useIndexEnd;
-  @JsonProperty("UseEventEnd")
-  public Boolean useEventEnd;
-
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class Endpoint {
-
     @JsonProperty("Days")
     public Integer days;
+
     @JsonProperty("TimeUnitValue")
     public Integer timeUnitValue;
     @JsonProperty("TimeUnit")
@@ -47,5 +39,18 @@ public class Window {
 
     @JsonProperty("Coeff")
     public int coeff;
-  }
+	}
+
+  @JsonProperty("Start")
+  public Endpoint start;
+
+  @JsonProperty("End")
+  public Endpoint end;
+
+	@JsonProperty("UseIndexEnd")
+	public Boolean useIndexEnd;
+
+	@JsonProperty("UseEventEnd")
+	public Boolean useEventEnd;
+
 }

@@ -20,10 +20,11 @@ package org.ohdsi.circe.check.checkers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.ohdsi.circe.cohortdefinition.*;
 import org.ohdsi.circe.vocabulary.Concept;
