@@ -2,6 +2,7 @@ package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Death;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -78,7 +80,13 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment, "d.death_date", "DATEADD(day,1,d.death_date)"));
     } else {
-      selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
+        selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if death_datetime is empty it should be added accordingly
+        selectCols.add("d.death_datetime as start_date, d.death_datetime as end_date");
+      }
     }
     return selectCols;
   }

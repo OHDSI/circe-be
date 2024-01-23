@@ -2,6 +2,7 @@ package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.DeviceExposure;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -102,7 +104,13 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))"));
     } else {
-      selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
+        selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if device_exposure_end_datetime is empty it should be added accordingly as for the 'day' case
+        selectCols.add("de.device_exposure_start_datetime as start_date, de.device_exposure_end_datetime as end_date");
+      }
     }
     return selectCols;
   }

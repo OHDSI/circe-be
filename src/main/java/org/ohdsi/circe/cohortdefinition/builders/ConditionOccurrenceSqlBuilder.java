@@ -2,6 +2,7 @@ package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.text.SimpleDateFormat;
@@ -93,13 +94,19 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       selectCols.add("co.condition_status_concept_id");
     }
     // dateAdjustment or default start/end dates
-      if (criteria.dateAdjustment != null) {
-          selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
-      } else {
-          selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+    if (criteria.dateAdjustment != null) {
+        selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+            criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
+            criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
+    } else {
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
+        selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
       }
+      else {
+        // if any specific business logic is necessary if condition_end_datetime is empty it should be added accordingly as for the 'day' case
+        selectCols.add("co.condition_start_datetime as start_date, co.condition_end_datetime as end_date");
+      }
+    }
     return selectCols;
   }
 
