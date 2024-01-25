@@ -43,14 +43,15 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.device_concept_id";
       case QUANTITY:
         return "C.quantity";
       case DURATION:
-        return "DATEDIFF(d,c.start_date, c.end_date)";
+        return String.format("DATEDIFF(%s,c.start_date, c.end_date)", StringUtils.isEmpty(timeIntervalUnit) ? "d" : timeIntervalUnit);
+//        return "DATEDIFF(d,c.start_date, c.end_date)";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Device Exposure:" + column.toString());
     }

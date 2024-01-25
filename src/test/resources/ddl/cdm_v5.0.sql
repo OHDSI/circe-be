@@ -194,6 +194,7 @@ CREATE TABLE @schemaName.death
     (
      person_id							INTEGER			NOT NULL ,
      death_date							DATE			NOT NULL ,
+     death_datetime							TIMESTAMP			 NULL ,
      death_type_concept_id				INTEGER			NOT NULL ,
      cause_concept_id					INTEGER			NULL ,
      cause_source_value					VARCHAR(50)		NULL,
@@ -243,7 +244,9 @@ CREATE TABLE @schemaName.drug_exposure
      person_id						INTEGER			NOT NULL ,
      drug_concept_id				INTEGER			NOT NULL ,
      drug_exposure_start_date		DATE			NOT NULL ,
+     drug_exposure_start_datetime		TIMESTAMP			NULL ,
      drug_exposure_end_date			DATE			NULL ,
+     drug_exposure_end_datetime			TIMESTAMP			NULL ,
      drug_type_concept_id			INTEGER			NOT NULL ,
      stop_reason					VARCHAR(20)		NULL ,
      refills						INTEGER			NULL ,
@@ -269,7 +272,9 @@ CREATE TABLE @schemaName.device_exposure
      person_id						INTEGER			NOT NULL ,
      device_concept_id				INTEGER			NOT NULL ,
      device_exposure_start_date		DATE			NOT NULL ,
+     device_exposure_start_datetime		TIMESTAMP		 NULL ,
      device_exposure_end_date		DATE			NULL ,
+     device_exposure_end_datetime		TIMESTAMP		 NULL ,
      device_type_concept_id			INTEGER			NOT NULL ,
      unique_device_id      VARCHAR(50)		NULL ,
      quantity						INTEGER			NULL ,
@@ -540,7 +545,9 @@ CREATE TABLE @schemaName.dose_era
 	 unit_concept_id				INTEGER			NOT NULL ,
 	 dose_value						NUMERIC			NOT NULL ,
      dose_era_start_date			DATE			NOT NULL ,
-     dose_era_end_date				DATE			NOT NULL
+     dose_era_start_datetime			TIMESTAMP			 NULL ,
+     dose_era_end_date				DATE			NOT NULL ,
+     dose_era_end_datetime				TIMESTAMP			 NULL
     )
 ;
 

@@ -42,14 +42,14 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DAYS_SUPPLY:
         return "C.days_supply";
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";
       case DURATION:
-        return "DATEDIFF(d, C.start_date, C.end_date)";
+        return String.format("DATEDIFF(%s,c.start_date, c.end_date)", StringUtils.isEmpty(timeIntervalUnit) ? "d" : timeIntervalUnit);
       case QUANTITY:
         return "C.quantity";
       case REFILLS:

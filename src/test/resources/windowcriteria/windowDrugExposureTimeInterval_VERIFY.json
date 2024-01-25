@@ -1,0 +1,66 @@
+{
+  "window_drug_exposure.no_columns": [
+    {
+      "person_id": 1,
+      "event_id": 1
+    },
+    {
+      "person_id": 1,
+      "event_id": 1
+    },
+    {
+      "person_id": 1,
+      "event_id": 1
+    },
+    {
+      "person_id": 1,
+      "event_id": 1
+    }
+  ],
+  "window_drug_exposure.add_columns": [
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2005-01-01 00:00:00",
+      "end_date": "2005-01-01 00:10:00",
+      "domain_concept_id": 2,
+      "refills": 2,
+      "quantity": 11,
+      "days_supply": 6,
+      "duration": 10
+    },
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2005-02-01 00:00:00",
+      "end_date": "2005-02-02 23:00:00",
+      "domain_concept_id": 2,
+      "refills": 3,
+      "quantity": 12,
+      "days_supply": 9,
+      "duration": 2820
+    },
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2005-03-01 00:00:00",
+      "end_date": "2005-03-01 01:00:00",
+      "domain_concept_id": 2,
+      "refills": 4,
+      "quantity": 13,
+      "days_supply": 12,
+      "duration": 60
+    },
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2005-04-01 00:00:00",
+      "end_date": "2005-04-07 00:00:00",
+      "domain_concept_id": 2,
+      "refills": 5,
+      "quantity": 14,
+      "days_supply": 15,
+      "duration": 8640
+    }
+  ]
+}

@@ -35,7 +35,7 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
               .filter((column) -> !this.getDefaultColumns().contains(column))
               .collect(Collectors.toList());
       if (filteredColumns.size() > 0) {
-        query = StringUtils.replace(query, "@additionalColumns", ", " + this.getAdditionalColumns(filteredColumns));
+        query = StringUtils.replace(query, "@additionalColumns", ", " + this.getAdditionalColumnsWithTimeInterval(filteredColumns, criteria.intervalUnit));
       } else {
         query = StringUtils.replace(query, "@additionalColumns", "");
       }
@@ -46,13 +46,21 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
     return query;
   }
 
-  protected abstract String getTableColumnForCriteriaColumn(CriteriaColumn column);
+  protected abstract String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit);
 
   protected String getAdditionalColumns(List<CriteriaColumn> columns) {
     String cols = String.join(", ", columns.stream()
             .map((column) -> {
-              return String.format("%s as %s", getTableColumnForCriteriaColumn(column), column.columnName());
+              return String.format("%s as %s", getTableColumnForCriteriaColumn(column, null), column.columnName());
             }).collect(Collectors.toList()));
+    return cols;
+  }
+
+  protected String getAdditionalColumnsWithTimeInterval(List<CriteriaColumn> columns, String timeIntervalUnit) {
+    String cols = String.join(", ", columns.stream()
+      .map((column) -> {
+        return String.format("%s as %s", getTableColumnForCriteriaColumn(column, timeIntervalUnit), column.columnName());
+      }).collect(Collectors.toList()));
     return cols;
   }
 

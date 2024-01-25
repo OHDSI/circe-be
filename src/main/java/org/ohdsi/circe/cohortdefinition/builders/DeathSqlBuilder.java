@@ -40,7 +40,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "coalesce(C.cause_concept_id,0)";

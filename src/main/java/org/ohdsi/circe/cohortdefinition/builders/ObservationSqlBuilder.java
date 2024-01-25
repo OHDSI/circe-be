@@ -43,7 +43,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.observation_concept_id";

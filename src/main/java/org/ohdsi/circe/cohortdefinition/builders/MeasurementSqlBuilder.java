@@ -41,7 +41,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.measurement_concept_id";
