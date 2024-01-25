@@ -19,6 +19,7 @@ import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
 import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
 import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
 import org.ohdsi.circe.cohortdefinition.Occurrence;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
@@ -183,6 +184,53 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
     
+    // Validate results
+    // perform inclusion query
+    final ITable actualInclusion = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".output", translatedCountQuery);
+    final ITable expectedInclusion = expectedDataSet.getTable(RESULTS_SCHEMA + ".output");
+
+    // Assert actual database table match expected table
+    Assertion.assertEquals(expectedInclusion, actualInclusion);
+
+  }
+
+  @Test
+  public void distinctVisitTestWithTimeInterval() throws Exception {
+    final CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
+    final String RESULTS_SCHEMA = "distinct_visit";
+    final String[] testDataSetsPrep = new String[] { "/datasets/vocabulary.json",
+      "/corelatedcriteria/distinctVisit_PREP.json"};
+
+    // Load expected data from an XML dataset
+    final String[] testDataSetsVerify = new String[] {"/corelatedcriteria/distinctVisit_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    // prepare results schema for the specified options.resultSchema
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    // load test data into DB.
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep); // clean load of the DB. Careful, clean means "delete the old stuff"
+
+    /// build inclusion  query for Group Criteria
+    CriteriaGroup cg = new CriteriaGroup();
+    cg.type= "ALL";
+    CorelatedCriteria cc = new CorelatedCriteria();
+    cc.criteria = new ConditionOccurrence(); // find any condition occurence
+    cc.criteria.intervalUnit = IntervalUnit.HOUR.getName();
+    cc.startWindow = CriteriaUtils.getPrior365Window();
+    cc.occurrence = CriteriaUtils.getDistinctCount(CriteriaColumn.VISIT_ID, Occurrence.AT_LEAST, 2);
+    cg.criteriaList = new CorelatedCriteria[] { cc };
+
+    // translate to PG
+    String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, RESULTS_SCHEMA + ".cohort", "cdm", 1);
+    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String translatedCountQuery = SqlRender.renderSql(SqlTranslate.translateSql(countQuery, "postgresql"),
+      new String[] {"cdm_database_schema", "indexId"},
+      new String[] {"cdm", "0"});
+
     // Validate results
     // perform inclusion query
     final ITable actualInclusion = dbUnitCon.createQueryTable(RESULTS_SCHEMA + ".output", translatedCountQuery);

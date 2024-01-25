@@ -43,7 +43,11 @@
     "CustomEra": {
       "DrugCodesetId": 0,
       "GapDays": 14,
+      "GapUnit": "day",
+      "GapUnitValue": 14,
       "Offset": 1,
+      "OffsetUnit": "day",
+      "OffsetUnitValue": 1,
       "DaysSupplyOverride": 7
     }
   },

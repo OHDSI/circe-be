@@ -54,7 +54,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.payer_concept_id";

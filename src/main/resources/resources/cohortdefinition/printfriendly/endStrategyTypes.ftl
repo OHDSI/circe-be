@@ -24,11 +24,21 @@ The person exits the cohort at the end of continuous observation.
 <#assign dateOffsetFieldOptions = [{"id": "StartDate", "name": "start date"}, {"id": "EndDate", "name": "end date"}]>
 
 <#macro DateOffsetStrategy s>
-The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offset "day"/>.
+    <#if s.offsetUnit = "day" || !s.offsetUnit?has_content>
+        The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus ${s.offset} days.
+    <#else >
+        The cohort end date will be offset from index event's ${utils.optionName(dateOffsetFieldOptions, s.dateField)} plus <@utils.formatValue s.offsetUnitValue s.offsetUnit/>.
+    </#if>
 </#macro>
 
 <#macro CustomEraStrategy s>
+    <#if s.offsetUnit == "day">
 The cohort end date will be based on a continuous exposure to ${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}:
 allowing ${s.gapDays} days between exposures, adding <@utils.formatValue s.offset "day"/> after exposure ends, and <#if 
 s.daysSupplyOverride??>forcing drug exposure days supply to: <@utils.formatValue s.daysSupplyOverride "day"/>.<#else>using days supply and exposure end date for exposure duration.</#if>
+    <#else >
+The cohort end date will be based on a continuous exposure to ${utils.codesetName(s.drugCodesetId!"", "_invalid drug specified_")}:
+allowing ${s.gapUnitValue} ${s.offsetUnit} between exposures, adding <@utils.formatValue s.offsetUnitValue s.offsetUnit/> after exposure ends, and <#if
+s.daysSupplyOverride??>forcing drug exposure ${s.offsetUnit} supply to: <@utils.formatValue s.daysSupplyOverride s.offsetUnit/>.<#else>using ${s.offsetUnit} supply and exposure end date for exposure duration.</#if>
+    </#if>
 </#macro>

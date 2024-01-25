@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 
 /**
@@ -60,5 +61,14 @@ public abstract class Criteria {
 
   @JsonProperty("DateAdjustment")
   public DateAdjustment dateAdjustment;
+  
+  /**
+   * This is a marker for the proper table columns definition while constructing the SELECT part of the result SQL
+   * in the corresponding SQL builder to reflect the values being defined in the associated WindowCriteria
+   * 
+   * The DAY value should be set only if all the WindowCriteria's Window.Endpoint values are DAY
+   */
+  @JsonProperty("IntervalUnit")
+  public String intervalUnit;
 
 }

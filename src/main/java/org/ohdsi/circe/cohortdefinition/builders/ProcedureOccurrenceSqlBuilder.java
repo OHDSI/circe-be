@@ -1,6 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -39,7 +41,7 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.procedure_concept_id";
@@ -102,7 +104,13 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)"));
     } else {
-      selectCols.add("po.procedure_date as start_date, DATEADD(day,1,po.procedure_date) as end_date");
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
+        selectCols.add("po.procedure_date as start_date, DATEADD(day,1,po.procedure_date) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if procedure_end_datetime is empty it should be added accordingly
+        selectCols.add("po.procedure_datetime as start_date, po.procedure_end_datetime as end_date");
+      }
     }
     return selectCols;
   }

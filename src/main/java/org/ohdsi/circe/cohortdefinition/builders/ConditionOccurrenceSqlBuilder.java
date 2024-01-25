@@ -2,6 +2,7 @@ package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.ArrayList;
@@ -39,13 +40,19 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     return CONDITION_OCCURRENCE_TEMPLATE;
   }
 
+  /**
+   * Add params timeIntervalUnit to check for hours/minutes/seconds situation
+   * @param column
+   * @param timeIntervalUnit
+   * @return
+   */
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.condition_concept_id";
       case DURATION:
-        return "(DATEDIFF(d,C.start_date, C.end_date))";
+        return String.format("DATEDIFF(%s,c.start_date, c.end_date)", StringUtils.isEmpty(timeIntervalUnit) ? "d" : timeIntervalUnit);
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Occurrence:" + column.toString());
     }
@@ -98,11 +105,17 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     }
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
-      selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
+        selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
+            criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))",
+            criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
     } else {
-      selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
+        selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if condition_end_datetime is empty it should be added accordingly as for the 'day' case
+        selectCols.add("co.condition_start_datetime as start_date, co.condition_end_datetime as end_date");
+      }
     }
     return selectCols;
   }

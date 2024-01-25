@@ -30,7 +30,7 @@
         "ConditionOccurrence": {
           "CodesetId": 0
         }
-      }      
+      }
     ],
     "ObservationWindow": {
       "PriorDays": 0,

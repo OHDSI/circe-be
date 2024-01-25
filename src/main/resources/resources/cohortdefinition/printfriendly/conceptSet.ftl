@@ -13,10 +13,10 @@
 -->${utils.renderCheckbox(conceptSetItem.includeDescendants)}|<#--
 -->${utils.renderCheckbox(conceptSetItem.includeMapped)}|
 </#items>
-  
+
 
 <#else>
-There are no concept set items in this concept set.  
+There are no concept set items in this concept set.
 
 </#list>
 </#list>

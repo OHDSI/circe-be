@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.ohdsi.circe.check.WarningSeverity;
@@ -83,16 +84,28 @@ public class TimePatternCheck extends BaseCorelatedCriteriaCheck {
     }
 
     private String formatDays(Window.Endpoint endpoint) {
-        return Objects.nonNull(endpoint.days) ? String.valueOf(endpoint.days) : "all";
+        return Objects.nonNull(endpoint.days) ? String.valueOf(endpoint.days) :
+                Objects.nonNull(endpoint.timeUnitValue) ? String.valueOf(endpoint.timeUnitValue) : "all";
+
     }
 
     private String formatCoeff(Window.Endpoint endpoint) {
         return endpoint.coeff < 0 ? "before " : "after ";
     }
 
+
     private Integer startDays(Window window) {
-        return Objects.nonNull(window) && Objects.nonNull(window.start) ?
-                (Objects.nonNull(window.start.days) ? window.start.days : 0) * window.start.coeff : 0;
+        return Optional.ofNullable(window)
+            .map(w -> w.start)
+            .map(start -> {
+                int coefficient = Optional.ofNullable(start.coeff).orElse(0);
+                return Optional.ofNullable(start.days)
+                    .map(days -> days * coefficient)
+                    .orElseGet(() -> Optional.ofNullable(start.timeUnitValue)
+                        .map(timeUnitValue -> timeUnitValue * coefficient)
+                        .orElse(0));
+            })
+            .orElse(0);
     }
 
     class TimeWindowInfo {

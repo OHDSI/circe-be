@@ -55,7 +55,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.period_type_concept_id";

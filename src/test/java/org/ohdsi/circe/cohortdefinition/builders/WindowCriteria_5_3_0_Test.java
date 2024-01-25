@@ -114,4 +114,18 @@ public class WindowCriteria_5_3_0_Test extends AbstractDatabaseTest {
     List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
     this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
   }
+
+  @Test
+  public void windowVisitDetailTestInSecondInterval() throws Exception {
+    final String resultsSchema = "window_visit_detail";
+    final String[] testDataSetsPrep = new String[]{"/datasets/vocabulary.json",
+      "/windowcriteria/windowVisitDetailTimeInterval_PREP.json"};
+    final String[] testDataSetsVerify = new String[]{"/windowcriteria/windowVisitDetailTimeInterval_VERIFY.json"};
+    WindowedCriteria wc = new WindowedCriteria();
+    wc.criteria = new VisitDetail(); // find any visit detail
+    wc.criteria.intervalUnit = IntervalUnit.SECOND.getName();
+    wc.startWindow = CriteriaUtils.getPrior365WindowTimeUnitInterval(IntervalUnit.SECOND.getName());
+    List<CriteriaColumn> additionalColumns = Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.DOMAIN_CONCEPT, CriteriaColumn.DURATION);
+    this.performWindowTest(wc, resultsSchema, testDataSetsPrep, testDataSetsVerify, additionalColumns);
+  }
 }

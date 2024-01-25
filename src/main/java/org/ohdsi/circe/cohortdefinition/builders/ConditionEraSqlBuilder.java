@@ -35,15 +35,21 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
     return CONDITION_ERA_TEMPLATE;
   }
 
+  /**
+   * Add params timeIntervalUnit to check for hours/minutes/seconds situation
+   * @param column
+   * @param timeIntervalUnit
+   * @return
+   */
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.condition_concept_id";
       case ERA_OCCURRENCES:
         return "C.condition_occurrence_count";
       case DURATION:
-        return "(DATEDIFF(d,C.start_date, C.end_date))";
+        return String.format("DATEDIFF(%s,c.start_date, c.end_date)", StringUtils.isEmpty(timeIntervalUnit) ? "d" : timeIntervalUnit);
       default:
        throw new IllegalArgumentException("Invalid CriteriaColumn for Condition Era:" + column.toString());
     }

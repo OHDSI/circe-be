@@ -30,7 +30,7 @@ public class LocationRegionSqlBuilder<T extends LocationRegion> extends Criteria
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.region_concept_id";

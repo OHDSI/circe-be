@@ -38,7 +38,7 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
   }
 
   @Override
-  protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
+  protected String getTableColumnForCriteriaColumn(CriteriaColumn column, String timeIntervalUnit) {
     switch (column) {
       case DOMAIN_CONCEPT:
         return "C.drug_concept_id";

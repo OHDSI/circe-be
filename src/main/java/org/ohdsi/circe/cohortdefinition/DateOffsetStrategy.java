@@ -18,25 +18,32 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Chris Knoll <cknoll@ohdsi.org>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DateOffsetStrategy extends EndStrategy {
 
   public enum DateField {
     StartDate,
     EndDate
   }
-  
+
   @JsonProperty("DateField")
   public DateField dateField = DateField.StartDate;
 
   @JsonProperty("Offset")
   public int offset = 0;
-  
+
+  @JsonProperty("OffsetUnitValue")
+  public int offsetUnitValue = 0;
+  @JsonProperty("OffsetUnit")
+  public String offsetUnit = "day";
+
   @Override
   public String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable) {
     return dispatcher.getStrategySql(this, eventTable);

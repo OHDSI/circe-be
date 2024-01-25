@@ -315,7 +315,7 @@ CREATE TABLE @schemaName.condition_occurrence
      person_id            INTEGER      NOT NULL , 
      condition_concept_id      INTEGER      NOT NULL , 
      condition_start_date      DATE      NOT NULL , 
-     condition_start_datetime      TIMESTAMP      NOT NULL ,
+     condition_start_datetime      TIMESTAMP      NULL ,
      condition_end_date        DATE      NULL ,
      condition_end_datetime        TIMESTAMP      NULL ,
      condition_type_concept_id    INTEGER      NOT NULL ,
