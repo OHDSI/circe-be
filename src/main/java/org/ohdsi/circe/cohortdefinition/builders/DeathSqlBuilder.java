@@ -69,7 +69,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
     if (criteria.deathType != null && criteria.deathType.length > 0) {
@@ -80,8 +80,9 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment, "d.death_date", "DATEADD(day,1,d.death_date)"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
-        selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
       }
       else {
         // if any specific business logic is necessary if death_datetime is empty it should be added accordingly

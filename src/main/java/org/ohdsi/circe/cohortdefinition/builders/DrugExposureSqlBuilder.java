@@ -85,7 +85,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -132,8 +132,9 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.drug_exposure_start_date" : 
                       "COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date))"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {    	
-        selectCols.add("de.drug_exposure_start_date as start_date, COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date)) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("de.drug_exposure_start_date as start_date, COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date)) as end_date");
       }
       else {
         // if any specific business logic is necessary if drug_exposure_end_datetime is empty it should be added accordingly as for the 'day' case

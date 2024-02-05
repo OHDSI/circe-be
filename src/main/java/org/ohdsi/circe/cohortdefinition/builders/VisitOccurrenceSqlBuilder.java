@@ -69,7 +69,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -94,8 +94,9 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
-        selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
       }
       else {
         // if any specific business logic is necessary if visit_end_datetime is empty it should be added accordingly

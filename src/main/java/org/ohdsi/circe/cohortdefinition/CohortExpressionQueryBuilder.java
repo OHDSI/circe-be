@@ -177,23 +177,23 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   }
 
-  private String getCensoringEventsQuery(Criteria[] censoringCriteria) {
+  private String getCensoringEventsQuery(Criteria[] censoringCriteria, BuilderOptions builderOptions) {
     ArrayList<String> criteriaQueries = new ArrayList<>();
     for (Criteria c : censoringCriteria) {
-      String criteriaQuery = c.accept(this);
+      String criteriaQuery = c.accept(this, builderOptions);
       criteriaQueries.add(StringUtils.replace(CENSORING_QUERY_TEMPLATE, "@criteriaQuery", criteriaQuery));
     }
 
     return StringUtils.join(criteriaQueries, "\nUNION ALL\n");
   }
 
-  public String getPrimaryEventsQuery(PrimaryCriteria primaryCriteria) {
+  public String getPrimaryEventsQuery(PrimaryCriteria primaryCriteria, BuilderOptions builderOptions) {
     String query = PRIMARY_EVENTS_TEMPLATE;
 
     ArrayList<String> criteriaQueries = new ArrayList<>();
 
     for (Criteria c : primaryCriteria.criteriaList) {
-      criteriaQueries.add(c.accept(this));
+      criteriaQueries.add(c.accept(this, builderOptions));
     }
 
     query = StringUtils.replace(query, "@criteriaQueries", StringUtils.join(criteriaQueries, "\nUNION ALL\n"));
@@ -268,7 +268,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String codesetQuery = getCodesetQuery(expression.conceptSets);
     resultSql = StringUtils.replace(resultSql, "@codesetQuery", codesetQuery);
 
-    String primaryEventsQuery = getPrimaryEventsQuery(expression.primaryCriteria);
+    BuilderOptions builderOptions = new BuilderOptions();
+    builderOptions.setUseDatetime(expression.useDatetime);
+    String primaryEventsQuery = getPrimaryEventsQuery(expression.primaryCriteria, builderOptions);
     resultSql = StringUtils.replace(resultSql, "@primaryEventsQuery", primaryEventsQuery);
 
     String additionalCriteriaQuery = "";
@@ -344,7 +346,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     if (expression.censoringCriteria != null && expression.censoringCriteria.length > 0) {
-      endDateSelects.add(String.format("-- Censor Events\n%s\n", getCensoringEventsQuery(expression.censoringCriteria)));
+      endDateSelects.add(String.format("-- Censor Events\n%s\n", getCensoringEventsQuery(expression.censoringCriteria, builderOptions)));
     }
 
     resultSql = StringUtils.replace(resultSql, "@finalCohortQuery", getFinalCohortQuery(expression.censorWindow));

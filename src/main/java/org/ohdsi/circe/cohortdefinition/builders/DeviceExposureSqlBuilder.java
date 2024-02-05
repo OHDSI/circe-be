@@ -81,7 +81,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Device Type
     if (criteria.deviceType != null && criteria.deviceType.length > 0) {
@@ -104,8 +104,9 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.device_exposure_start_date" : "COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date))"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
-        selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
       }
       else {
         // if any specific business logic is necessary if device_exposure_end_datetime is empty it should be added accordingly as for the 'day' case

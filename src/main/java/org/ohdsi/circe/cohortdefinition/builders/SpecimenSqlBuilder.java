@@ -139,7 +139,7 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
   }
   
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     // as this logic was fully missing comparing to the other SQL builders adding only the ones which belong to the datetime functionality
     ArrayList<String> selectCols = new ArrayList<>();
 
@@ -149,8 +149,9 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "s.specimen_date" : "DATEADD(day,1,s.specimen_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "s.specimen_date" : "DATEADD(day,1,s.specimen_date)"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
-        selectCols.add("s.specimen_date as start_date, DATEADD(day,1,s.specimen_date) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("s.specimen_date as start_date, DATEADD(day,1,s.specimen_date) as end_date");
       }
       else {
         // if any specific business logic is necessary if specimen_datetime is empty it should be added accordingly

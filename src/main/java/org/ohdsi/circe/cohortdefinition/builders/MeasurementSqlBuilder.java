@@ -85,7 +85,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -120,8 +120,9 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {    	
-        selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
       }
       else {
         // if any specific business logic is necessary if measurement_datetime is empty it should be added accordingly

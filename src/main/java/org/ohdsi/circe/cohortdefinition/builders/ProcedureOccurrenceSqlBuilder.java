@@ -79,7 +79,7 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -104,8 +104,9 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "po.procedure_date" : "DATEADD(day,1,po.procedure_date)"));
     } else {
-      if (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit)) {
-        selectCols.add("po.procedure_date as start_date, DATEADD(day,1,po.procedure_date) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("po.procedure_date as start_date, DATEADD(day,1,po.procedure_date) as end_date");
       }
       else {
         // if any specific business logic is necessary if procedure_end_datetime is empty it should be added accordingly
