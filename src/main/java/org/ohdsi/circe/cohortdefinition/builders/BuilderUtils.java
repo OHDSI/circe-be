@@ -9,6 +9,8 @@ import org.ohdsi.circe.vocabulary.Concept;
 
 import java.util.Locale;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -162,10 +164,26 @@ public abstract class BuilderUtils {
     return value.replaceAll("\\\\*\\'", "''");
   }
 
-    private static String formatDouble(double d, String format) {
-        // Forces the US Locale formatting for all double values
-        // for Issue #184: https://github.com/OHDSI/circe-be/issues/184
-        String formatString = "%" + format;
-        return String.format(Locale.US, formatString, d);
-    }
+  private static String formatDouble(double d, String format) {
+    // Forces the US Locale formatting for all double values
+    // for Issue #184: https://github.com/OHDSI/circe-be/issues/184
+    String formatString = "%" + format;
+    return String.format(Locale.US, formatString, d);
   }
+  
+  public static <T> String splitInClause(String column, List<T> values, int groupSize) {
+    // split the values into groupSize lists
+    List<List<T>> groups = new ArrayList<>();
+    for (int i = 0; i < values.size(); i += groupSize) {
+        int endIndex = Math.min(i + groupSize, values.size());
+        groups.add(values.subList(i, endIndex));
+    }
+
+    /// create individual IN statements
+    List<String> ins = groups.stream().map(group -> String.format("%s in (%s)", column, StringUtils.join(group, ","))).collect(Collectors.toList());
+    
+    // return the set of INs grouped into ORs
+    return String.format("(%s)", StringUtils.join(ins, " or "));
+    
+  }
+}

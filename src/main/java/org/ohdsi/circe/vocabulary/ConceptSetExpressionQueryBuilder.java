@@ -20,6 +20,7 @@ package org.ohdsi.circe.vocabulary;
 
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.builders.BuilderUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 /**
@@ -33,6 +34,7 @@ public class ConceptSetExpressionQueryBuilder {
   private final static String CONCEPT_SET_MAPPED_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/vocabulary/sql/conceptSetMapped.sql");
   private final static String CONCEPT_SET_INCLUDE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/vocabulary/sql/conceptSetInclude.sql");
   private final static String CONCEPT_SET_EXCLUDE_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/vocabulary/sql/conceptSetExclude.sql");
+  private final static int MAX_IN_LENGTH = 1000; // oracle limitation
 
 
   private ArrayList<Long> getConceptIds(ArrayList<Concept> concepts)
@@ -52,11 +54,11 @@ public class ConceptSetExpressionQueryBuilder {
   )
   {
     ArrayList<String> queries = new ArrayList<>();
-    if (concepts.size() > 0) {
-      queries.add(StringUtils.replace(CONCEPT_SET_QUERY_TEMPLATE, "@conceptIds", StringUtils.join(getConceptIds(concepts), ",")));
+    if (!concepts.isEmpty()) {
+      queries.add(StringUtils.replace(CONCEPT_SET_QUERY_TEMPLATE, "@conceptIdIn", BuilderUtils.splitInClause("concept_id", getConceptIds(concepts), MAX_IN_LENGTH)));
     }
-    if (descendantConcepts.size() > 0) {
-      queries.add(StringUtils.replace(CONCEPT_SET_DESCENDANTS_TEMPLATE, "@conceptIds", StringUtils.join(getConceptIds(descendantConcepts), ",")));
+    if (!descendantConcepts.isEmpty()) {
+      queries.add(StringUtils.replace(CONCEPT_SET_DESCENDANTS_TEMPLATE, "@conceptIdIn", BuilderUtils.splitInClause("ca.ancestor_concept_id", getConceptIds(descendantConcepts), MAX_IN_LENGTH)));
     }
     
     return StringUtils.join(queries, "UNION");
