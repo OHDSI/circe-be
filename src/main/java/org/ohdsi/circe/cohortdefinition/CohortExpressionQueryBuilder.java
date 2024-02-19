@@ -310,7 +310,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       inclusionRuleInserts.add(String.format("SELECT inclusion_rule_id, person_id, event_id\nINTO #inclusion_events\nFROM (%s) I;", irTempUnion));
 
       inclusionRuleInserts.addAll(inclusionRuleTempTables.stream()
-              .map(d -> String.format("TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
+              .map(d -> String.format("-- TRUNCATE TABLE %s;\nDROP TABLE %s;\n", d, d))
               .collect(Collectors.toList())
       );
       resultSql = StringUtils.replace(resultSql, "@inclusionCohortInserts", StringUtils.join(inclusionRuleInserts, "\n"));
@@ -337,7 +337,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     if (expression.endStrategy != null) {
       // replace @strategy_ends placeholders with temp table creation and cleanup scripts.
       resultSql = StringUtils.replace(resultSql, "@strategy_ends_temp_tables", expression.endStrategy.accept(this, "#included_events"));
-      resultSql = StringUtils.replace(resultSql, "@strategy_ends_cleanup", "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
+      resultSql = StringUtils.replace(resultSql, "@strategy_ends_cleanup", ""); // "TRUNCATE TABLE #strategy_ends;\nDROP TABLE #strategy_ends;\n");
       endDateSelects.add(String.format("-- End Date Strategy\n%s\n", "SELECT event_id, person_id, end_date from #strategy_ends"));
     } else {
       // replace @trategy_ends placeholders with empty string

@@ -61,5 +61,5 @@ JOIN
 ) ERAS on ERAS.person_id = et.person_id 
 WHERE et.start_date between ERAS.era_start_date and ERAS.era_end_date;
 
-TRUNCATE TABLE #drugTarget;
-DROP TABLE #drugTarget;
+-- TRUNCATE TABLE #drugTarget;
+-- DROP TABLE #drugTarget;
