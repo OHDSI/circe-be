@@ -20,11 +20,13 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.*;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -144,9 +146,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return String.join(",", columns.stream().map((column) -> { return prefix + column.columnName();}).collect(Collectors.toList()));
   }
 
-  private String wrapCriteriaQuery(String query, CriteriaGroup group) {
+  private String wrapCriteriaQuery(String query, CriteriaGroup group, Boolean useDatetime) {
     String eventQuery = StringUtils.replace(EVENT_TABLE_EXPRESSION_TEMPLATE, "@eventQuery", query);
-    String groupQuery = this.getCriteriaGroupQuery(group, String.format("(%s)", eventQuery));
+    String groupQuery = this.getCriteriaGroupQuery(group, String.format("(%s)", eventQuery), useDatetime);
     groupQuery = StringUtils.replace(groupQuery, "@indexId", "" + 0);
     String wrappedQuery = String.format(
             "select PE.person_id, PE.event_id, PE.start_date, PE.end_date, PE.visit_occurrence_id, PE.sort_date FROM (\n%s\n) PE\nJOIN (\n%s) AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n",
@@ -276,7 +278,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String additionalCriteriaQuery = "";
     if (expression.additionalCriteria != null && !expression.additionalCriteria.isEmpty()) {
       CriteriaGroup acGroup = expression.additionalCriteria;
-      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, String.format("(%s)", primaryEventsQuery));//acGroup.accept(this);
+      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, String.format("(%s)", primaryEventsQuery), expression.useDatetime);//acGroup.accept(this);
       acGroupQuery = StringUtils.replace(acGroupQuery, "@indexId", "" + 0);
       additionalCriteriaQuery = "\nJOIN (\n" + acGroupQuery + ") AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n";
     }
@@ -297,7 +299,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
       for (int i = 0; i < expression.inclusionRules.size(); i++) {
         CriteriaGroup cg = expression.inclusionRules.get(i).expression;
-        String inclusionRuleInsert = getInclusionRuleQuery(cg);
+        String inclusionRuleInsert = getInclusionRuleQuery(cg, expression.useDatetime);
         inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@inclusion_rule_id", "" + i);
         inclusionRuleInserts.add(inclusionRuleInsert);
         inclusionRuleTempTables.add(String.format("#Inclusion_%d", i));
@@ -402,20 +404,22 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return resultSql;
   }
 
-  public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable) {
+  public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable, Boolean useDatetime) {
     String query = GROUP_QUERY_TEMPLATE;
     ArrayList<String> additionalCriteriaQueries = new ArrayList<>();
     String joinType = "INNER";
 
     int indexId = 0;
     for (CorelatedCriteria cc : group.criteriaList) {
-      String acQuery = this.getCorelatedlCriteriaQuery(cc, eventTable); //ac.accept(this);
+      String acQuery = this.getCorelatedlCriteriaQuery(cc, eventTable, useDatetime); //ac.accept(this);
       acQuery = StringUtils.replace(acQuery, "@indexId", "" + indexId);
       additionalCriteriaQueries.add(acQuery);
       indexId++;
     }
 
     for (DemographicCriteria dc : group.demographicCriteriaList) {
+      // the Demographics Criteria refers to an event date/datetime alias start_date, end_date
+      // therefore the useDatetime logic is irrelevant at this place!?
       String dcQuery = this.getDemographicCriteriaQuery(dc, eventTable); //ac.accept(this);
       dcQuery = StringUtils.replace(dcQuery, "@indexId", "" + indexId);
       additionalCriteriaQueries.add(dcQuery);
@@ -423,7 +427,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     for (CriteriaGroup g : group.groups) {
-      String gQuery = this.getCriteriaGroupQuery(g, eventTable); //g.accept(this);
+      String gQuery = this.getCriteriaGroupQuery(g, eventTable, useDatetime); //g.accept(this);
       gQuery = StringUtils.replace(gQuery, "@indexId", "" + indexId);
       additionalCriteriaQueries.add(gQuery);
       indexId++;
@@ -469,9 +473,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-  private String getInclusionRuleQuery(CriteriaGroup inclusionRule) {
+  private String getInclusionRuleQuery(CriteriaGroup inclusionRule, Boolean useDatetime) {
     String resultSql = INCLUSION_RULE_QUERY_TEMPLATE;
-    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events") + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
+    String additionalCriteriaQuery = "\nJOIN (\n" + getCriteriaGroupQuery(inclusionRule, "#qualified_events", useDatetime) + ") AC on AC.person_id = pe.person_id AND AC.event_id = pe.event_id";
     additionalCriteriaQuery = StringUtils.replace(additionalCriteriaQuery, "@indexId", "" + 0);
     resultSql = StringUtils.replace(resultSql, "@additionalCriteriaQuery", additionalCriteriaQuery);
     return resultSql;
@@ -634,7 +638,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return query;
   }
 
-  public String getCorelatedlCriteriaQuery(CorelatedCriteria corelatedCriteria, String eventTable) {
+  public String getCorelatedlCriteriaQuery(CorelatedCriteria corelatedCriteria, String eventTable, Boolean useDatetime) {
 
     // pick the appropraite query template that is optimized for include (at least 1) or exclude (allow 0)
     String query = (corelatedCriteria.occurrence.type == Occurrence.AT_MOST || corelatedCriteria.occurrence.count == 0) ? ADDITIONAL_CRITERIA_LEFT_TEMPLATE : ADDITIONAL_CRITERIA_INNER_TEMPLATE;
@@ -642,6 +646,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String countColumnExpression = "cc.event_id";
 
     BuilderOptions builderOptions = new BuilderOptions();
+    // a part of the Cohort Expression design being passed
+    builderOptions.setUseDatetime(useDatetime);
     if (corelatedCriteria.occurrence.isDistinct) {
       if (corelatedCriteria.occurrence.countColumn == null) { // backwards compatability:  default column uses domain_concept_id
         builderOptions.additionalColumns.add(CriteriaColumn.DOMAIN_CONCEPT);
@@ -673,16 +679,16 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
   protected <T extends Criteria> String getCriteriaSql(CriteriaSqlBuilder<T> builder, T criteria, BuilderOptions options) {
     String query = builder.getCriteriaSql(criteria, options);
-    return processCorrelatedCriteria(query, criteria);
+    return processCorrelatedCriteria(query, criteria, options == null ? false : options.isUseDatetime());
   }
 
   protected <T extends Criteria> String getCriteriaSql(CriteriaSqlBuilder<T> builder, T criteria) {
     return this.getCriteriaSql(builder, criteria, null);
   }
 
-  protected String processCorrelatedCriteria(String query, Criteria criteria) {
+  protected String processCorrelatedCriteria(String query, Criteria criteria, Boolean useDatetime) {
     if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
-      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
+      query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria, useDatetime);
     }
     return query;
   }

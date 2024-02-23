@@ -88,7 +88,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.genderCS = inCsSelection;
 
     // translate to PG
-    String inGenderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String inGenderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     inGenderQuery = inGenderQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedInGenderQuery = SqlRender.renderSql(SqlTranslate.translateSql(inGenderQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
@@ -104,7 +104,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.genderCS = notInCsSelection;
     
     // translate to PG
-    String notInGenderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String notInGenderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     notInGenderQuery = notInGenderQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedNotInGenderQuery = SqlRender.renderSql(SqlTranslate.translateSql(notInGenderQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
@@ -121,7 +121,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.providerSpecialtyCS = inCsSelection;
     
     // translate to PG
-    String inProviderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String inProviderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     inProviderQuery = inProviderQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedInProviderQuery = SqlRender.renderSql(SqlTranslate.translateSql(inProviderQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
@@ -137,7 +137,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.providerSpecialtyCS = notInCsSelection;
     
     // translate to PG
-    String notInProviderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String notInProviderQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     notInProviderQuery = notInProviderQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedNotInProviderQuery = SqlRender.renderSql(SqlTranslate.translateSql(notInProviderQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
@@ -154,7 +154,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.placeOfServiceCS = inCsSelection;
     
     // translate to PG
-    String inPlaceOfServiceQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String inPlaceOfServiceQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     inPlaceOfServiceQuery = inPlaceOfServiceQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedInPlaceOfServiceQuery = SqlRender.renderSql(SqlTranslate.translateSql(inPlaceOfServiceQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
@@ -170,7 +170,7 @@ public class CorelatedCriteria_5_3_0_Test extends AbstractDatabaseTest {
     visitDetail.placeOfServiceCS = notInCsSelection;
     
     // translate to PG
-    String notInPlaceOfServiceQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String notInPlaceOfServiceQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     notInPlaceOfServiceQuery = notInPlaceOfServiceQuery.replace("#Codesets", RESULTS_SCHEMA + ".codesets");
     String translatedNotInPlaceOfServiceQuery = SqlRender.renderSql(SqlTranslate.translateSql(notInPlaceOfServiceQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
