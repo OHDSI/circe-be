@@ -88,7 +88,7 @@ public class ConceptSetDbTest extends AbstractDatabaseTest {
     final ITable actualResult = dbUnitCon.createQueryTable("inclause.result", translatedConceptsetQuery);
 
     // Load expected data from an XML dataset
-    final String[] testDataSetsVerify = new String[] {"/conceptSet/inClause_VERIFY.json"};
+    final String[] testDataSetsVerify = new String[] {"/conceptset/inClause_VERIFY.json"};
     final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
     final ITable expectedResult = expectedDataSet.getTable("inclause.result");
 
