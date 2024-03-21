@@ -111,7 +111,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     ConditionEraSqlBuilder<ConditionEra> builder = new ConditionEraSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("conditionEra.simple", query), new String[]{"person_id", "start_date"}));
@@ -119,7 +121,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("conditionEra.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -155,7 +157,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     ConditionOccurrenceSqlBuilder<ConditionOccurrence> builder = new ConditionOccurrenceSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("conditionOccurrence.simple", query), new String[]{"person_id", "start_date"}));
@@ -163,7 +167,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("conditionOccurrence.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -199,7 +203,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     DeathSqlBuilder<Death> builder = new DeathSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("death.simple", query), new String[]{"person_id", "start_date"}));
@@ -207,7 +213,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("death.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -243,7 +249,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     DeviceExposureSqlBuilder<DeviceExposure> builder = new DeviceExposureSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("deviceExposure.simple", query), new String[]{"person_id", "start_date"}));
@@ -251,7 +259,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("deviceExposure.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -287,7 +295,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     DoseEraSqlBuilder<DoseEra> builder = new DoseEraSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("doseEra.simple", query), new String[]{"person_id", "start_date"}));
@@ -295,7 +305,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("doseEra.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -331,7 +341,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     DrugEraSqlBuilder<DrugEra> builder = new DrugEraSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("drugEra.simple", query), new String[]{"person_id", "start_date"}));
@@ -339,7 +351,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("drugEra.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -375,7 +387,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     DrugExposureSqlBuilder<DrugExposure> builder = new DrugExposureSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("drugExposure.simple", query), new String[]{"person_id", "start_date"}));
@@ -383,7 +397,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("drugExposure.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -419,7 +433,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     MeasurementSqlBuilder<Measurement> builder = new MeasurementSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("measurement.simple", query), new String[]{"person_id", "start_date"}));
@@ -427,7 +443,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("measurement.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -463,7 +479,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     ObservationSqlBuilder<Observation> builder = new ObservationSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("observation.simple", query), new String[]{"person_id", "start_date"}));
@@ -471,7 +489,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("observation.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -507,7 +525,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     ObservationPeriod criteria = new ObservationPeriod();
 
     ObservationPeriodSqlBuilder<ObservationPeriod> builder = new ObservationPeriodSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("observationPeriod.simple", query), new String[]{"person_id", "start_date"}));
@@ -515,7 +535,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("observationPeriod.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -525,7 +545,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     userPeriod.endDate = "2000-09-30";
     criteria.userDefinedPeriod = userPeriod;
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("observationPeriod.user_defined", query), new String[]{"person_id", "start_date"}));
 
@@ -560,7 +580,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     PayerPlanPeriod criteria = new PayerPlanPeriod();
 
     PayerPlanPeriodSqlBuilder<PayerPlanPeriod> builder = new PayerPlanPeriodSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("payerPlanPeriod.simple", query), new String[]{"person_id", "start_date"}));
@@ -568,7 +590,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("payerPlanPeriod.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -578,7 +600,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     userPeriod.endDate = "2000-09-30";
     criteria.userDefinedPeriod = userPeriod;
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("payerPlanPeriod.user_defined", query), new String[]{"person_id", "start_date"}));
 
@@ -614,7 +636,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     ProcedureOccurrenceSqlBuilder<ProcedureOccurrence> builder = new ProcedureOccurrenceSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("procedureOccurrence.simple", query), new String[]{"person_id", "start_date"}));
@@ -622,7 +646,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("procedureOccurrence.date_adjust", query), new String[]{"person_id", "start_date"}));
 
@@ -659,7 +683,9 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
 
     VisitOccurrenceSqlBuilder<VisitOccurrence> builder = new VisitOccurrenceSqlBuilder<>();
-    String query = renderQuery(builder.getCriteriaSql(criteria));
+    BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
+    String query = renderQuery(builder.getCriteriaSql(criteria, options));
 
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("visitOccurrence.simple", query), new String[]{"person_id", "start_date"}));
@@ -667,7 +693,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 2: adjust start and end dates
     criteria.dateAdjustment = createDateAdjustment(DateAdjustment.DateType.START_DATE, 15, DateAdjustment.DateType.END_DATE, -10);
 
-    query = renderQuery(builder.getCriteriaSql(criteria));
+    query = renderQuery(builder.getCriteriaSql(criteria, options));
     // Store actual records from criteria query into actualTables
     actualTables.add(new SortedTable(dbUnitCon.createQueryTable("visitOccurrence.date_adjust", query), new String[]{"person_id", "start_date"}));
 

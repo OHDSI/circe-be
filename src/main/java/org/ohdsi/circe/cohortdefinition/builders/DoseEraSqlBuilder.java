@@ -23,7 +23,7 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
-  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.dose_era_id", "de.drug_concept_id, de.unit_concept_id, de.dose_value"));
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("dera.person_id", "dera.dose_era_id", "dera.drug_concept_id", "dera.unit_concept_id", "dera.dose_value"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -57,21 +57,26 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
 
     String codesetClause = "";
     if (criteria.codesetId != null) {
-      codesetClause = String.format("where de.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
+      codesetClause = String.format("where dera.drug_concept_id in (SELECT concept_id from  #Codesets where codeset_id = %d)", criteria.codesetId);
     }
     return StringUtils.replace(query, "@codesetClause", codesetClause);
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first) {
       whereClauses.add("C.ordinal = 1");
-      query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY de.person_id ORDER BY de.dose_era_start_date, de.dose_era_id) as ordinal");
+      query = StringUtils.replace(query, "@ordinalExpression", ", row_number() over (PARTITION BY dera.person_id ORDER BY dera.dose_era_start_date, dera.dose_era_id) as ordinal");
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+      }
+    query = StringUtils.replace(query, "@concept_id", "");
 
     return query;
   }
@@ -90,19 +95,28 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
- 
+
+    // unit
+    if (criteria.unit != null && criteria.unit.length > 0) {
+      selectCols.add("dera.unit_concept_id");
+    }
+
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "de.dose_era_start_date" : "de.dose_era_end_date",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "de.dose_era_start_date" : "de.dose_era_end_date"));
+              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "dera.dose_era_start_date" : "dera.dose_era_end_date",
+              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "dera.dose_era_start_date" : "dera.dose_era_end_date"));
     } else {
-      selectCols.add("de.dose_era_start_date as start_date, de.dose_era_end_date as end_date");
+      selectCols.add("dera.dose_era_start_date as start_date, dera.dose_era_end_date as end_date");
     }
 
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("dera.drug_concept_id concept_id");
+    }
     return selectCols;
   }
 

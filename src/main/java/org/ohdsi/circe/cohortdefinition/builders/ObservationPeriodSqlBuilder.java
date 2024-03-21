@@ -73,13 +73,16 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
-
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+    }
+    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -91,6 +94,8 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     } else {
       selectCols.add("op.observation_period_start_date as start_date, op.observation_period_end_date as end_date");
     }
+
+    selectCols.add("op.period_type_concept_id concept_id");
     return selectCols;
   }
 
@@ -144,7 +149,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     // periodType
     if (criteria.periodType != null && criteria.periodType.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.periodType);
-      whereClauses.add(String.format("C.period_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
     // periodLength

@@ -24,7 +24,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
-  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("ppp.person_id", "ppp.payer_plan_period_id"));
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("ppp.person_id", "ppp.payer_plan_period_id", "ppp.payer_concept_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -70,13 +70,16 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
-
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+    }
+    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -126,6 +129,10 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "ppp.payer_plan_period_start_date" : "ppp.payer_plan_period_end_date"));
     } else {
       selectCols.add("ppp.payer_plan_period_start_date as start_date, ppp.payer_plan_period_end_date as end_date");
+    }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("ppp.payer_concept_id concept_id");
     }
     return selectCols;
   }
@@ -200,7 +207,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
 
     // payer concept
     if (criteria.payerConcept != null) {
-      whereClauses.add(String.format("C.payer_concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.payerConcept));
+      whereClauses.add(String.format("C.concept_id in (SELECT concept_id from #Codesets where codeset_id = %d)", criteria.payerConcept));
     }
 
     // plan concept

@@ -21,7 +21,7 @@ FROM (
 ) E
 ;
 
-select et.event_id, et.person_id, ERAS.era_end_date as end_date
+select et.event_id, et.person_id, ERAS.era_end_date as end_date@concept_id @et_qe_temp_id
 INTO #strategy_ends
 from @eventTable et
 JOIN 

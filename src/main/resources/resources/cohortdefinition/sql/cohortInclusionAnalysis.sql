@@ -39,5 +39,5 @@ FROM
   from @results_database_schema.cohort_inclusion_result sr
   CROSS JOIN (select count(*) as total_rules from #inclusion_rules) RuleTotal
   where sr.mode_id = @inclusionImpactMode and sr.@cohort_id_field_name = @target_cohort_id and sr.inclusion_rule_mask = POWER(cast(2 as bigint),RuleTotal.total_rules)-1
-) FC
+  ) FC
 ;

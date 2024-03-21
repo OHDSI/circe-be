@@ -55,6 +55,8 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
           String[] verifySets,
           List<CriteriaColumn> additionalColumns) throws Exception {
     final CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
+    final BuilderOptions options = new BuilderOptions();
+    options.setRetainCohortCovariates(false);
 
     // prepare results schema for the specified options.resultSchema
     prepareSchema(resultsSchema, RESULTS_DDL_PATH);
@@ -67,7 +69,7 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
 
     // translate to PG
     String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, resultsSchema + ".cohort", "cdm", 1);
-    String query = queryBuilder.getWindowedCriteriaQuery(wc, eventTable);
+    String query = queryBuilder.getWindowedCriteriaQuery(wc, eventTable,options);
     String translatedSql = SqlRender.renderSql(SqlTranslate.translateSql(query, "postgresql"),
             new String[]{"cdm_database_schema"},
             new String[]{"cdm"});
@@ -83,7 +85,6 @@ public class WindowCriteria_5_0_0_Test extends AbstractDatabaseTest {
     Assertion.assertEquals(expectedTable, actualTable);
 
     // requesting additional columns
-    BuilderOptions options = new BuilderOptions();
     options.additionalColumns = additionalColumns;
     String queryWithColumns = queryBuilder.getWindowedCriteriaQuery(wc, eventTable, options);
     String translatedWithColumnsSql = SqlRender.renderSql(SqlTranslate.translateSql(queryWithColumns, "postgresql"),

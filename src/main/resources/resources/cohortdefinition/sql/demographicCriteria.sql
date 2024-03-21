@@ -1,5 +1,6 @@
 -- Begin Demographic Criteria
 SELECT @indexId as index_id, e.person_id, e.event_id
+  --@nullAdditionColumns
 FROM @eventTable E
 JOIN @cdm_database_schema.PERSON P ON P.PERSON_ID = E.PERSON_ID
 @whereClause

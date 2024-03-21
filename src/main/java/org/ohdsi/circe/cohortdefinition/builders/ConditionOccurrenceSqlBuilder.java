@@ -64,7 +64,7 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first == true) {
@@ -73,12 +73,17 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    // If save covariates is included, add the concept_id column
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+    }
+    query = StringUtils.replace(query, "@concept_id", "");
 
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
     if (criteria.conditionType != null && criteria.conditionType.length > 0) {
@@ -103,6 +108,10 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "co.condition_start_date" : "COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date))"));
     } else {
       selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
+    }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("co.condition_concept_id concept_id");
     }
     return selectCols;
   }

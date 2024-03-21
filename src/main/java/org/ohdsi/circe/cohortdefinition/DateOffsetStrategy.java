@@ -38,7 +38,7 @@ public class DateOffsetStrategy extends EndStrategy {
   public int offset = 0;
   
   @Override
-  public String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable) {
-    return dispatcher.getStrategySql(this, eventTable);
+  public String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable, Boolean retainCohortCovariates) {
+    return dispatcher.getStrategySql(this, eventTable, retainCohortCovariates);
   }
 }

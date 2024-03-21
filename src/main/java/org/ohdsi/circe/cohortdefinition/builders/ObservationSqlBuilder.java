@@ -49,6 +49,12 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
         return "C.value_as_number";
       case DURATION:
         return "CAST(1 as int)";
+      case VALUE_AS_STRING:
+        return "C.value_as_string";
+      case VALUE_AS_CONCEPT_ID:
+        return "C.value_as_concept_id";
+      case UNIT:
+        return "C.unit_concept_id";
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Observation:" + column.toString());
     }
@@ -66,7 +72,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first) {
@@ -75,12 +81,59 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+      // measurementType
+      if (criteria.observationType != null && criteria.observationType.length > 0) {
+        query = StringUtils.replace(query, "@c_observation_type_concept_id", ", C.observation_type_concept_id");
+      }
+
+      // valueAsNumber
+//      if (criteria.valueAsNumber != null) {
+      query = StringUtils.replace(query, "@c_value_as_number", ", C.value_as_number");
+//      }
+
+
+      // valueAsString
+      if (criteria.valueAsString != null) {
+        query = StringUtils.replace(query, "@c_value_as_string", ", C.value_as_string");
+      }
+
+      // valueAsConcept
+      if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+        query = StringUtils.replace(query, "@c_value_as_concept_id", ", C.value_as_concept_id");
+      }
+
+      // qualifier
+      if (criteria.qualifier != null && criteria.qualifier.length > 0) {
+        query = StringUtils.replace(query, "@c_qualifier_concept_id", ", C.qualifier_concept_id");
+      }
+
+      // unit
+      if (criteria.unit != null && criteria.unit.length > 0) {
+        query = StringUtils.replace(query, "@c_unit_concept_id", ", C.unit_concept_id");
+      }
+
+      // providerSpecialty
+      if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+        query = StringUtils.replace(query, "@c_provider_id", ", C.provider_id");
+      }
+
+    }
+    query = StringUtils.replace(query, "@concept_id", "");
+    query = StringUtils.replace(query, "@c_observation_type_concept_id", "");
+    query = StringUtils.replace(query, "@c_value_as_number", "");
+    query = StringUtils.replace(query, "@c_value_as_string", "");
+    query = StringUtils.replace(query, "@c_value_as_concept_id", "");
+    query = StringUtils.replace(query, "@c_qualifier_concept_id", "");
+    query = StringUtils.replace(query, "@c_unit_concept_id", "");
+    query = StringUtils.replace(query, "@c_provider_id", "");
 
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -108,6 +161,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     if (criteria.unit != null && criteria.unit.length > 0) {
       selectCols.add("o.unit_concept_id");
     }
+
     // providerSpecialty
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
       selectCols.add("o.provider_id");
@@ -120,6 +174,10 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "o.observation_date" : "DATEADD(day,1,o.observation_date)"));
     } else {
       selectCols.add("o.observation_date as start_date, DATEADD(day,1,o.observation_date) as end_date");
+    }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("o.observation_concept_id concept_id");
     }
     return selectCols;
   }

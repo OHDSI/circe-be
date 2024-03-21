@@ -142,7 +142,7 @@
     <dependency>
       <groupId>org.ohdsi.sql</groupId>
       <artifactId>SqlRender</artifactId>
-      <version>1.6.8</version>
+      <version>1.16.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends CriteriaSqlBuilder<T> {
@@ -55,7 +56,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
     // first
     if (criteria.first != null && criteria.first == true) {
       whereClauses.add("C.ordinal = 1");
@@ -63,11 +64,15 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    if (options != null && options.isRetainCohortCovariates()) {
+      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+    }
+    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -94,7 +99,10 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     } else {
       selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
     }
-
+// If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("vo.visit_concept_id concept_id");
+    }
     return selectCols;
   }
 

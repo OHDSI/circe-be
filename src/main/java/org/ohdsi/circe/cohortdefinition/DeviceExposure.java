@@ -19,6 +19,7 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
 import org.ohdsi.circe.vocabulary.Concept;
 
@@ -66,6 +67,9 @@ public class DeviceExposure extends Criteria {
 
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("UnitConceptId")
+  public Concept[] unitConceptId;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
