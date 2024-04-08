@@ -159,8 +159,13 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     ArrayList<String> selectColsPE = new ArrayList<>();
     if (options.isRetainCohortCovariates()) {
 		eventQuery = StringUtils.replace(eventQuery, "@concept_id", ", Q.concept_id");
-        eventQuery = criteria.embedWrapCriteriaQuery(eventQuery, selectColsPE);
-    } else {
+		if (criteria instanceof Measurement) {
+			eventQuery = measurementSqlBuilder.embedWrapCriteriaQuery(eventQuery, criteria, selectColsPE);
+		}
+		if (criteria instanceof Observation) {
+			eventQuery = observationSqlBuilder.embedWrapCriteriaQuery(eventQuery, criteria, selectColsPE);
+        }
+		eventQuery = StringUtils.replace(eventQuery, "@QAdditionalColumnsInclusionN", "");    } else {
       eventQuery = StringUtils.replace(eventQuery, "@concept_id", "");
       eventQuery = StringUtils.replace(eventQuery, "@QAdditionalColumnsInclusionN", "");
     }
@@ -290,24 +295,42 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return this.buildExpressionQuery(CohortExpression.fromJson(expression), options);
   }
 
-	// Function all full field select for union all
-    private void addInclusionGroup(List<List<ColumnFieldData>> listFields, CriteriaGroup cg, int indexCG,
-			List<String> inclusionRuleInsertN, List<String> inclusionRuleGroupN) {
-        
-        listFields.forEach(l -> {
-            if (listFields.indexOf(l) == indexCG) {
-                l.forEach(s -> {
-                    inclusionRuleInsertN.add(", " + s.getName() + " " + s.getName() + "_" + indexCG);
-                    inclusionRuleGroupN.add(", AC." + s.getName());
-                });
-            } else {
-                l.forEach(s -> inclusionRuleInsertN
-                        .add(", CAST(null as " + s.getDataType() + ") " + s.getName() + "_" + listFields.indexOf(l)));
-            }
-        });
-        
+	private void addInclusionGroup(List<InclusionRule> rules, CriteriaGroup cg, int indexCG,
+		for (int i = 0; i < rules.size(); i++) {
+			List<CorelatedCriteria> cgList = Arrays.asList(cg.criteriaList);
+			if (i == indexCG && cgList.stream()
+					.anyMatch(c -> c.criteria instanceof Measurement || c.criteria instanceof Observation)) {
+				inclusionRuleInsertN.add(", value_as_number value_as_number_" + i);
+				inclusionRuleGroupN.add(", AC.value_as_number");
+				inclusionRuleInsertN.add(", value_as_string value_as_string_" + i);
+				inclusionRuleGroupN.add(", AC.value_as_string");
+				inclusionRuleInsertN.add(", value_as_concept_id value_as_concept_id_" + i);
+				inclusionRuleGroupN.add(", AC.value_as_concept_id");
+				inclusionRuleInsertN.add(", unit_concept_id unit_concept_id_" + i);
+				inclusionRuleGroupN.add(", AC.unit_concept_id");
+				inclusionRuleInsertN.add(", provider_id provider_id_" + i);
+				inclusionRuleGroupN.add(", AC.provider_id");
+				inclusionRuleInsertN.add(", qualifier_concept_id qualifier_concept_id_" + i);
+				inclusionRuleGroupN.add(", AC.qualifier_concept_id");
+				inclusionRuleInsertN.add(", observation_type_concept_id observation_type_concept_id_" + i);
+				inclusionRuleGroupN.add(", AC.observation_type_concept_id");
+				inclusionRuleInsertN.add(", range_low range_low_" + i);
+				inclusionRuleGroupN.add(", AC.range_low");
+				inclusionRuleInsertN.add(", range_high range_high_" + i);
+				inclusionRuleGroupN.add(", AC.range_high");
+			} else {
+				inclusionRuleInsertN.add(", CAST(null as numeric) value_as_number_" + i);
+				inclusionRuleInsertN.add(", null value_as_string_" + i);
+				inclusionRuleInsertN.add(", CAST(null as int) value_as_concept_id_" + i);
+				inclusionRuleInsertN.add(", CAST(null as int) unit_concept_id_" + i);
+				inclusionRuleInsertN.add(", CAST(null as int) provider_id_" + i);
+				inclusionRuleInsertN.add(", CAST(null as int) qualifier_concept_id_" + i);
+				inclusionRuleInsertN.add(", CAST(null as int) observation_type_concept_id_" + i);
+				inclusionRuleInsertN.add(", CAST(null as numeric) range_low_" + i);
+				inclusionRuleInsertN.add(", CAST(null as numeric) range_high_" + i);
+			}
+		}
 	}
-
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
@@ -365,10 +388,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
           ArrayList<String> inclusionRuleGroupN = new ArrayList<>();
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@conceptid", ", pe.concept_id");
 
-          this.addInclusionGroup(listField, cg, i, inclusionRuleInsertN, inclusionRuleGroupN);
-          
+	      this.addInclusionGroup(expression.inclusionRules, cg, i, inclusionRuleInsertN, inclusionRuleGroupN);
 	      lstFieldRuleInsertNValues.add(StringUtils.join(inclusionRuleInsertN, ""));
-	      
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsInclusionN", StringUtils.join(lstFieldRuleInsertNValues, " "));
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsCriteriaQuery", StringUtils.join(inclusionRuleGroupN, " "));
         } else {
@@ -526,9 +547,30 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       additionalCriteriaQueries.add(acQuery);
       indexId++;
 
-      query = cc.criteria.embedCriteriaGroup(query);
-      
-    }
+		  if (retainCohortCovariates) {
+		  	if (cc.criteria instanceof Measurement) {
+		  		query = measurementSqlBuilder.embedCriteriaGroup(query, cc.criteria);
+		  	}
+		  	else if (cc.criteria instanceof Observation) {
+		  		query = observationSqlBuilder.embedCriteriaGroup(query, cc.criteria);
+		  	}else {
+          ArrayList<String> selectCols = new ArrayList<>();
+          selectCols.add(", CAST(null as numeric) value_as_number");
+          selectCols.add(", null as value_as_string");
+          selectCols.add(", CAST(null as int) value_as_concept_id");
+          selectCols.add(", CAST(null as int) unit_concept_id");
+          selectCols.add(", CAST(null as int) provider_id");
+          selectCols.add(", CAST(null as int) qualifier_concept_id");
+          selectCols.add(", CAST(null as int) observation_type_concept_id");
+          selectCols.add(", CAST(null as numeric) range_low");
+          selectCols.add(", CAST(null as numeric) range_high");
+          query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectCols, ""));
+          query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectCols, ""));
+        }
+      }
+		  query = StringUtils.replace(query, "@e.additonColumns", "");
+		  query = StringUtils.replace(query, "@additonColumnsGroup", "");
+      query = StringUtils.replace(query, "@e.additonGroupColumns", "");    }
 
     for (DemographicCriteria dc : group.demographicCriteriaList) {
       String dcQuery = this.getDemographicCriteriaQuery(dc, eventTable); //ac.accept(this);
@@ -583,6 +625,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     //If it does not exist in the Measurement or Observation table, remove it
     query = StringUtils.replace(query, "@e.additonColumns", "");
+    query = StringUtils.replace(query, "@e.additonGroupColumns", "");
     query = StringUtils.replace(query, "@additonColumnsGroup", "");
 
     return query;
@@ -661,9 +704,31 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       query = StringUtils.replace(query, "@additionalColumns", "");
     }
 
-    query = criteria.criteria.embedWindowedCriteriaQuery(query);
-    query = criteria.criteria.embedWindowedCriteriaQueryP(query);
-
+    if (options != null && options.isRetainCohortCovariates()) {
+      if (criteria.criteria instanceof Measurement) {
+        query = measurementSqlBuilder.embedWindowedCriteriaQuery(query, criteria.criteria, options);
+        query = measurementSqlBuilder.embedWindowedCriteriaQueryP(query, criteria.criteria, options);
+      } else if (criteria.criteria instanceof Observation) {
+        query = observationSqlBuilder.embedWindowedCriteriaQuery(query, criteria.criteria, options);
+        query = observationSqlBuilder.embedWindowedCriteriaQueryP(query, criteria.criteria, options);
+      } else {
+        ArrayList<String> selectCols = new ArrayList<>();
+        selectCols.add(", CAST(null as numeric) value_as_number");
+        selectCols.add(", null as value_as_string");
+        selectCols.add(", CAST(null as int) value_as_concept_id");
+        selectCols.add(", CAST(null as int) unit_concept_id");
+        selectCols.add(", CAST(null as int) provider_id");
+        selectCols.add(", CAST(null as int) qualifier_concept_id");
+        selectCols.add(", CAST(null as int) observation_type_concept_id");
+        selectCols.add(", CAST(null as numeric) range_low");
+        selectCols.add(", CAST(null as numeric) range_high");
+        query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      }
+      }
+    }
+	  query = StringUtils.replace(query, "@additionColumnscc", "");
+	  query = StringUtils.replace(query, "@additionColumnGroupscc", "");
+	  query = StringUtils.replace(query, "@p.additionColumns", "");
     // build index date window expression
     String startExpression;
     String endExpression;
