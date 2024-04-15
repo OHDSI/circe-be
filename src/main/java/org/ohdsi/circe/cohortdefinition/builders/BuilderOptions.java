@@ -7,6 +7,8 @@ public class BuilderOptions {
 
   public List<CriteriaColumn> additionalColumns = new ArrayList<>();
   
+  public List<CriteriaColumn> localWindowsSelectedColumns;
+  
   private boolean useDatetime;
   private boolean retainCohortCovariates;
 

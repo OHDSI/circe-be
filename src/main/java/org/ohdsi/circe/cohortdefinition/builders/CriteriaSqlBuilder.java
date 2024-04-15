@@ -100,4 +100,8 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
     
     return whereClauses;
   }
+  
+  protected void addSelectedField(T criteria, BuilderOptions option) {
+      return;
+  }
 }
