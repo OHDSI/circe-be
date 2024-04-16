@@ -83,53 +83,47 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        cColumns.add("C.value_as_number");
+        
       // measurementType
       if (criteria.observationType != null && criteria.observationType.length > 0) {
-        query = StringUtils.replace(query, "@c_observation_type_concept_id", ", C.observation_type_concept_id");
+          cColumns.add("C.observation_type_concept_id");
       }
-
-      // valueAsNumber
-//      if (criteria.valueAsNumber != null) {
-      query = StringUtils.replace(query, "@c_value_as_number", ", C.value_as_number");
-//      }
-
 
       // valueAsString
       if (criteria.valueAsString != null) {
-        query = StringUtils.replace(query, "@c_value_as_string", ", C.value_as_string");
+          cColumns.add("C.value_as_string");
       }
 
       // valueAsConcept
       if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
-        query = StringUtils.replace(query, "@c_value_as_concept_id", ", C.value_as_concept_id");
+          cColumns.add("C.value_as_concept_id");
       }
 
       // qualifier
       if (criteria.qualifier != null && criteria.qualifier.length > 0) {
-        query = StringUtils.replace(query, "@c_qualifier_concept_id", ", C.qualifier_concept_id");
+          cColumns.add("C.qualifier_concept_id");
       }
 
       // unit
       if (criteria.unit != null && criteria.unit.length > 0) {
-        query = StringUtils.replace(query, "@c_unit_concept_id", ", C.unit_concept_id");
+          cColumns.add("C.unit_concept_id");
       }
 
       // providerSpecialty
       if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-        query = StringUtils.replace(query, "@c_provider_id", ", C.provider_id");
+          cColumns.add("C.provider_id");
       }
-
-    }
-    query = StringUtils.replace(query, "@concept_id", "");
-    query = StringUtils.replace(query, "@c_observation_type_concept_id", "");
-    query = StringUtils.replace(query, "@c_value_as_number", "");
-    query = StringUtils.replace(query, "@c_value_as_string", "");
-    query = StringUtils.replace(query, "@c_value_as_concept_id", "");
-    query = StringUtils.replace(query, "@c_qualifier_concept_id", "");
-    query = StringUtils.replace(query, "@c_unit_concept_id", "");
-    query = StringUtils.replace(query, "@c_provider_id", "");
+      
+      query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+      
+  } else {
+      query = StringUtils.replace(query, "@c.additionalColumns", "");
+  }
 
     return query;
   }

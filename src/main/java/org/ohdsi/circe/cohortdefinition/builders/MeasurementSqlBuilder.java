@@ -88,49 +88,45 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
-      query = StringUtils.replace(query, "@c_value_as_number", ", C.value_as_number");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        cColumns.add("C.value_as_number");
       if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
-        query = StringUtils.replace(query, "@c_value_as_concept_id", ", C.value_as_concept_id");
+            cColumns.add("C.value_as_concept_id");
       }
       // unit
       if (criteria.unit != null && criteria.unit.length > 0) {
-        query = StringUtils.replace(query, "@c_unit_concept_id", ", C.unit_concept_id");
+          cColumns.add("C.unit_concept_id");
       }
       // range_low
       if (criteria.rangeLow != null) {
-        query = StringUtils.replace(query, "@c_range_low", ", C.range_low");
+          cColumns.add("C.range_low");
       }
 
       // range_high
       if (criteria.rangeHigh != null) {
-        query = StringUtils.replace(query, "@c_range_high", ", C.range_high");
+          cColumns.add("C.range_high");
       }
 
       // providerSpecialty
       if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-        query = StringUtils.replace(query, "@c_provider_id", ", C.provider_id");
+          cColumns.add("C.provider_id");
       }
       
       // measurementType
       if (criteria.measurementType != null && criteria.measurementType.length > 0) {
-          query = StringUtils.replace(query, "@c_measurement_type_concept_id", ", C.measurement_type_concept_id");
+          cColumns.add("C.measurement_type_concept_id");
       }
       
       // operator
       if (criteria.operator != null && criteria.operator.length > 0) {
-          query = StringUtils.replace(query, "@c_operator_concept_id", ", C.operator_concept_id");
+          cColumns.add("C.operator_concept_id");
       }
+      
+      query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+      query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
-    query = StringUtils.replace(query, "@c_value_as_number", "");
-    query = StringUtils.replace(query, "@c_value_as_concept_id", "");
-    query = StringUtils.replace(query, "@c_unit_concept_id", "");
-    query = StringUtils.replace(query, "@c_provider_id", "");
-    query = StringUtils.replace(query, "@c_range_low", "");
-    query = StringUtils.replace(query, "@c_range_high", "");
-    query = StringUtils.replace(query, "@c_measurement_type_concept_id", "");
-    query = StringUtils.replace(query, "@c_operator_concept_id", "");
     return query;
   }
 

@@ -148,6 +148,11 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     // as this logic was fully missing comparing to the other SQL builders adding only the ones which belong to the datetime functionality
     ArrayList<String> selectCols = new ArrayList<>();
 
+    selectCols.add("s.person_id");
+    selectCols.add("s.specimen_id");
+    selectCols.add("s.specimen_date");
+    selectCols.add("s.specimen_concept_id");
+    
     // unit
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
       selectCols.add("s.specimen_concept_id concept_id");

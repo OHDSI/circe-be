@@ -690,8 +690,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getWindowedCriteriaQuery(String sqlTemplate, WindowedCriteria criteria, String eventTable, BuilderOptions options) {
-      options.localWindowsSelectedColumns = new ArrayList<>();
-      
     String query = sqlTemplate;
     boolean checkObservationPeriod = !criteria.ignoreObservationPeriod;
 
