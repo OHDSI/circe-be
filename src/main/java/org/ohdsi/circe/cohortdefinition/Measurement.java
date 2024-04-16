@@ -20,8 +20,6 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import static org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder.checkColumnTable;
-
 import java.util.ArrayList;
 import java.util.List;
 

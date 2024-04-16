@@ -18,7 +18,6 @@ import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumeri
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
-import static org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder.checkColumnTable;
 
 public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBuilder<T> {
 

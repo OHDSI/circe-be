@@ -11,14 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
-import static org.ohdsi.circe.cohortdefinition.CohortExpressionQueryBuilder.checkColumnTable;
 
 public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBuilder<T> {
 

@@ -1010,23 +1010,4 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return strategySql;
   }
 
-	public static Boolean checkColumnTable(Criteria criteria, String column) {
-    try {
-      Class<?> criteriaClass = criteria.getClass();
-
-      // Get the criteria field
-      Field criteriaField = criteriaClass.getDeclaredField(column);
-      // Make the criteria field accessible, as it might be private
-      criteriaField.setAccessible(true);
-      Object criteriaValue = criteriaField.get(criteria);
-      return Arrays.stream(criteria.getClass().getDeclaredFields()).anyMatch(f -> f.getName().equals(column)) && criteriaValue != null;
-    } catch (NoSuchFieldException e) {
-      return false;
-    } catch (IllegalAccessException e) {
-      return false;
-    }
-  }
-
-// </editor-fold>
-
 }
