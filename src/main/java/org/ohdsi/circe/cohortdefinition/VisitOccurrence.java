@@ -19,8 +19,15 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.analysis.versioning.CdmVersion;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -80,5 +87,93 @@ public class VisitOccurrence extends Criteria {
     return dispatcher.getCriteriaSql(this, options);
   }
   
+  @Override
+  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+      List<ColumnFieldData> selectCols = new ArrayList<>();
+      
+      if (visitSourceConcept != null) {
+          selectCols.add(new ColumnFieldData("visit_source_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      return selectCols;
+  }
   
+  @Override
+  public String embedCriteriaGroup(String query) {
+      ArrayList<String> selectColsCQ = new ArrayList<>();
+      ArrayList<String> selectColsG = new ArrayList<>();
+      
+      if (visitSourceConcept != null) {
+          selectColsCQ.add(", CQ.visit_source_concept_id");
+          selectColsG.add(", G.visit_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsCQ.add(", CQ.provider_id");
+          selectColsG.add(", G.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
+      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQuery(String query) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (visitSourceConcept != null) {
+          selectCols.add(", cc.visit_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", cc.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQueryP(String query) {
+      ArrayList<String> selectColsA = new ArrayList<>();
+      
+      if (visitSourceConcept != null) {
+          selectColsA.add(", A.visit_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsA.add(", A.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@p.additionColumns", StringUtils.join(selectColsA, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (visitSourceConcept != null) {
+          selectCols.add(", Q.visit_source_concept_id");
+          selectColsPE.add(", PE.visit_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", Q.provider_id");
+          selectColsPE.add(", PE.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
+      return query;
+  }
 }

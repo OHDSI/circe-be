@@ -69,11 +69,19 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
-    // If save covariates is included, add the concept_id column
+    
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if (criteria.occurrenceCount != null) {
+            cColumns.add("C.condition_occurrence_count");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
 
     return query;
   }

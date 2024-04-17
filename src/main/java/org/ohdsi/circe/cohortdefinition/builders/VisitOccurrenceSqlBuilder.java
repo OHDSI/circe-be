@@ -64,10 +64,24 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+     
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if (criteria.visitSourceConcept != null) {
+            cColumns.add("C.visit_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+            cColumns.add("C.provider_id");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 
@@ -102,6 +116,10 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
       selectCols.add("vo.visit_concept_id concept_id");
+    }
+        
+    if (criteria.visitSourceConcept != null) {
+        selectCols.add("vo.visit_source_concept_id");
     }
     return selectCols;
   }

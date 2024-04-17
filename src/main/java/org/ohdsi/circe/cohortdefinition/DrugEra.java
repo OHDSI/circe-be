@@ -19,7 +19,14 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -63,4 +70,89 @@ public class DrugEra extends Criteria {
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
     return dispatcher.getCriteriaSql(this, options);
   }  
+  
+  @Override
+  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+      List<ColumnFieldData> selectCols = new ArrayList<>();
+      
+      if (occurrenceCount != null) {
+          selectCols.add(new ColumnFieldData("drug_exposure_count", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (gapDays != null) {
+          selectCols.add(new ColumnFieldData("gap_days", ColumnFieldDataType.INTEGER));
+      }
+      
+      return selectCols;
+  }
+  
+  @Override
+  public String embedCriteriaGroup(String query) {
+      ArrayList<String> selectColsCQ = new ArrayList<>();
+      ArrayList<String> selectColsG = new ArrayList<>();
+      
+      if (occurrenceCount != null) {
+          selectColsCQ.add(", CQ.drug_exposure_count");
+          selectColsG.add(", G.drug_exposure_count");
+      }
+      
+      if (gapDays != null) {
+          selectColsCQ.add(", CQ.gap_days");
+          selectColsG.add(", G.gap_days");
+      }
+      
+      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
+      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQuery(String query) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (occurrenceCount != null) {
+          selectCols.add(", cc.drug_exposure_count");
+      }
+      
+      if (gapDays != null) {
+          selectCols.add(", cc.gap_days");
+      }
+      
+      query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQueryP(String query) {
+      ArrayList<String> selectColsA = new ArrayList<>();
+      
+      if (occurrenceCount != null) {
+          selectColsA.add(", A.drug_exposure_count");
+      }
+      
+      if (gapDays != null) {
+          selectColsA.add(", A.gap_days");
+      }
+      
+      query = StringUtils.replace(query, "@p.additionColumns", StringUtils.join(selectColsA, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (occurrenceCount != null) {
+          selectCols.add(", Q.drug_exposure_count");
+          selectColsPE.add(", PE.drug_exposure_count");
+      }
+      
+      if (gapDays != null) {
+          selectCols.add(", Q.gap_days");
+          selectColsPE.add(", PE.gap_days");
+      }
+      
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
+      return query;
+  }
 }

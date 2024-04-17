@@ -1,6 +1,6 @@
 -- Begin Observation Period Criteria
 select C.person_id, C.observation_period_id as event_id, @startDateExpression as start_date, @endDateExpression as end_date,
-       CAST(NULL as bigint) as visit_occurrence_id, C.start_date as sort_date@additionalColumns @concept_id
+       CAST(NULL as bigint) as visit_occurrence_id, C.start_date as sort_date@additionalColumns @c.additionalColumns
 
 from 
 (

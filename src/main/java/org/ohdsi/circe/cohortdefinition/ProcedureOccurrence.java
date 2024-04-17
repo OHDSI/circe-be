@@ -19,7 +19,14 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -69,4 +76,159 @@ public class ProcedureOccurrence extends Criteria {
     return dispatcher.getCriteriaSql(this, options);
   }
 
+  @Override
+  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+      List<ColumnFieldData> selectCols = new ArrayList<>();
+      
+      if (procedureType != null && procedureType.length > 0) {
+          selectCols.add(new ColumnFieldData("procedure_type_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (modifier != null && modifier.length > 0) {
+          selectCols.add(new ColumnFieldData("modifier_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (quantity != null) {
+          selectCols.add(new ColumnFieldData("quantity", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (procedureSourceConcept != null) {
+          selectCols.add(new ColumnFieldData("procedure_source_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      return selectCols;
+  }
+  
+  @Override
+  public String embedCriteriaGroup(String query) {
+      ArrayList<String> selectColsCQ = new ArrayList<>();
+      ArrayList<String> selectColsG = new ArrayList<>();
+      
+      if (procedureType != null && procedureType.length > 0) {
+          selectColsCQ.add(", CQ.procedure_type_concept_id");
+          selectColsG.add(", G.procedure_type_concept_id");
+      }
+      
+      if (modifier != null && modifier.length > 0) {
+          selectColsCQ.add(", CQ.modifier_concept_id");
+          selectColsG.add(", G.modifier_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectColsCQ.add(", CQ.quantity");
+          selectColsG.add(", G.quantity");
+      }
+      
+      if (procedureSourceConcept != null) {
+          selectColsCQ.add(", CQ.procedure_source_concept_id");
+          selectColsG.add(", G.procedure_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsCQ.add(", CQ.provider_id");
+          selectColsG.add(", G.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
+      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQuery(String query) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (procedureType != null && procedureType.length > 0) {
+          selectCols.add(", cc.procedure_type_concept_id");
+      }
+      
+      if (modifier != null && modifier.length > 0) {
+          selectCols.add(", cc.modifier_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectCols.add(", cc.quantity");
+      }
+      
+      if (procedureSourceConcept != null) {
+          selectCols.add(", cc.procedure_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", cc.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQueryP(String query) {
+      ArrayList<String> selectColsA = new ArrayList<>();
+      
+      if (procedureType != null && procedureType.length > 0) {
+          selectColsA.add(", A.procedure_type_concept_id");
+      }
+      
+      if (modifier != null && modifier.length > 0) {
+          selectColsA.add(", A.modifier_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectColsA.add(", A.quantity");
+      }
+      
+      if (procedureSourceConcept != null) {
+          selectColsA.add(", A.procedure_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsA.add(", A.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@p.additionColumns", StringUtils.join(selectColsA, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+      ArrayList<String> selectCols = new ArrayList<>();
+
+      if (procedureType != null && procedureType.length > 0) {
+          selectCols.add(", Q.procedure_type_concept_id");
+          selectColsPE.add(", PE.procedure_type_concept_id");
+      }
+      
+      if (modifier != null && modifier.length > 0) {
+          selectCols.add(", Q.modifier_concept_id");
+          selectColsPE.add(", PE.modifier_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectCols.add(", Q.quantity");
+          selectColsPE.add(", PE.quantity");
+      }
+      
+      if (procedureSourceConcept != null) {
+          selectCols.add(", Q.procedure_source_concept_id");
+          selectColsPE.add(", PE.procedure_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", Q.provider_id");
+          selectColsPE.add(", PE.provider_id");
+      }
+      
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
+      return query;
+  }
 }

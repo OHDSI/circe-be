@@ -74,10 +74,18 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
   @Override
   protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
-    if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
-    }
-    query = StringUtils.replace(query, "@concept_id", "");
+      if (options != null && options.isRetainCohortCovariates()) {
+          List<String> cColumns = new ArrayList<>();
+          cColumns.add("C.concept_id");
+          
+          if (criteria.periodType != null && criteria.periodType.length > 0) {
+              cColumns.add("C.period_type_concept_id");
+          }
+          
+          query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+      } else {
+          query = StringUtils.replace(query, "@c.additionalColumns", "");
+      }
     return query;
   }
 

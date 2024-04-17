@@ -1,6 +1,6 @@
 -- Begin Drug Era Criteria
 select C.person_id, C.drug_era_id as event_id, C.start_date, C.end_date,
-    CAST(NULL as bigint) as visit_occurrence_id,C.start_date as sort_date@additionalColumns @concept_id
+    CAST(NULL as bigint) as visit_occurrence_id,C.start_date as sort_date@additionalColumns @c.additionalColumns
 from 
 (
   select @selectClause @ordinalExpression

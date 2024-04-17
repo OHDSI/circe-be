@@ -20,7 +20,14 @@ package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -75,5 +82,187 @@ public class DeviceExposure extends Criteria {
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
     return dispatcher.getCriteriaSql(this, options);
   }
-
+  
+  @Override
+  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+      List<ColumnFieldData> selectCols = new ArrayList<>();
+      
+      if (deviceType != null && deviceType.length > 0) {
+          selectCols.add(new ColumnFieldData("device_type_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (quantity != null) {
+          selectCols.add(new ColumnFieldData("quantity", ColumnFieldDataType.INTEGER));
+      }
+      
+      if (uniqueDeviceId != null) {
+          selectCols.add(new ColumnFieldData("unique_device_id", ColumnFieldDataType.VARCHAR));
+      }
+      
+      if (deviceSourceConcept != null) {
+          selectCols.add(new ColumnFieldData("device_source_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      // unit
+      if (unitConceptId != null && unitConceptId.length > 0) {
+          selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
+      }
+      
+      return selectCols;
+  }
+  
+  @Override
+  public String embedCriteriaGroup(String query) {
+      ArrayList<String> selectColsCQ = new ArrayList<>();
+      ArrayList<String> selectColsG = new ArrayList<>();
+      
+      if (deviceType != null && deviceType.length > 0) {
+          selectColsCQ.add(", CQ.device_type_concept_id");
+          selectColsG.add(", G.device_type_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectColsCQ.add(", CQ.quantity");
+          selectColsG.add(", G.quantity");
+      }
+      
+      if (uniqueDeviceId != null) {
+          selectColsCQ.add(", CQ.unique_device_id");
+          selectColsG.add(", G.unique_device_id");
+      }
+      
+      if (deviceSourceConcept != null) {
+          selectColsCQ.add(", CQ.device_source_concept_id");
+          selectColsG.add(", G.device_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsCQ.add(", CQ.provider_id");
+          selectColsG.add(", G.provider_id");
+      }
+      
+      // unit
+      if (unitConceptId != null && unitConceptId.length > 0) {
+          selectColsCQ.add(", CQ.unit_concept_id");
+          selectColsG.add(", G.unit_concept_id");
+      }
+      
+      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
+      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQuery(String query) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (deviceType != null && deviceType.length > 0) {
+          selectCols.add(", cc.device_type_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectCols.add(", cc.quantity");
+      }
+      
+      if (uniqueDeviceId != null) {
+          selectCols.add(", cc.unique_device_id");
+      }
+      
+      if (deviceSourceConcept != null) {
+          selectCols.add(", cc.device_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", cc.provider_id");
+      }
+      
+      // unit
+      if (unitConceptId != null && unitConceptId.length > 0) {
+          selectCols.add(", cc.unit_concept_id");
+      }
+      
+      query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQueryP(String query) {
+      ArrayList<String> selectColsA = new ArrayList<>();
+      
+      if (deviceType != null && deviceType.length > 0) {
+          selectColsA.add(", A.device_type_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectColsA.add(", A.quantity");
+      }
+      
+      if (uniqueDeviceId != null) {
+          selectColsA.add(", A.unique_device_id");
+      }
+      
+      if (deviceSourceConcept != null) {
+          selectColsA.add(", A.device_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectColsA.add(", A.provider_id");
+      }
+      
+      // unit
+      if (unitConceptId != null && unitConceptId.length > 0) {
+          selectColsA.add(", A.unit_concept_id");
+      }
+      
+      query = StringUtils.replace(query, "@p.additionColumns", StringUtils.join(selectColsA, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if (deviceType != null && deviceType.length > 0) {
+          selectCols.add(", Q.device_type_concept_id");
+          selectColsPE.add(", PE.device_type_concept_id");
+      }
+      
+      if (quantity != null) {
+          selectCols.add(", Q.quantity");
+          selectColsPE.add(", PE.quantity");
+      }
+      
+      if (uniqueDeviceId != null) {
+          selectCols.add(", Q.unique_device_id");
+          selectColsPE.add(", PE.unique_device_id");
+      }
+      
+      if (deviceSourceConcept != null) {
+          selectCols.add(", Q.device_source_concept_id");
+          selectColsPE.add(", PE.device_source_concept_id");
+      }
+      
+      // providerSpecialty
+      if (providerSpecialty != null && providerSpecialty.length > 0) {
+          selectCols.add(", Q.provider_id");
+          selectColsPE.add(", PE.provider_id");
+      }
+      
+      // unit
+      if (unitConceptId != null && unitConceptId.length > 0) {
+          selectCols.add(", Q.unit_concept_id");
+          selectColsPE.add(", PE.unit_concept_id");
+      }
+      
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
+      return query;
+  }
 }

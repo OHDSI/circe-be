@@ -1,7 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 public enum ColumnFieldDataType {
-    INTEGER("int"), NUMERIC("numeric"), VARCHAR("varchar");
+    INTEGER("int"), NUMERIC("numeric"), VARCHAR("varchar"), DATE("date");
     
     private String type;
     

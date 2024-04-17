@@ -3,8 +3,6 @@ package org.ohdsi.circe.cohortdefinition.builders;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Criteria;
-import org.ohdsi.circe.cohortdefinition.Measurement;
-import org.ohdsi.circe.cohortdefinition.Observation;
 
 import java.util.List;
 import java.util.Set;

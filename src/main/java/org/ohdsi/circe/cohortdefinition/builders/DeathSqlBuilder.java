@@ -62,10 +62,26 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
 
   @Override
   protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
-    if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
-    }
-    query = StringUtils.replace(query, "@concept_id", "");
+      
+      if (options != null && options.isRetainCohortCovariates()) {
+          List<String> cColumns = new ArrayList<>();
+          cColumns.add("C.concept_id");
+          if (criteria.occurrenceStartDate != null) {
+              cColumns.add("C.death_date");
+          }
+          
+          if (criteria.deathType != null && criteria.deathType.length > 0) {
+              cColumns.add("C.death_type_concept_id");
+          }
+          
+          if (criteria.deathSourceConcept != null) {
+              cColumns.add("C.cause_concept_id");
+          }
+          
+          query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+      } else {
+          query = StringUtils.replace(query, "@c.additionalColumns", "");
+      }
     return query;
   }
 
@@ -87,6 +103,10 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
       selectCols.add("d.cause_concept_id concept_id");
+    }
+    
+    if (criteria.occurrenceStartDate != null) {
+        selectCols.add("d.death_date");
     }
 
     return selectCols;

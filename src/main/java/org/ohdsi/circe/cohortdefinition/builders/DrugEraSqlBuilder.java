@@ -75,9 +75,21 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
     }
 
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if (criteria.occurrenceCount != null) {
+            cColumns.add("C.drug_exposure_count");
+        }
+        
+        if (criteria.gapDays != null) {
+            cColumns.add("C.gap_days");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 

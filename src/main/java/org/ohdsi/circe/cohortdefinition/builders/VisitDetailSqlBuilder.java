@@ -63,9 +63,32 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        if (criteria.visitDetailStartDate != null) {
+            cColumns.add("C.visit_detail_start_date");
+        }
+        
+        if (criteria.visitDetailEndDate != null) {
+            cColumns.add("C.visit_detail_end_date");
+        }
+        
+        if (criteria.visitDetailTypeCS != null) {
+            cColumns.add("C.visit_detail_type_concept_id");
+        }
+        
+        if (criteria.visitDetailSourceConcept != null) {
+            cColumns.add("C.visit_detail_source_concept_id");
+        }
+        
+        if (criteria.providerSpecialtyCS != null) {
+            cColumns.add("C.provider_id");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 

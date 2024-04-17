@@ -75,9 +75,30 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     }
     // If save covariates is included, add the concept_id column
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if (criteria.conditionType != null && criteria.conditionType.length > 0) {
+            cColumns.add("C.condition_type_concept_id");
+        }
+        
+        if (criteria.conditionSourceConcept != null) {
+            cColumns.add("C.condition_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+            cColumns.add("C.provider_id");
+        }
+        
+        if (criteria.conditionStatus != null && criteria.conditionStatus.length > 0) {
+            cColumns.add("C.condition_status_concept_id");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
 
     return query;
   }
@@ -112,6 +133,10 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
       selectCols.add("co.condition_concept_id concept_id");
+    }
+
+    if (criteria.conditionSourceConcept != null) {
+        selectCols.add("co.condition_source_concept_id");
     }
     return selectCols;
   }

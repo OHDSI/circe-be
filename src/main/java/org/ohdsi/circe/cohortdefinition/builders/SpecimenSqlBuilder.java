@@ -68,10 +68,42 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    
     if (options != null && options.isRetainCohortCovariates()) {
-      query = StringUtils.replace(query, "@concept_id", ", C.concept_id");
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        if (criteria.occurrenceStartDate != null) {
+            cColumns.add("C.specimen_date");
+        }
+        
+        if (criteria.specimenType != null && criteria.specimenType.length > 0) {
+            cColumns.add("C.specimen_type_concept_id");
+        }
+        
+        if (criteria.unit != null && criteria.unit.length > 0) {
+            cColumns.add("C.unit_concept_id");
+        }
+        
+        if (criteria.quantity != null) {
+            cColumns.add("C.quantity");
+        }
+        
+        if (criteria.anatomicSite != null && criteria.anatomicSite.length > 0) {
+            cColumns.add("C.anatomic_site_concept_id");
+        }
+        
+        if (criteria.diseaseStatus != null && criteria.diseaseStatus.length > 0) {
+            cColumns.add("C.disease_status_concept_id");
+        }
+        
+        if (criteria.sourceId != null) {
+            cColumns.add("C.specimen_source_id");
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
     }
-    query = StringUtils.replace(query, "@concept_id", "");
     return query;
   }
 
