@@ -76,7 +76,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
-
+    if (options != null && options.isRetainCohortCovariates()) {
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         

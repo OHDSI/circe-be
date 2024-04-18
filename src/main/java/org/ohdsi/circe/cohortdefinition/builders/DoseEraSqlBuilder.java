@@ -72,7 +72,7 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
-
+    if (options != null && options.isRetainCohortCovariates()) {
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         if (criteria.eraStartDate != null) {
