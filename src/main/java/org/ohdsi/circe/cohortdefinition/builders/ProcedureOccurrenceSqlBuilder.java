@@ -135,7 +135,11 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("po.procedure_concept_id concept_id");
+        selectCols.add("po.procedure_concept_id concept_id");
+        
+        if (criteria.procedureSourceConcept != null) {
+            selectCols.add("po.procedure_source_concept_id");
+        }
     }
     return selectCols;
   }

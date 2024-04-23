@@ -128,6 +128,16 @@ left join inclusion_events ie on qe.concept_id = ie.concept_id
 @leftjoinEraStrategy
 ;
 
+-- If @results_database_schema."cohort_details_@target_cohort_id" exists, remove it and create new one.
+DO
+$do$
+BEGIN
+   if EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES where table_schema = '@results_database_schema' and TABLE_NAME = 'cohort_details_@target_cohort_id') THEN
+      DROP TABLE @results_database_schema."cohort_details_@target_cohort_id";
+   END IF;
+END
+$do$
+;
 
 select fc.*
 into @results_database_schema."cohort_details_@target_cohort_id"
@@ -138,28 +148,28 @@ TRUNCATE TABLE #final_cohort_details;
 DROP TABLE #final_cohort_details;
 }
 
-TRUNCATE TABLE #best_events;
-DROP TABLE #best_events;
+-- TRUNCATE TABLE #best_events;
+-- DROP TABLE #best_events;
 
-TRUNCATE TABLE #inclusion_rules;
-DROP TABLE #inclusion_rules;
+-- TRUNCATE TABLE #inclusion_rules;
+-- DROP TABLE #inclusion_rules;
 }
 
 @strategy_ends_cleanup
-TRUNCATE TABLE #cohort_rows;
-DROP TABLE #cohort_rows;
+-- TRUNCATE TABLE #cohort_rows;
+-- DROP TABLE #cohort_rows;
 
-TRUNCATE TABLE #final_cohort;
-DROP TABLE #final_cohort;
+-- TRUNCATE TABLE #final_cohort;
+-- DROP TABLE #final_cohort;
 
-TRUNCATE TABLE #inclusion_events;
-DROP TABLE #inclusion_events;
+-- TRUNCATE TABLE #inclusion_events;
+-- DROP TABLE #inclusion_events;
 
-TRUNCATE TABLE #qualified_events;
-DROP TABLE #qualified_events;
+-- TRUNCATE TABLE #qualified_events;
+-- DROP TABLE #qualified_events;
 
-TRUNCATE TABLE #included_events;
-DROP TABLE #included_events;
+-- TRUNCATE TABLE #included_events;
+-- DROP TABLE #included_events;
 
 TRUNCATE TABLE #Codesets;
 DROP TABLE #Codesets;

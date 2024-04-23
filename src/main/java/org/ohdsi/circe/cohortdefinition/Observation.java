@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -87,43 +89,39 @@ public class Observation extends Criteria {
   }  
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      // If save covariates is included, add the concept_id column
-      if (options != null && options.isRetainCohortCovariates()) {
-          selectCols.add(new ColumnFieldData("concept_id", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          selectCols.add(new ColumnFieldData("value_as_number", ColumnFieldDataType.NUMERIC));
+          
+          // observationType
+          if (observationType != null && observationType.length > 0) {
+              selectCols.add(new ColumnFieldData("observation_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (valueAsString != null) {
+              selectCols.add(new ColumnFieldData("value_as_string", ColumnFieldDataType.VARCHAR));
+          }
+          
+          if (valueAsConcept != null && valueAsConcept.length > 0) {
+              selectCols.add(new ColumnFieldData("value_as_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          // unit
+          if (unit != null && unit.length > 0) {
+              selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          // qualifier
+          if (qualifier != null && qualifier.length > 0) {
+              selectCols.add(new ColumnFieldData("qualifier_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          // providerSpecialty
+          if (providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+          }
       }
-      
-      selectCols.add(new ColumnFieldData("value_as_number", ColumnFieldDataType.NUMERIC));
-      
-      // observationType
-      if (observationType != null && observationType.length > 0) {
-          selectCols.add(new ColumnFieldData("observation_type_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (valueAsString != null) {
-          selectCols.add(new ColumnFieldData("value_as_string", ColumnFieldDataType.VARCHAR));
-      }
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(new ColumnFieldData("value_as_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // qualifier
-      if (qualifier != null && qualifier.length > 0) {
-          selectCols.add(new ColumnFieldData("qualifier_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
-      }
-      
       return selectCols;
   }
   
@@ -174,47 +172,41 @@ public class Observation extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
-      ArrayList<String> selectGroupCols = new ArrayList<>();
-      selectCols.add(", cc.value_as_number");
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       selectGroupCols.add(", cc.value_as_number");
       
-      // observationType
-      if (observationType != null && observationType.length > 0) {
-          selectCols.add(", cc.observation_type_concept_id");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("value_as_number")) {
+              selectCols.add(", cc.value_as_number");
+              groupCols.add(", cc.value_as_number");
+          } else if (entry.getKey().equals("observation_type_concept_id") && observationType != null && observationType.length > 0) {
+              selectCols.add(", cc.observation_type_concept_id");
+              groupCols.add(", cc.observation_type_concept_id");
+          } else if (entry.getKey().equals("value_as_string") && valueAsString != null) {
+              selectCols.add(", cc.value_as_string");
+              groupCols.add(", cc.value_as_string");
+          } else if (entry.getKey().equals("value_as_concept_id") && valueAsConcept != null && valueAsConcept.length > 0) {
+              selectCols.add(", cc.value_as_concept_id");
+              groupCols.add(", cc.value_as_concept_id");
+          } else if (entry.getKey().equals("unit_concept_id") && unit != null && unit.length > 0) {
+              selectCols.add(", cc.unit_concept_id");
+              groupCols.add(", cc.unit_concept_id");
+          } else if (entry.getKey().equals("qualifier_concept_id") && qualifier != null && qualifier.length > 0) {
+              selectCols.add(", cc.qualifier_concept_id");
+              groupCols.add(", cc.qualifier_concept_id");
+          } else if (entry.getKey().equals("provider_id") && providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(", cc.provider_id");
+              groupCols.add(", cc.provider_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
           selectGroupCols.add(", cc.observation_type_concept_id");
       }
       
-      if (valueAsString != null) {
-          selectCols.add(", cc.value_as_string");
-          selectGroupCols.add(", cc.value_as_string");
-      }
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(", cc.value_as_concept_id");
-          selectGroupCols.add(", cc.value_as_concept_id");
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", cc.unit_concept_id");
-          selectGroupCols.add(", cc.unit_concept_id");
-      }
-      
-      // qualifier
-      if (qualifier != null && qualifier.length > 0) {
-          selectCols.add(", cc.qualifier_concept_id");
-          selectGroupCols.add(", cc.qualifier_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", cc.provider_id");
-          selectGroupCols.add(", cc.provider_id");
-      }
-      
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
-      query = StringUtils.replace(query, "@additionColumnGroupscc", StringUtils.join(selectGroupCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

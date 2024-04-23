@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -72,15 +74,17 @@ public class DrugEra extends Criteria {
   }  
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (occurrenceCount != null) {
-          selectCols.add(new ColumnFieldData("drug_exposure_count", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (gapDays != null) {
-          selectCols.add(new ColumnFieldData("gap_days", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          if (occurrenceCount != null) {
+              selectCols.add(new ColumnFieldData("drug_exposure_count", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (gapDays != null) {
+              selectCols.add(new ColumnFieldData("gap_days", ColumnFieldDataType.INTEGER));
+          }
       }
       
       return selectCols;
@@ -107,18 +111,24 @@ public class DrugEra extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       
-      if (occurrenceCount != null) {
-          selectCols.add(", cc.drug_exposure_count");
-      }
-      
-      if (gapDays != null) {
-          selectCols.add(", cc.gap_days");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("drug_exposure_count") && occurrenceCount != null) {
+              selectCols.add(", cc.drug_exposure_count");
+              groupCols.add(", cc.drug_exposure_count");
+          } else if (entry.getKey().equals("gap_days") && gapDays != null) {
+              selectCols.add(", cc.gap_days");
+              groupCols.add(", cc.gap_days");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

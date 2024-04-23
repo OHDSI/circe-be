@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.analysis.versioning.CdmVersion;
@@ -86,53 +88,50 @@ public class PayerPlanPeriod extends Criteria {
 	}
     
     @Override
-    public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+    public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
         List<ColumnFieldData> selectCols = new ArrayList<>();
         
-        if (periodStartDate != null) {
-            selectCols.add(new ColumnFieldData("payer_plan_period_start_date", ColumnFieldDataType.DATE));
+        if (retainCohortCovariates) {
+            if (periodStartDate != null) {
+                selectCols.add(new ColumnFieldData("payer_plan_period_start_date", ColumnFieldDataType.DATE));
+            }
+            
+            if (periodEndDate != null) {
+                selectCols.add(new ColumnFieldData("payer_plan_period_end_date", ColumnFieldDataType.DATE));
+            }
+            
+            if (payerConcept != null) {
+                selectCols.add(new ColumnFieldData("payer_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (planConcept != null) {
+                selectCols.add(new ColumnFieldData("plan_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (sponsorConcept != null) {
+                selectCols.add(new ColumnFieldData("sponsor_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (stopReasonConcept != null) {
+                selectCols.add(new ColumnFieldData("stop_reason_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (payerSourceConcept != null) {
+                selectCols.add(new ColumnFieldData("payer_source_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (planSourceConcept != null) {
+                selectCols.add(new ColumnFieldData("plan_source_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (sponsorSourceConcept != null) {
+                selectCols.add(new ColumnFieldData("sponsor_source_concept_id", ColumnFieldDataType.INTEGER));
+            }
+            
+            if (stopReasonSourceConcept != null) {
+                selectCols.add(new ColumnFieldData("stop_reason_source_concept_id", ColumnFieldDataType.INTEGER));
+            }
         }
-        
-        if (periodEndDate != null) {
-            selectCols.add(new ColumnFieldData("payer_plan_period_end_date", ColumnFieldDataType.DATE));
-        }
-        
-        if (payerConcept != null) {
-            selectCols.add(new ColumnFieldData("payer_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (planConcept != null) {
-            selectCols.add(new ColumnFieldData("plan_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (sponsorConcept != null) {
-            selectCols.add(new ColumnFieldData("sponsor_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (stopReasonConcept != null) {
-            selectCols.add(new ColumnFieldData("stop_reason_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (stopReasonConcept != null) {
-            selectCols.add(new ColumnFieldData("stop_reason_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (payerSourceConcept != null) {
-            selectCols.add(new ColumnFieldData("payer_source_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (planSourceConcept != null) {
-            selectCols.add(new ColumnFieldData("plan_source_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (sponsorSourceConcept != null) {
-            selectCols.add(new ColumnFieldData("sponsor_source_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
-        if (stopReasonSourceConcept != null) {
-            selectCols.add(new ColumnFieldData("stop_reason_source_concept_id", ColumnFieldDataType.INTEGER));
-        }
-        
         return selectCols;
     }
     
@@ -171,11 +170,6 @@ public class PayerPlanPeriod extends Criteria {
             selectColsG.add(", G.stop_reason_concept_id");
         }
         
-        if (stopReasonConcept != null) {
-            selectColsCQ.add(", CQ.stop_reason_concept_id");
-            selectColsG.add(", G.stop_reason_concept_id");
-        }
-        
         if (payerSourceConcept != null) {
             selectColsCQ.add(", CQ.payer_source_concept_id");
             selectColsG.add(", G.payer_source_concept_id");
@@ -202,54 +196,48 @@ public class PayerPlanPeriod extends Criteria {
     }
     
     @Override
-    public String embedWindowedCriteriaQuery(String query) {
-        ArrayList<String> selectCols = new ArrayList<>();
+    public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+        List<String> selectCols = new ArrayList<>();
+        List<String> groupCols = new ArrayList<>();
         
-        if (periodStartDate != null) {
-            selectCols.add(", cc.payer_plan_period_start_date");
-        }
-        
-        if (periodEndDate != null) {
-            selectCols.add(", cc.payer_plan_period_end_date");
-        }
-        
-        if (payerConcept != null) {
-            selectCols.add(", cc.payer_concept_id");
-        }
-        
-        if (planConcept != null) {
-            selectCols.add(", cc.plan_concept_id");
-        }
-        
-        if (sponsorConcept != null) {
-            selectCols.add(", cc.sponsor_concept_id");
-        }
-        
-        if (stopReasonConcept != null) {
-            selectCols.add(", cc.stop_reason_concept_id");
-        }
-        
-        if (stopReasonConcept != null) {
-            selectCols.add(", cc.stop_reason_concept_id");
-        }
-        
-        if (payerSourceConcept != null) {
-            selectCols.add(", cc.payer_source_concept_id");
-        }
-        
-        if (planSourceConcept != null) {
-            selectCols.add(", cc.plan_source_concept_id");
-        }
-        
-        if (sponsorSourceConcept != null) {
-            selectCols.add(", cc.sponsor_source_concept_id");
-        }
-        
-        if (stopReasonSourceConcept != null) {
-            selectCols.add(", cc.stop_reason_source_concept_id");
+        for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+            if (entry.getKey().equals("payer_plan_period_start_date") && periodStartDate != null) {
+                selectCols.add(", cc.payer_plan_period_start_date");
+                groupCols.add(", cc.payer_plan_period_start_date");
+            } else if (entry.getKey().equals("payer_plan_period_end_date") && periodEndDate != null) {
+                selectCols.add(", cc.payer_plan_period_end_date");
+                groupCols.add(", cc.payer_plan_period_end_date");
+            } else if (entry.getKey().equals("payer_concept_id") && payerConcept != null) {
+                selectCols.add(", cc.payer_concept_id");
+                groupCols.add(", cc.payer_concept_id");
+            } else if (entry.getKey().equals("plan_concept_id") && planConcept != null) {
+                selectCols.add(", cc.plan_concept_id");
+                groupCols.add(", cc.plan_concept_id");
+            } else if (entry.getKey().equals("sponsor_concept_id") && sponsorConcept != null) {
+                selectCols.add(", cc.sponsor_concept_id");
+                groupCols.add(", cc.sponsor_concept_id");
+            } else if (entry.getKey().equals("stop_reason_concept_id") && stopReasonConcept != null) {
+                selectCols.add(", cc.stop_reason_concept_id");
+                groupCols.add(", cc.stop_reason_concept_id");
+            } else if (entry.getKey().equals("payer_source_concept_id") && payerSourceConcept != null) {
+                selectCols.add(", cc.payer_source_concept_id");
+                groupCols.add(", cc.payer_source_concept_id");
+            } else if (entry.getKey().equals("plan_source_concept_id") && planSourceConcept != null) {
+                selectCols.add(", cc.plan_source_concept_id");
+                groupCols.add(", cc.plan_source_concept_id");
+            } else if (entry.getKey().equals("sponsor_source_concept_id") && sponsorSourceConcept != null) {
+                selectCols.add(", cc.sponsor_source_concept_id");
+                groupCols.add(", cc.sponsor_source_concept_id");
+            } else if (entry.getKey().equals("stop_reason_source_concept_id") && stopReasonSourceConcept != null) {
+                selectCols.add(", cc.stop_reason_source_concept_id");
+                groupCols.add(", cc.stop_reason_source_concept_id");
+            } else {
+                selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+            }
         }
         
         query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+        query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
         return query;
     }
     
@@ -275,10 +263,6 @@ public class PayerPlanPeriod extends Criteria {
         
         if (sponsorConcept != null) {
             selectColsA.add(", A.sponsor_concept_id");
-        }
-        
-        if (stopReasonConcept != null) {
-            selectColsA.add(", A.stop_reason_concept_id");
         }
         
         if (stopReasonConcept != null) {
@@ -332,11 +316,6 @@ public class PayerPlanPeriod extends Criteria {
         if (sponsorConcept != null) {
             selectCols.add(", Q.sponsor_concept_id");
             selectColsPE.add(", PE.sponsor_concept_id");
-        }
-        
-        if (stopReasonConcept != null) {
-            selectCols.add(", Q.stop_reason_concept_id");
-            selectColsPE.add(", PE.stop_reason_concept_id");
         }
         
         if (stopReasonConcept != null) {

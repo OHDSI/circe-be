@@ -103,7 +103,9 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
       selectCols.add("op.observation_period_start_date as start_date, op.observation_period_end_date as end_date");
     }
 
-    selectCols.add("op.period_type_concept_id concept_id");
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("op.period_type_concept_id concept_id");
+    }
     return selectCols;
   }
 
@@ -157,7 +159,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     // periodType
     if (criteria.periodType != null && criteria.periodType.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.periodType);
-      whereClauses.add(String.format("C.concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+      whereClauses.add(String.format("C.period_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
     // periodLength

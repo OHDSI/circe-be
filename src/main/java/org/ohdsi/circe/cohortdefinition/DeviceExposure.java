@@ -23,6 +23,8 @@ import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -84,35 +86,31 @@ public class DeviceExposure extends Criteria {
   }
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (deviceType != null && deviceType.length > 0) {
-          selectCols.add(new ColumnFieldData("device_type_concept_id", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          if (deviceType != null && deviceType.length > 0) {
+              selectCols.add(new ColumnFieldData("device_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (quantity != null) {
+              selectCols.add(new ColumnFieldData("quantity", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (uniqueDeviceId != null) {
+              selectCols.add(new ColumnFieldData("unique_device_id", ColumnFieldDataType.VARCHAR));
+          }
+          
+          if (deviceSourceConcept != null) {
+              selectCols.add(new ColumnFieldData("device_source_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          // providerSpecialty
+          if (providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+          }
       }
-      
-      if (quantity != null) {
-          selectCols.add(new ColumnFieldData("quantity", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (uniqueDeviceId != null) {
-          selectCols.add(new ColumnFieldData("unique_device_id", ColumnFieldDataType.VARCHAR));
-      }
-      
-      if (deviceSourceConcept != null) {
-          selectCols.add(new ColumnFieldData("device_source_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // unit
-      if (unitConceptId != null && unitConceptId.length > 0) {
-          selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
       return selectCols;
   }
   
@@ -159,36 +157,33 @@ public class DeviceExposure extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       
-      if (deviceType != null && deviceType.length > 0) {
-          selectCols.add(", cc.device_type_concept_id");
-      }
-      
-      if (quantity != null) {
-          selectCols.add(", cc.quantity");
-      }
-      
-      if (uniqueDeviceId != null) {
-          selectCols.add(", cc.unique_device_id");
-      }
-      
-      if (deviceSourceConcept != null) {
-          selectCols.add(", cc.device_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", cc.provider_id");
-      }
-      
-      // unit
-      if (unitConceptId != null && unitConceptId.length > 0) {
-          selectCols.add(", cc.unit_concept_id");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("device_type_concept_id") && deviceType != null && deviceType.length > 0) {
+              selectCols.add(", cc.device_type_concept_id");
+              groupCols.add(", cc.device_type_concept_id");
+          } else if (entry.getKey().equals("quantity") && quantity != null) {
+              selectCols.add(", cc.quantity");
+              groupCols.add(", cc.quantity");
+          } else if (entry.getKey().equals("unique_device_id") && uniqueDeviceId != null) {
+              selectCols.add(", cc.unique_device_id");
+              groupCols.add(", cc.unique_device_id");
+          } else if (entry.getKey().equals("device_source_concept_id") && deviceSourceConcept != null) {
+              selectCols.add(", cc.device_source_concept_id");
+              groupCols.add(", cc.device_source_concept_id");
+          } else if (entry.getKey().equals("provider_id") && providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(", cc.provider_id");
+              groupCols.add(", cc.provider_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

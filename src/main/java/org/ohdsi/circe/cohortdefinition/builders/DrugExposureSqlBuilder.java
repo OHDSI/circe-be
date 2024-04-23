@@ -180,11 +180,11 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("de.drug_concept_id concept_id");
-    }
-
-    if (criteria.drugSourceConcept != null) {
-        selectCols.add("de.drug_source_concept_id");
+        selectCols.add("de.drug_concept_id concept_id");
+        
+        if (criteria.drugSourceConcept != null) {
+            selectCols.add("de.drug_source_concept_id");
+        }
     }
     return selectCols;
   }

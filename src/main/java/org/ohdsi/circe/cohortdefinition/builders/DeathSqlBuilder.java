@@ -102,11 +102,10 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
 
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("d.cause_concept_id concept_id");
-    }
-    
-    if (criteria.occurrenceStartDate != null) {
-        selectCols.add("d.death_date");
+        selectCols.add("d.cause_concept_id concept_id");
+        if (criteria.occurrenceStartDate != null) {
+            selectCols.add("d.death_date");
+        }
     }
 
     return selectCols;

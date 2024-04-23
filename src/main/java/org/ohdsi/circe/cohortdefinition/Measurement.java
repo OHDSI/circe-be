@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -99,41 +101,43 @@ public class Measurement extends Criteria {
   }
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      selectCols.add(new ColumnFieldData("value_as_number", ColumnFieldDataType.NUMERIC));
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(new ColumnFieldData("value_as_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      // range_low
-      if (rangeLow != null) {
-          selectCols.add(new ColumnFieldData("range_low", ColumnFieldDataType.NUMERIC));
-      }
-      
-      // range_high
-      if (rangeHigh != null) {
-          selectCols.add(new ColumnFieldData("range_high", ColumnFieldDataType.NUMERIC));
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // measurementType
-      if (measurementType != null && measurementType.length > 0) {
-          selectCols.add(new ColumnFieldData("measurement_type_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      // operator
-      if (operator != null && operator.length > 0) {
-          selectCols.add(new ColumnFieldData("operator_concept_id", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          selectCols.add(new ColumnFieldData("value_as_number", ColumnFieldDataType.NUMERIC));
+          
+          if (valueAsConcept != null && valueAsConcept.length > 0) {
+              selectCols.add(new ColumnFieldData("value_as_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          // unit
+          if (unit != null && unit.length > 0) {
+              selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          // range_low
+          if (rangeLow != null) {
+              selectCols.add(new ColumnFieldData("range_low", ColumnFieldDataType.NUMERIC));
+          }
+          
+          // range_high
+          if (rangeHigh != null) {
+              selectCols.add(new ColumnFieldData("range_high", ColumnFieldDataType.NUMERIC));
+          }
+          
+          // providerSpecialty
+          if (providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          // measurementType
+          if (measurementType != null && measurementType.length > 0) {
+              selectCols.add(new ColumnFieldData("measurement_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          // operator
+          if (operator != null && operator.length > 0) {
+              selectCols.add(new ColumnFieldData("operator_concept_id", ColumnFieldDataType.INTEGER));
+          }
       }
       
       return selectCols;
@@ -192,55 +196,44 @@ public class Measurement extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
-      ArrayList<String> selectGroupCols = new ArrayList<>();
-      selectCols.add(", cc.value_as_number");
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       selectGroupCols.add(", cc.value_as_number");
       
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(", cc.value_as_concept_id");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("value_as_number")) {
+              selectCols.add(", cc.value_as_number");
+              groupCols.add(", cc.value_as_number");
+          } else if (entry.getKey().equals("value_as_concept_id") && valueAsConcept != null && valueAsConcept.length > 0) {
+              selectCols.add(", cc.value_as_concept_id");
+              groupCols.add(", cc.value_as_concept_id");
+          } else if (entry.getKey().equals("unit_concept_id") && unit != null && unit.length > 0) {
+              selectCols.add(", cc.unit_concept_id");
+              groupCols.add(", cc.unit_concept_id");
+          } else if (entry.getKey().equals("range_low") && rangeLow != null) {
+              selectCols.add(", cc.range_low");
+              groupCols.add(", cc.range_low");
+          } else if (entry.getKey().equals("range_high") && rangeHigh != null) {
+              selectCols.add(", cc.range_high");
+              groupCols.add(", cc.range_high");
+          } else if (entry.getKey().equals("provider_id") && providerSpecialty != null && providerSpecialty.length > 0) {
+              selectCols.add(", cc.provider_id");
+              groupCols.add(", cc.provider_id");
+          } else if (entry.getKey().equals("measurement_type_concept_id") && measurementType != null && measurementType.length > 0) {
+              selectCols.add(", cc.measurement_type_concept_id");
+              groupCols.add(", cc.measurement_type_concept_id");
+          } else if (entry.getKey().equals("operator_concept_id") && operator != null && operator.length > 0) {
+              selectCols.add(", cc.operator_concept_id");
+              groupCols.add(", cc.operator_concept_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
           selectGroupCols.add(", cc.value_as_concept_id");
       }
       
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", cc.unit_concept_id");
-          selectGroupCols.add(", cc.unit_concept_id");
-      }
-      
-      // range_low
-      if (rangeLow != null) {
-          selectCols.add(", cc.range_low");
-          selectGroupCols.add(", cc.range_low");
-      }
-      
-      // range_high
-      if (rangeHigh != null) {
-          selectCols.add(", cc.range_high");
-          selectGroupCols.add(", cc.range_high");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", cc.provider_id");
-          selectGroupCols.add(", cc.provider_id");
-      }
-      
-      // measurementType
-      if (measurementType != null && measurementType.length > 0) {
-          selectCols.add(", cc.measurement_type_concept_id");
-          selectGroupCols.add(", cc.measurement_type_concept_id");
-      }
-      
-      // operator
-      if (operator != null && operator.length > 0) {
-          selectCols.add(", cc.operator_concept_id");
-          selectGroupCols.add(", cc.operator_concept_id");
-      }
-      
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
-      query = StringUtils.replace(query, "@additionColumnGroupscc", StringUtils.join(selectGroupCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

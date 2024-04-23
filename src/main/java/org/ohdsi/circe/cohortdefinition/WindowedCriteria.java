@@ -18,6 +18,10 @@
  */
 package org.ohdsi.circe.cohortdefinition;
 
+import java.util.Map;
+
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WindowedCriteria {
@@ -35,4 +39,7 @@ public class WindowedCriteria {
 
   @JsonProperty("IgnoreObservationPeriod")
   public boolean ignoreObservationPeriod = false;
+    
+  // Map contain all distinct field for UNION ALL
+  public Map<String, ColumnFieldData> mapDistinctField;
 }

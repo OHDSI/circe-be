@@ -132,12 +132,13 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     }
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("co.condition_concept_id concept_id");
+        selectCols.add("co.condition_concept_id concept_id");
+        
+        if (criteria.conditionSourceConcept != null) {
+            selectCols.add("co.condition_source_concept_id");
+        }
     }
-
-    if (criteria.conditionSourceConcept != null) {
-        selectCols.add("co.condition_source_concept_id");
-    }
+    
     return selectCols;
   }
 

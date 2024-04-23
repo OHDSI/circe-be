@@ -149,11 +149,11 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     }
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("de.device_concept_id concept_id");
-    }
+        selectCols.add("de.device_concept_id concept_id");
         
-    if (criteria.deviceSourceConcept != null) {
-        selectCols.add("de.device_source_concept_id");
+        if (criteria.deviceSourceConcept != null) {
+            selectCols.add("de.device_source_concept_id");
+        }
     }
     
     return selectCols;

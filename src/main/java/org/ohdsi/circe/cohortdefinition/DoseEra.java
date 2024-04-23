@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -71,26 +73,27 @@ public class DoseEra extends Criteria {
   }  
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (eraStartDate != null) {
-          selectCols.add(new ColumnFieldData("dose_era_start_date", ColumnFieldDataType.DATE));
+      if (retainCohortCovariates) {
+          if (eraStartDate != null) {
+              selectCols.add(new ColumnFieldData("dose_era_start_date", ColumnFieldDataType.DATE));
+          }
+          
+          if (eraEndDate != null) {
+              selectCols.add(new ColumnFieldData("dose_era_end_date", ColumnFieldDataType.DATE));
+          }
+          
+          // unit
+          if (unit != null && unit.length > 0) {
+              selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.DATE));
+          }
+          
+          if (doseValue != null) {
+              selectCols.add(new ColumnFieldData("dose_value", ColumnFieldDataType.NUMERIC));
+          }
       }
-      
-      if (eraEndDate != null) {
-          selectCols.add(new ColumnFieldData("dose_era_end_date", ColumnFieldDataType.DATE));
-      }
-      
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(new ColumnFieldData("unit_concept_id", ColumnFieldDataType.DATE));
-      }
-      
-      if (doseValue != null) {
-          selectCols.add(new ColumnFieldData("dose_value", ColumnFieldDataType.NUMERIC));
-      }
-      
       return selectCols;
   }
   
@@ -126,27 +129,30 @@ public class DoseEra extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       
-      if (eraStartDate != null) {
-          selectCols.add(", cc.dose_era_start_date");
-      }
-      
-      if (eraEndDate != null) {
-          selectCols.add(", cc.dose_era_end_date");
-      }
-      
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", cc.unit_concept_id");
-      }
-      
-      if (doseValue != null) {
-          selectCols.add(", cc.dose_value");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("dose_era_start_date") && eraStartDate != null) {
+              selectCols.add(", cc.dose_era_start_date");
+              groupCols.add(", cc.dose_era_start_date");
+          } else if (entry.getKey().equals("dose_era_end_date") && eraEndDate != null) {
+              selectCols.add(", cc.dose_era_end_date");
+              groupCols.add(", cc.dose_era_end_date");
+          } else if (entry.getKey().equals("unit_concept_id") && unit != null && unit.length > 0) {
+              selectCols.add(", cc.unit_concept_id");
+              groupCols.add(", cc.unit_concept_id");
+          } else if (entry.getKey().equals("dose_value") && doseValue != null) {
+              selectCols.add(", cc.dose_value");
+              groupCols.add(", cc.dose_value");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

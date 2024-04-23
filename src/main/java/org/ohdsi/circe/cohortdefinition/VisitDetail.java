@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.analysis.versioning.CdmVersion;
@@ -84,27 +86,29 @@ public class VisitDetail extends Criteria {
   }
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (visitDetailStartDate != null) {
-          selectCols.add(new ColumnFieldData("visit_detail_start_date", ColumnFieldDataType.DATE));
-      }
-      
-      if (visitDetailEndDate != null) {
-          selectCols.add(new ColumnFieldData("visit_detail_end_date", ColumnFieldDataType.DATE));
-      }
-      
-      if (visitDetailTypeCS != null) {
-          selectCols.add(new ColumnFieldData("visit_detail_type_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (visitDetailSourceConcept != null) {
-          selectCols.add(new ColumnFieldData("visit_detail_source_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (providerSpecialtyCS != null) {
-          selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          if (visitDetailStartDate != null) {
+              selectCols.add(new ColumnFieldData("visit_detail_start_date", ColumnFieldDataType.DATE));
+          }
+          
+          if (visitDetailEndDate != null) {
+              selectCols.add(new ColumnFieldData("visit_detail_end_date", ColumnFieldDataType.DATE));
+          }
+          
+          if (visitDetailTypeCS != null) {
+              selectCols.add(new ColumnFieldData("visit_detail_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (visitDetailSourceConcept != null) {
+              selectCols.add(new ColumnFieldData("visit_detail_source_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (providerSpecialtyCS != null) {
+              selectCols.add(new ColumnFieldData("provider_id", ColumnFieldDataType.INTEGER));
+          }
       }
       
       return selectCols;
@@ -146,30 +150,33 @@ public class VisitDetail extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       
-      if (visitDetailStartDate != null) {
-          selectCols.add(", cc.visit_detail_start_date");
-      }
-      
-      if (visitDetailEndDate != null) {
-          selectCols.add(", cc.visit_detail_end_date");
-      }
-      
-      if (visitDetailTypeCS != null) {
-          selectCols.add(", cc.visit_detail_type_concept_id");
-      }
-      
-      if (visitDetailSourceConcept != null) {
-          selectCols.add(", cc.visit_detail_source_concept_id");
-      }
-      
-      if (providerSpecialtyCS != null) {
-          selectCols.add(", cc.provider_id");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("visit_detail_start_date") && visitDetailStartDate != null) {
+              selectCols.add(", cc.visit_detail_start_date");
+              groupCols.add(", cc.visit_detail_start_date");
+          } else if (entry.getKey().equals("visit_detail_end_date") && visitDetailEndDate != null) {
+              selectCols.add(", cc.visit_detail_end_date");
+              groupCols.add(", cc.visit_detail_end_date");
+          } else if (entry.getKey().equals("visit_detail_type_concept_id") && visitDetailTypeCS != null) {
+              selectCols.add(", cc.visit_detail_type_concept_id");
+              groupCols.add(", cc.visit_detail_type_concept_id");
+          } else if (entry.getKey().equals("visit_detail_source_concept_id") && visitDetailSourceConcept != null) {
+              selectCols.add(", cc.visit_detail_source_concept_id");
+              groupCols.add(", cc.visit_detail_source_concept_id");
+          } else if (entry.getKey().equals("provider_id") && providerSpecialtyCS != null) {
+              selectCols.add(", cc.provider_id");
+              groupCols.add(", cc.provider_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

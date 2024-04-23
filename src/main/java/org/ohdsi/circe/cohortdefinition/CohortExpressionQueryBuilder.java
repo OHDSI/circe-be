@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
@@ -296,7 +298,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
 	// Function all full field select for union all
-    private void addInclusionGroup(List<List<ColumnFieldData>> listFields, CriteriaGroup cg, int indexCG,
+     private void addColumnFieldInclusionGroup(List<List<ColumnFieldData>> listFields, CriteriaGroup cg, int indexCG,
 			List<String> inclusionRuleInsertN, List<String> inclusionRuleGroupN) {
         
         listFields.forEach(l -> {
@@ -326,7 +328,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String additionalCriteriaQuery = "";
     if (expression.additionalCriteria != null && !expression.additionalCriteria.isEmpty()) {
       CriteriaGroup acGroup = expression.additionalCriteria;
-      String acGroupQuery = this.getCriteriaGroupQuery(acGroup, String.format("(%s)", primaryEventsQuery), options != null && options.retainCohortCovariates);//acGroup.accept(this);
+         String acGroupQuery = this.getCriteriaGroupQuery(acGroup, String.format("(%s)", primaryEventsQuery), options.retainCohortCovariates);// acGroup.accept(this);
       acGroupQuery = StringUtils.replace(acGroupQuery, "@indexId", "" + 0);
       additionalCriteriaQuery = "\nJOIN (\n" + acGroupQuery + ") AC on AC.person_id = pe.person_id and AC.event_id = pe.event_id\n";
     }
@@ -348,11 +350,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       ArrayList<String> inclusionRuleTempTables = new ArrayList<>();
       String allFieldInclusionNValues = "";
       
-      List<List<ColumnFieldData>> listField = new ArrayList<>();
+      // Add column field for inclusion group needed to listField
       for (int i = 0; i < expression.inclusionRules.size(); i++) {
           CriteriaGroup cg = expression.inclusionRules.get(i).expression;
           for (CorelatedCriteria cc : cg.criteriaList) {
-              List<ColumnFieldData> fieldDatas = cc.criteria.getSelectedField(builderOptions);
+              List<ColumnFieldData> fieldDatas = cc.criteria
+                      .getSelectedField(builderOptions.isRetainCohortCovariates());
               listField.add(fieldDatas);
           }
       }
@@ -369,7 +372,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
           ArrayList<String> inclusionRuleGroupN = new ArrayList<>();
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@conceptid", ", pe.concept_id");
 
-	      this.addInclusionGroup(expression.inclusionRules, cg, i, inclusionRuleInsertN, inclusionRuleGroupN);
+          this.addColumnFieldInclusionGroup(listField, cg, i, inclusionRuleInsertN, inclusionRuleGroupN);
 	      lstFieldRuleInsertNValues.add(StringUtils.join(inclusionRuleInsertN, ""));
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsInclusionN", StringUtils.join(lstFieldRuleInsertNValues, " "));
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsCriteriaQuery", StringUtils.join(inclusionRuleGroupN, " "));
@@ -521,8 +524,17 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     String joinType = "INNER";
     
     int indexId = 0;
+    // Add column field for group criteria needed to listField
+    Map<String, ColumnFieldData> mapDistinctField = new HashMap<>();
+    for (int i = 0; i < group.criteriaList.length; i++) {
+        CorelatedCriteria cc = group.criteriaList[i];
+        cc.criteria.getSelectedField(retainCohortCovariates).forEach(c -> {
+            mapDistinctField.put(c.getName(), c);
+        });
+    }
+    
     for (CorelatedCriteria cc : group.criteriaList) {
-      
+      cc.mapDistinctField = mapDistinctField;
       String acQuery = this.getCorelatedlCriteriaQuery(cc, eventTable, retainCohortCovariates); //ac.accept(this);
       acQuery = StringUtils.replace(acQuery, "@indexId", "" + indexId);
       additionalCriteriaQueries.add(acQuery);
@@ -684,27 +696,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     if (options != null && options.isRetainCohortCovariates()) {
-      if (criteria.criteria instanceof Measurement) {
-        query = measurementSqlBuilder.embedWindowedCriteriaQuery(query, criteria.criteria, options);
-        query = measurementSqlBuilder.embedWindowedCriteriaQueryP(query, criteria.criteria, options);
-      } else if (criteria.criteria instanceof Observation) {
-        query = observationSqlBuilder.embedWindowedCriteriaQuery(query, criteria.criteria, options);
-        query = observationSqlBuilder.embedWindowedCriteriaQueryP(query, criteria.criteria, options);
-      } else {
-        ArrayList<String> selectCols = new ArrayList<>();
-        selectCols.add(", CAST(null as numeric) value_as_number");
-        selectCols.add(", null as value_as_string");
-        selectCols.add(", CAST(null as int) value_as_concept_id");
-        selectCols.add(", CAST(null as int) unit_concept_id");
-        selectCols.add(", CAST(null as int) provider_id");
-        selectCols.add(", CAST(null as int) qualifier_concept_id");
-        selectCols.add(", CAST(null as int) observation_type_concept_id");
-        selectCols.add(", CAST(null as numeric) range_low");
-        selectCols.add(", CAST(null as numeric) range_high");
-        query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
-      }
-      }
-    }
+        query = criteria.criteria.embedWindowedCriteriaQuery(query, criteria.mapDistinctField);
+        query = criteria.criteria.embedWindowedCriteriaQueryP(query);
+    } else {
+        query = StringUtils.replace(query, "@additionColumnscc", "");
+        query = StringUtils.replace(query, "@additionGroupColumnscc", "");    }
 	  query = StringUtils.replace(query, "@additionColumnscc", "");
 	  query = StringUtils.replace(query, "@additionColumnGroupscc", "");
 	  query = StringUtils.replace(query, "@p.additionColumns", "");

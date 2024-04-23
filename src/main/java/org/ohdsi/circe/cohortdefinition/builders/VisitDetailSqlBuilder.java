@@ -122,7 +122,11 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
     // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("vd.visit_detail_concept_id concept_id");
+        selectCols.add("vd.visit_detail_concept_id concept_id");
+        
+        if (criteria.visitDetailSourceConcept != null) {
+            selectCols.add("vd.visit_detail_source_concept_id");
+        }
     }
     return selectCols;
   }

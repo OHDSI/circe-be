@@ -113,13 +113,13 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     } else {
       selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
     }
-// If save covariates is included, add the concept_id column
+    // If save covariates is included, add the concept_id column
     if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      selectCols.add("vo.visit_concept_id concept_id");
-    }
+        selectCols.add("vo.visit_concept_id concept_id");
         
-    if (criteria.visitSourceConcept != null) {
-        selectCols.add("vo.visit_source_concept_id");
+        if (criteria.visitSourceConcept != null) {
+            selectCols.add("vo.visit_source_concept_id");
+        }
     }
     return selectCols;
   }

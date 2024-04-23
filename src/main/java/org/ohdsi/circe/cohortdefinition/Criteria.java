@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -63,7 +64,7 @@ public abstract class Criteria {
 
   public abstract String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options);
   
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       return new ArrayList<>();
   }
   
@@ -73,7 +74,7 @@ public abstract class Criteria {
       return query;
   }
   
-  public String embedWindowedCriteriaQuery(String query) {
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       query = StringUtils.replace(query, "@additionColumnscc", "");
       query = StringUtils.replace(query, "@additionColumnGroupscc", "");
       return query;

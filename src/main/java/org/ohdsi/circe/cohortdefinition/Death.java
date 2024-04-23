@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -61,21 +63,22 @@ public class Death extends Criteria {
   }
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (occurrenceStartDate != null) {
-          selectCols.add(new ColumnFieldData("death_date", ColumnFieldDataType.DATE));
+      if (retainCohortCovariates) {
+          if (occurrenceStartDate != null) {
+              selectCols.add(new ColumnFieldData("death_date", ColumnFieldDataType.DATE));
+          }
+          
+          if (deathType != null && deathType.length > 0) {
+              selectCols.add(new ColumnFieldData("death_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+          
+          if (deathSourceConcept != null) {
+              selectCols.add(new ColumnFieldData("cause_concept_id", ColumnFieldDataType.INTEGER));
+          }
       }
-      
-      if (deathType != null && deathType.length > 0) {
-          selectCols.add(new ColumnFieldData("death_type_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
-      if (deathSourceConcept != null) {
-          selectCols.add(new ColumnFieldData("cause_concept_id", ColumnFieldDataType.INTEGER));
-      }
-      
       return selectCols;
   }
   
@@ -105,22 +108,26 @@ public class Death extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
-      
-      if (occurrenceStartDate != null) {
-          selectCols.add(", cc.death_date");
-      }
-      
-      if (deathType != null && deathType.length > 0) {
-          selectCols.add(", cc.death_type_concept_id");
-      }
-      
-      if (deathSourceConcept != null) {
-          selectCols.add(", cc.cause_concept_id");
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("death_date") && occurrenceStartDate != null) {
+              selectCols.add(", cc.death_date");
+              groupCols.add(", cc.death_date");
+          } else if (entry.getKey().equals("death_type_concept_id") && deathType != null && deathType.length > 0) {
+              selectCols.add(", cc.death_type_concept_id");
+              groupCols.add(", cc.death_type_concept_id");
+          } else if (entry.getKey().equals("cause_concept_id") && deathSourceConcept != null) {
+              selectCols.add(", cc.cause_concept_id");
+              groupCols.add(", cc.cause_concept_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

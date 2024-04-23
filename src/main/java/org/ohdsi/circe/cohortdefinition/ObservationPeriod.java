@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -66,11 +68,13 @@ public class ObservationPeriod extends Criteria {
   }  
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (periodType != null && periodType.length > 0) {
-          selectCols.add(new ColumnFieldData("period_type_concept_id", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          if (periodType != null && periodType.length > 0) {
+              selectCols.add(new ColumnFieldData("period_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
       }
       
       return selectCols;
@@ -92,14 +96,21 @@ public class ObservationPeriod extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
       
-      if (periodType != null && periodType.length > 0) {
-          selectCols.add(", cc.period_type_concept_id");
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("period_type_concept_id") && periodType != null && periodType.length > 0) {
+              selectCols.add(", cc.period_type_concept_id");
+              groupCols.add(", cc.period_type_concept_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
   

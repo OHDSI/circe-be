@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
@@ -69,11 +71,13 @@ public class ConditionEra extends Criteria {
   }
   
   @Override
-  public List<ColumnFieldData> getSelectedField(BuilderOptions options) {
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
       List<ColumnFieldData> selectCols = new ArrayList<>();
       
-      if (occurrenceCount != null) {
-          selectCols.add(new ColumnFieldData("condition_occurrence_count", ColumnFieldDataType.INTEGER));
+      if (retainCohortCovariates) {
+          if (occurrenceCount != null) {
+              selectCols.add(new ColumnFieldData("condition_occurrence_count", ColumnFieldDataType.INTEGER));
+          }
       }
       
       return selectCols;
@@ -81,8 +85,8 @@ public class ConditionEra extends Criteria {
   
   @Override
   public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
+      List<String> selectColsCQ = new ArrayList<>();
+      List<String> selectColsG = new ArrayList<>();
       
       if (occurrenceCount != null) {
           selectColsCQ.add(", CQ.condition_occurrence_count");
@@ -95,16 +99,23 @@ public class ConditionEra extends Criteria {
   }
   
   @Override
-  public String embedWindowedCriteriaQuery(String query) {
-      ArrayList<String> selectCols = new ArrayList<>();
-      
-      if (occurrenceCount != null) {
-          selectCols.add(", cc.condition_occurrence_count");
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("condition_occurrence_count") && occurrenceCount != null) {
+              selectCols.add(", cc.condition_occurrence_count");
+              groupCols.add(", cc.condition_occurrence_count");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
       return query;
   }
+  
   
   @Override
   public String embedWindowedCriteriaQueryP(String query) {
