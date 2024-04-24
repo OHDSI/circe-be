@@ -83,41 +83,43 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         
-        if (criteria.drugType != null && criteria.drugType.length > 0) {
-            cColumns.add("C.drug_type_concept_id");
-        }
-        
-        if (criteria.stopReason != null) {
-            cColumns.add("C.stop_reason");
-        }
-        
-        if (criteria.refills != null) {
-            cColumns.add("C.refills");
-        }
-        
-        if (criteria.quantity != null) {
-            cColumns.add("C.quantity");
-        }
-        
-        if (criteria.daysSupply != null) {
-            cColumns.add("C.days_supply");
-        }
-        
-        if (criteria.routeConcept != null && criteria.routeConcept.length > 0) {
-            cColumns.add("C.route_concept_id");
-        }
-        
-        if (criteria.lotNumber != null) {
-            cColumns.add("C.lot_number");
-        }
-        
-        if (criteria.drugSourceConcept != null) {
-            cColumns.add("C.drug_source_concept_id");
-        }
-        
-        // providerSpecialty
-        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-            cColumns.add("C.provider_id");
+        if(!options.isPrimaryCriteria()){
+          if (criteria.drugType != null && criteria.drugType.length > 0) {
+              cColumns.add("C.drug_type_concept_id");
+          }
+          
+          if (criteria.stopReason != null) {
+              cColumns.add("C.stop_reason");
+          }
+          
+          if (criteria.refills != null) {
+              cColumns.add("C.refills");
+          }
+          
+          if (criteria.quantity != null) {
+              cColumns.add("C.quantity");
+          }
+          
+          if (criteria.daysSupply != null) {
+              cColumns.add("C.days_supply");
+          }
+          
+          if (criteria.routeConcept != null && criteria.routeConcept.length > 0) {
+              cColumns.add("C.route_concept_id");
+          }
+          
+          if (criteria.lotNumber != null) {
+              cColumns.add("C.lot_number");
+          }
+          
+          if (criteria.drugSourceConcept != null) {
+              cColumns.add("C.drug_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
         }
         
         query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

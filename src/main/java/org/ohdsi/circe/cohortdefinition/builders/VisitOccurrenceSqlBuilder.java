@@ -69,13 +69,15 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         
-        if (criteria.visitSourceConcept != null) {
-            cColumns.add("C.visit_source_concept_id");
-        }
-        
-        // providerSpecialty
-        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-            cColumns.add("C.provider_id");
+        if(!options.isPrimaryCriteria()){
+          if (criteria.visitSourceConcept != null) {
+              cColumns.add("C.visit_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
         }
         
         query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

@@ -149,17 +149,19 @@ public class DrugEra extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (occurrenceCount != null) {
-          selectCols.add(", Q.drug_exposure_count");
-          selectColsPE.add(", PE.drug_exposure_count");
-      }
-      
-      if (gapDays != null) {
-          selectCols.add(", Q.gap_days");
-          selectColsPE.add(", PE.gap_days");
+      if(!options.isPrimaryCriteria()){
+        if (occurrenceCount != null) {
+            selectCols.add(", Q.drug_exposure_count");
+            selectColsPE.add(", PE.drug_exposure_count");
+        }
+        
+        if (gapDays != null) {
+            selectCols.add(", Q.gap_days");
+            selectColsPE.add(", PE.gap_days");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

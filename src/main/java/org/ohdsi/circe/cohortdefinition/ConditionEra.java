@@ -130,12 +130,14 @@ public class ConditionEra extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (occurrenceCount != null) {
-          selectCols.add(", Q.condition_occurrence_count");
-          selectColsPE.add(", PE.condition_occurrence_count");
+      if(!options.isPrimaryCriteria()){
+        if (occurrenceCount != null) {
+            selectCols.add(", Q.condition_occurrence_count");
+            selectColsPE.add(", PE.condition_occurrence_count");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

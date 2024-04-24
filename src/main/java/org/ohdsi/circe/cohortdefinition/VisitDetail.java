@@ -209,32 +209,34 @@ public class VisitDetail extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (visitDetailStartDate != null) {
-          selectCols.add(", Q.visit_detail_start_date");
-          selectColsPE.add(", PE.visit_detail_start_date");
-      }
-      
-      if (visitDetailEndDate != null) {
-          selectCols.add(", Q.visit_detail_end_date");
-          selectColsPE.add(", PE.visit_detail_end_date");
-      }
-      
-      if (visitDetailTypeCS != null) {
-          selectCols.add(", Q.visit_detail_type_concept_id");
-          selectColsPE.add(", PE.visit_detail_type_concept_id");
-      }
-      
-      if (visitDetailSourceConcept != null) {
-          selectCols.add(", Q.visit_detail_source_concept_id");
-          selectColsPE.add(", PE.visit_detail_source_concept_id");
-      }
-      
-      if (providerSpecialtyCS != null) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", PE.provider_id");
+      if(!options.isPrimaryCriteria()){
+        if (visitDetailStartDate != null) {
+            selectCols.add(", Q.visit_detail_start_date");
+            selectColsPE.add(", PE.visit_detail_start_date");
+        }
+        
+        if (visitDetailEndDate != null) {
+            selectCols.add(", Q.visit_detail_end_date");
+            selectColsPE.add(", PE.visit_detail_end_date");
+        }
+        
+        if (visitDetailTypeCS != null) {
+            selectCols.add(", Q.visit_detail_type_concept_id");
+            selectColsPE.add(", PE.visit_detail_type_concept_id");
+        }
+        
+        if (visitDetailSourceConcept != null) {
+            selectCols.add(", Q.visit_detail_source_concept_id");
+            selectColsPE.add(", PE.visit_detail_source_concept_id");
+        }
+        
+        if (providerSpecialtyCS != null) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

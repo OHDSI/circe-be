@@ -77,25 +77,27 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         
-        if (criteria.procedureType != null && criteria.procedureType.length > 0) {
-            cColumns.add("C.procedure_type_concept_id");
-        }
-        
-        if (criteria.modifier != null && criteria.modifier.length > 0) {
-            cColumns.add("C.modifier_concept_id");
-        }
-        
-        if (criteria.quantity != null) {
-            cColumns.add("C.quantity");
-        }
-        
-        if (criteria.procedureSourceConcept != null) {
-            cColumns.add("C.procedure_source_concept_id");
-        }
-        
-        // providerSpecialty
-        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-            cColumns.add("C.provider_id");
+        if(!options.isPrimaryCriteria()){
+          if (criteria.procedureType != null && criteria.procedureType.length > 0) {
+              cColumns.add("C.procedure_type_concept_id");
+          }
+          
+          if (criteria.modifier != null && criteria.modifier.length > 0) {
+              cColumns.add("C.modifier_concept_id");
+          }
+          
+          if (criteria.quantity != null) {
+              cColumns.add("C.quantity");
+          }
+          
+          if (criteria.procedureSourceConcept != null) {
+              cColumns.add("C.procedure_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
         }
         
         query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

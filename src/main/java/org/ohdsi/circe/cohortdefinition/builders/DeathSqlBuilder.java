@@ -66,16 +66,18 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
       if (options != null && options.isRetainCohortCovariates()) {
           List<String> cColumns = new ArrayList<>();
           cColumns.add("C.concept_id");
-          if (criteria.occurrenceStartDate != null) {
-              cColumns.add("C.death_date");
-          }
-          
-          if (criteria.deathType != null && criteria.deathType.length > 0) {
-              cColumns.add("C.death_type_concept_id");
-          }
-          
-          if (criteria.deathSourceConcept != null) {
-              cColumns.add("C.cause_concept_id");
+          if(!options.isPrimaryCriteria()){    
+            if (criteria.occurrenceStartDate != null) {
+                cColumns.add("C.death_date");
+            }
+            
+            if (criteria.deathType != null && criteria.deathType.length > 0) {
+                cColumns.add("C.death_type_concept_id");
+            }
+            
+            if (criteria.deathSourceConcept != null) {
+                cColumns.add("C.cause_concept_id");
+            }
           }
           
           query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

@@ -129,15 +129,7 @@ left join inclusion_events ie on qe.concept_id = ie.concept_id
 ;
 
 -- If @results_database_schema."cohort_details_@target_cohort_id" exists, remove it and create new one.
-DO
-$do$
-BEGIN
-   if EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES where table_schema = '@results_database_schema' and TABLE_NAME = 'cohort_details_@target_cohort_id') THEN
-      DROP TABLE @results_database_schema."cohort_details_@target_cohort_id";
-   END IF;
-END
-$do$
-;
+DROP TABLE IF EXISTS @results_database_schema."cohort_details_@target_cohort_id";
 
 select fc.*
 into @results_database_schema."cohort_details_@target_cohort_id"

@@ -75,21 +75,23 @@ public class DoseEraSqlBuilder<T extends DoseEra> extends CriteriaSqlBuilder<T> 
     if (options != null && options.isRetainCohortCovariates()) {
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
-        if (criteria.eraStartDate != null) {
-            cColumns.add("C.dose_era_start_date");
-        }
-        
-        if (criteria.eraEndDate != null) {
-            cColumns.add("C.dose_era_end_date");
-        }
-        
-        // unit
-        if (criteria.unit != null && criteria.unit.length > 0) {
-            cColumns.add("C.unit_concept_id");
-        }
-        
-        if (criteria.doseValue != null) {
-            cColumns.add("C.dose_value");
+        if(!options.isPrimaryCriteria()){
+          if (criteria.eraStartDate != null) {
+              cColumns.add("C.dose_era_start_date");
+          }
+          
+          if (criteria.eraEndDate != null) {
+              cColumns.add("C.dose_era_end_date");
+          }
+          
+          // unit
+          if (criteria.unit != null && criteria.unit.length > 0) {
+              cColumns.add("C.unit_concept_id");
+          }
+          
+          if (criteria.doseValue != null) {
+              cColumns.add("C.dose_value");
+          }
         }
         
         query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

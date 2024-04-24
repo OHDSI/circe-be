@@ -85,7 +85,7 @@ public abstract class Criteria {
       return query;
   }
   
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", "");
       return query;
   }

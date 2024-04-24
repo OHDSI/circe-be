@@ -74,8 +74,10 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
         List<String> cColumns = new ArrayList<>();
         cColumns.add("C.concept_id");
         
-        if (criteria.occurrenceCount != null) {
-            cColumns.add("C.condition_occurrence_count");
+        if(!options.isPrimaryCriteria()){
+          if (criteria.occurrenceCount != null) {
+              cColumns.add("C.condition_occurrence_count");
+          }
         }
         
         query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

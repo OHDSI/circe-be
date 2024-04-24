@@ -222,39 +222,35 @@ public class DeviceExposure extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (deviceType != null && deviceType.length > 0) {
-          selectCols.add(", Q.device_type_concept_id");
-          selectColsPE.add(", PE.device_type_concept_id");
-      }
-      
-      if (quantity != null) {
-          selectCols.add(", Q.quantity");
-          selectColsPE.add(", PE.quantity");
-      }
-      
-      if (uniqueDeviceId != null) {
-          selectCols.add(", Q.unique_device_id");
-          selectColsPE.add(", PE.unique_device_id");
-      }
-      
-      if (deviceSourceConcept != null) {
-          selectCols.add(", Q.device_source_concept_id");
-          selectColsPE.add(", PE.device_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", PE.provider_id");
-      }
-      
-      // unit
-      if (unitConceptId != null && unitConceptId.length > 0) {
-          selectCols.add(", Q.unit_concept_id");
-          selectColsPE.add(", PE.unit_concept_id");
+      if(!options.isPrimaryCriteria()){
+        if (deviceType != null && deviceType.length > 0) {
+            selectCols.add(", Q.device_type_concept_id");
+            selectColsPE.add(", PE.device_type_concept_id");
+        }
+        
+        if (quantity != null) {
+            selectCols.add(", Q.quantity");
+            selectColsPE.add(", PE.quantity");
+        }
+        
+        if (uniqueDeviceId != null) {
+            selectCols.add(", Q.unique_device_id");
+            selectColsPE.add(", PE.unique_device_id");
+        }
+        
+        if (deviceSourceConcept != null) {
+            selectCols.add(", Q.device_source_concept_id");
+            selectColsPE.add(", PE.device_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

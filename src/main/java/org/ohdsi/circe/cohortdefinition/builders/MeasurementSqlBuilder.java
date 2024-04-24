@@ -86,39 +86,42 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     if (options != null && options.isRetainCohortCovariates()) {
-        List<String> cColumns = new ArrayList<>();
-        cColumns.add("C.concept_id");
+      List<String> cColumns = new ArrayList<>();
+      cColumns.add("C.concept_id");
+
+      if(!options.isPrimaryCriteria()){
         cColumns.add("C.value_as_number");
-      if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
-            cColumns.add("C.value_as_concept_id");
-      }
-      // unit
-      if (criteria.unit != null && criteria.unit.length > 0) {
-          cColumns.add("C.unit_concept_id");
-      }
-      // range_low
-      if (criteria.rangeLow != null) {
-          cColumns.add("C.range_low");
-      }
+        if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+              cColumns.add("C.value_as_concept_id");
+        }
+        // unit
+        if (criteria.unit != null && criteria.unit.length > 0) {
+            cColumns.add("C.unit_concept_id");
+        }
+        // range_low
+        if (criteria.rangeLow != null) {
+            cColumns.add("C.range_low");
+        }
 
-      // range_high
-      if (criteria.rangeHigh != null) {
-          cColumns.add("C.range_high");
-      }
+        // range_high
+        if (criteria.rangeHigh != null) {
+            cColumns.add("C.range_high");
+        }
 
-      // providerSpecialty
-      if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
-          cColumns.add("C.provider_id");
-      }
-      
-      // measurementType
-      if (criteria.measurementType != null && criteria.measurementType.length > 0) {
-          cColumns.add("C.measurement_type_concept_id");
-      }
-      
-      // operator
-      if (criteria.operator != null && criteria.operator.length > 0) {
-          cColumns.add("C.operator_concept_id");
+        // providerSpecialty
+        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+            cColumns.add("C.provider_id");
+        }
+        
+        // measurementType
+        if (criteria.measurementType != null && criteria.measurementType.length > 0) {
+            cColumns.add("C.measurement_type_concept_id");
+        }
+        
+        // operator
+        if (criteria.operator != null && criteria.operator.length > 0) {
+            cColumns.add("C.operator_concept_id");
+        }
       }
       
       query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

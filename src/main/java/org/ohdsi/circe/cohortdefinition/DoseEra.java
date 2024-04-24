@@ -182,28 +182,30 @@ public class DoseEra extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (eraStartDate != null) {
-          selectCols.add(", Q.dose_era_start_date");
-          selectColsPE.add(", PE.dose_era_start_date");
-      }
-      
-      if (eraEndDate != null) {
-          selectCols.add(", Q.dose_era_end_date");
-          selectColsPE.add(", PE.dose_era_end_date");
-      }
-      
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", Q.unit_concept_id");
-          selectColsPE.add(", PE.unit_concept_id");
-      }
-      
-      if (doseValue != null) {
-          selectCols.add(", Q.dose_value");
-          selectColsPE.add(", PE.dose_value");
+      if(!options.isPrimaryCriteria()){
+        if (eraStartDate != null) {
+            selectCols.add(", Q.dose_era_start_date");
+            selectColsPE.add(", PE.dose_era_start_date");
+        }
+        
+        if (eraEndDate != null) {
+            selectCols.add(", Q.dose_era_end_date");
+            selectColsPE.add(", PE.dose_era_end_date");
+        }
+        
+        // unit
+        if (unit != null && unit.length > 0) {
+            selectCols.add(", Q.unit_concept_id");
+            selectColsPE.add(", PE.unit_concept_id");
+        }
+        
+        if (doseValue != null) {
+            selectCols.add(", Q.dose_value");
+            selectColsPE.add(", PE.dose_value");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

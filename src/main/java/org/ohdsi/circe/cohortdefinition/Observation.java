@@ -245,42 +245,44 @@ public class Observation extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
-      selectCols.add(", Q.value_as_number");
-      selectColsPE.add(", AC.value_as_number");
-      
-      // observationType
-      if (observationType != null && observationType.length > 0) {
-          selectCols.add(", Q.observation_type_concept_id");
-          selectColsPE.add(", AC.observation_type_concept_id");
-      }
-      
-      if (valueAsString != null) {
-          selectCols.add(", Q.value_as_string");
-          selectColsPE.add(", AC.value_as_string");
-      }
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(", Q.value_as_concept_id");
-          selectColsPE.add(", AC.value_as_concept_id");
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", Q.unit_concept_id");
-          selectColsPE.add(", AC.unit_concept_id");
-      }
-      
-      // qualifier
-      if (qualifier != null && qualifier.length > 0) {
-          selectCols.add(", Q.qualifier_concept_id");
-          selectColsPE.add(", AC.qualifier_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", AC.provider_id");
+      if(!options.isPrimaryCriteria()){
+        selectCols.add(", Q.value_as_number");
+        selectColsPE.add(", PE.value_as_number");
+        
+        // observationType
+        if (observationType != null && observationType.length > 0) {
+            selectCols.add(", Q.observation_type_concept_id");
+            selectColsPE.add(", PE.observation_type_concept_id");
+        }
+        
+        if (valueAsString != null) {
+            selectCols.add(", Q.value_as_string");
+            selectColsPE.add(", PE.value_as_string");
+        }
+        
+        if (valueAsConcept != null && valueAsConcept.length > 0) {
+            selectCols.add(", Q.value_as_concept_id");
+            selectColsPE.add(", PE.value_as_concept_id");
+        }
+        // unit
+        if (unit != null && unit.length > 0) {
+            selectCols.add(", Q.unit_concept_id");
+            selectColsPE.add(", PE.unit_concept_id");
+        }
+        
+        // qualifier
+        if (qualifier != null && qualifier.length > 0) {
+            selectCols.add(", Q.qualifier_concept_id");
+            selectColsPE.add(", PE.qualifier_concept_id");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
       }
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
       return query;

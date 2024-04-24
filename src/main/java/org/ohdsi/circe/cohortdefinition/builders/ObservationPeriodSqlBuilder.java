@@ -78,8 +78,10 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
           List<String> cColumns = new ArrayList<>();
           cColumns.add("C.concept_id");
           
-          if (criteria.periodType != null && criteria.periodType.length > 0) {
-              cColumns.add("C.period_type_concept_id");
+          if(!options.isPrimaryCriteria()){
+            if (criteria.periodType != null && criteria.periodType.length > 0) {
+                cColumns.add("C.period_type_concept_id");
+            }
           }
           
           query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

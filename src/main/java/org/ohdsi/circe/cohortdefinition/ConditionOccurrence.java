@@ -195,28 +195,30 @@ public class ConditionOccurrence extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (conditionType != null && conditionType.length > 0) {
-          selectCols.add(", Q.condition_type_concept_id");
-          selectColsPE.add(", PE.condition_type_concept_id");
-      }
-      
-      if (conditionSourceConcept != null) {
-          selectCols.add(", Q.condition_source_concept_id");
-          selectColsPE.add(", PE.condition_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", PE.provider_id");
-      }
-      
-      if (conditionStatus != null && conditionStatus.length > 0) {
-          selectCols.add(", Q.condition_status_concept_id");
-          selectColsPE.add(", PE.condition_status_concept_id");
+      if(!options.isPrimaryCriteria()){
+        if (conditionType != null && conditionType.length > 0) {
+            selectCols.add(", Q.condition_type_concept_id");
+            selectColsPE.add(", PE.condition_type_concept_id");
+        }
+        
+        if (conditionSourceConcept != null) {
+            selectCols.add(", Q.condition_source_concept_id");
+            selectColsPE.add(", PE.condition_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
+        
+        if (conditionStatus != null && conditionStatus.length > 0) {
+            selectCols.add(", Q.condition_status_concept_id");
+            selectColsPE.add(", PE.condition_status_concept_id");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

@@ -291,53 +291,55 @@ public class DrugExposure extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (drugType != null && drugType.length > 0) {
-          selectCols.add(", Q.drug_type_concept_id");
-          selectColsPE.add(", PE.drug_type_concept_id");
-      }
-      
-      if (stopReason != null) {
-          selectCols.add(", Q.stop_reason");
-          selectColsPE.add(", PE.stop_reason");
-      }
-      
-      if (refills != null) {
-          selectCols.add(", Q.refills");
-          selectColsPE.add(", PE.refills");
-      }
-      
-      if (quantity != null) {
-          selectCols.add(", Q.quantity");
-          selectColsPE.add(", PE.quantity");
-      }
-      
-      if (daysSupply != null) {
-          selectCols.add(", Q.days_supply");
-          selectColsPE.add(", PE.days_supply");
-      }
-      
-      if (routeConcept != null && routeConcept.length > 0) {
-          selectCols.add(", Q.route_concept_id");
-          selectColsPE.add(", PE.route_concept_id");
-      }
-      
-      if (lotNumber != null) {
-          selectCols.add(", Q.lot_number");
-          selectColsPE.add(", PE.lot_number");
-      }
-      
-      if (drugSourceConcept != null) {
-          selectCols.add(", Q.drug_source_concept_id");
-          selectColsPE.add(", PE.drug_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", PE.provider_id");
+      if(!options.isPrimaryCriteria()){
+        if (drugType != null && drugType.length > 0) {
+            selectCols.add(", Q.drug_type_concept_id");
+            selectColsPE.add(", PE.drug_type_concept_id");
+        }
+        
+        if (stopReason != null) {
+            selectCols.add(", Q.stop_reason");
+            selectColsPE.add(", PE.stop_reason");
+        }
+        
+        if (refills != null) {
+            selectCols.add(", Q.refills");
+            selectColsPE.add(", PE.refills");
+        }
+        
+        if (quantity != null) {
+            selectCols.add(", Q.quantity");
+            selectColsPE.add(", PE.quantity");
+        }
+        
+        if (daysSupply != null) {
+            selectCols.add(", Q.days_supply");
+            selectColsPE.add(", PE.days_supply");
+        }
+        
+        if (routeConcept != null && routeConcept.length > 0) {
+            selectCols.add(", Q.route_concept_id");
+            selectColsPE.add(", PE.route_concept_id");
+        }
+        
+        if (lotNumber != null) {
+            selectCols.add(", Q.lot_number");
+            selectColsPE.add(", PE.lot_number");
+        }
+        
+        if (drugSourceConcept != null) {
+            selectCols.add(", Q.drug_source_concept_id");
+            selectColsPE.add(", PE.drug_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));

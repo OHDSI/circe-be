@@ -74,48 +74,50 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
       if (options != null && options.isRetainCohortCovariates()) {
           List<String> cColumns = new ArrayList<>();
           cColumns.add("C.concept_id");
-          if (criteria.periodStartDate != null) {
-              cColumns.add("C.payer_plan_period_start_date");
-          }
-          
-          if (criteria.periodEndDate != null) {
-              cColumns.add("C.payer_plan_period_end_date");
-          }
-          
-          if (criteria.payerConcept != null) {
-              cColumns.add("C.payer_concept_id");
-          }
-          
-          if (criteria.planConcept != null) {
-              cColumns.add("C.plan_concept_id");
-          }
-          
-          if (criteria.sponsorConcept != null) {
-              cColumns.add("C.sponsor_concept_id");
-          }
-          
-          if (criteria.stopReasonConcept != null) {
-              cColumns.add("C.stop_reason_concept_id");
-          }
-          
-          if (criteria.stopReasonConcept != null) {
-              cColumns.add("C.stop_reason_concept_id");
-          }
-          
-          if (criteria.payerSourceConcept != null) {
-              cColumns.add("C.payer_source_concept_id");
-          }
-          
-          if (criteria.planSourceConcept != null) {
-              cColumns.add("C.plan_source_concept_id");
-          }
-          
-          if (criteria.sponsorSourceConcept != null) {
-              cColumns.add("C.sponsor_source_concept_id");
-          }
-          
-          if (criteria.stopReasonSourceConcept != null) {
-              cColumns.add("C.stop_reason_source_concept_id");
+          if(!options.isPrimaryCriteria()){
+            if (criteria.periodStartDate != null) {
+                cColumns.add("C.payer_plan_period_start_date");
+            }
+            
+            if (criteria.periodEndDate != null) {
+                cColumns.add("C.payer_plan_period_end_date");
+            }
+            
+            if (criteria.payerConcept != null) {
+                cColumns.add("C.payer_concept_id");
+            }
+            
+            if (criteria.planConcept != null) {
+                cColumns.add("C.plan_concept_id");
+            }
+            
+            if (criteria.sponsorConcept != null) {
+                cColumns.add("C.sponsor_concept_id");
+            }
+            
+            if (criteria.stopReasonConcept != null) {
+                cColumns.add("C.stop_reason_concept_id");
+            }
+            
+            if (criteria.stopReasonConcept != null) {
+                cColumns.add("C.stop_reason_concept_id");
+            }
+            
+            if (criteria.payerSourceConcept != null) {
+                cColumns.add("C.payer_source_concept_id");
+            }
+            
+            if (criteria.planSourceConcept != null) {
+                cColumns.add("C.plan_source_concept_id");
+            }
+            
+            if (criteria.sponsorSourceConcept != null) {
+                cColumns.add("C.sponsor_source_concept_id");
+            }
+            
+            if (criteria.stopReasonSourceConcept != null) {
+                cColumns.add("C.stop_reason_source_concept_id");
+            }
           }
           
           query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));

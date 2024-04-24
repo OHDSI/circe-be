@@ -237,44 +237,45 @@ public class Specimen extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (occurrenceStartDate != null) {
-          selectCols.add(", Q.specimen_date");
-          selectColsPE.add(", PE.specimen_date");
+      if(!options.isPrimaryCriteria()){
+        if (occurrenceStartDate != null) {
+            selectCols.add(", Q.specimen_date");
+            selectColsPE.add(", PE.specimen_date");
+        }
+        
+        if (specimenType != null && specimenType.length > 0) {
+            selectCols.add(", Q.specimen_type_concept_id");
+            selectColsPE.add(", PE.specimen_type_concept_id");
+        }
+        
+        if (unit != null && unit.length > 0) {
+            selectCols.add(", Q.unit_concept_id");
+            selectColsPE.add(", PE.unit_concept_id");
+        }
+        
+        if (quantity != null) {
+            selectCols.add(", Q.quantity");
+            selectColsPE.add(", PE.quantity");
+        }
+        
+        if (anatomicSite != null && anatomicSite.length > 0) {
+            selectCols.add(", Q.anatomic_site_concept_id");
+            selectColsPE.add(", PE.anatomic_site_concept_id");
+        }
+        
+        if (diseaseStatus != null && diseaseStatus.length > 0) {
+            selectCols.add(", Q.disease_status_concept_id");
+            selectColsPE.add(", PE.disease_status_concept_id");
+        }
+        
+        if (sourceId != null) {
+            selectCols.add(", Q.specimen_source_id");
+            selectColsPE.add(", PE.specimen_source_id");
+        }
       }
-      
-      if (specimenType != null && specimenType.length > 0) {
-          selectCols.add(", Q.specimen_type_concept_id");
-          selectColsPE.add(", PE.specimen_type_concept_id");
-      }
-      
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", Q.unit_concept_id");
-          selectColsPE.add(", PE.unit_concept_id");
-      }
-      
-      if (quantity != null) {
-          selectCols.add(", Q.quantity");
-          selectColsPE.add(", PE.quantity");
-      }
-      
-      if (anatomicSite != null && anatomicSite.length > 0) {
-          selectCols.add(", Q.anatomic_site_concept_id");
-          selectColsPE.add(", PE.anatomic_site_concept_id");
-      }
-      
-      if (diseaseStatus != null && diseaseStatus.length > 0) {
-          selectCols.add(", Q.disease_status_concept_id");
-          selectColsPE.add(", PE.disease_status_concept_id");
-      }
-      
-      if (sourceId != null) {
-          selectCols.add(", Q.specimen_source_id");
-          selectColsPE.add(", PE.specimen_source_id");
-      }
-      
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
       return query;
   }

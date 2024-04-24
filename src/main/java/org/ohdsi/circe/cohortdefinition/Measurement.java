@@ -279,50 +279,52 @@ public class Measurement extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
-      selectCols.add(", Q.value_as_number");
-      selectColsPE.add(", AC.value_as_number");
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectCols.add(", Q.value_as_concept_id");
-          selectColsPE.add(", AC.value_as_concept_id");
-      }
-      
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectCols.add(", Q.unit_concept_id");
-          selectColsPE.add(", AC.unit_concept_id");
-      }
-      
-      // range_low
-      if (rangeLow != null) {
-          selectCols.add(", Q.range_low");
-          selectColsPE.add(", AC.range_low");
-      }
-      
-      // range_high
-      if (rangeHigh != null) {
-          selectCols.add(", Q.range_high");
-          selectColsPE.add(", AC.range_high");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", AC.provider_id");
-      }
-      
-      // measurementType
-      if (measurementType != null && measurementType.length > 0) {
-          selectCols.add(", Q.measurement_type_concept_id");
-          selectColsPE.add(", AC.measurement_type_concept_id");
-      }
-      
-      // operator
-      if (operator != null && operator.length > 0) {
-          selectCols.add(", Q.operator_concept_id");
-          selectColsPE.add(", AC.operator_concept_id");
+      if(!options.isPrimaryCriteria()){
+        selectCols.add(", Q.value_as_number");
+        selectColsPE.add(", PE.value_as_number");
+        
+        if (valueAsConcept != null && valueAsConcept.length > 0) {
+            selectCols.add(", Q.value_as_concept_id");
+            selectColsPE.add(", PE.value_as_concept_id");
+        }
+        
+        // unit
+        if (unit != null && unit.length > 0) {
+            selectCols.add(", Q.unit_concept_id");
+            selectColsPE.add(", PE.unit_concept_id");
+        }
+        
+        // range_low
+        if (rangeLow != null) {
+            selectCols.add(", Q.range_low");
+            selectColsPE.add(", PE.range_low");
+        }
+        
+        // range_high
+        if (rangeHigh != null) {
+            selectCols.add(", Q.range_high");
+            selectColsPE.add(", PE.range_high");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
+        
+        // measurementType
+        if (measurementType != null && measurementType.length > 0) {
+            selectCols.add(", Q.measurement_type_concept_id");
+            selectColsPE.add(", PE.measurement_type_concept_id");
+        }
+        
+        // operator
+        if (operator != null && operator.length > 0) {
+            selectCols.add(", Q.operator_concept_id");
+            selectColsPE.add(", PE.operator_concept_id");
+        }
       }
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
       return query;

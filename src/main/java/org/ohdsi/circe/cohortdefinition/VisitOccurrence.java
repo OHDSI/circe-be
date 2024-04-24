@@ -168,21 +168,23 @@ public class VisitOccurrence extends Criteria {
   }
   
   @Override
-  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE) {
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
       
-      if (visitSourceConcept != null) {
-          selectCols.add(", Q.visit_source_concept_id");
-          selectColsPE.add(", PE.visit_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectCols.add(", Q.provider_id");
-          selectColsPE.add(", PE.provider_id");
+      if(!options.isPrimaryCriteria()){
+        if (visitSourceConcept != null) {
+            selectCols.add(", Q.visit_source_concept_id");
+            selectColsPE.add(", PE.visit_source_concept_id");
+        }
+        
+        // providerSpecialty
+        if (providerSpecialty != null && providerSpecialty.length > 0) {
+            selectCols.add(", Q.provider_id");
+            selectColsPE.add(", PE.provider_id");
+        }
       }
       
       query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
       return query;
-  }
+  }  
 }
