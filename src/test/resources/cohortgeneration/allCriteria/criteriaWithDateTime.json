@@ -1,0 +1,190 @@
+{
+    "ConceptSets": [
+      {
+        "id": 0,
+        "name": "Dehydration",
+        "expression": {
+          "items": [
+            {
+              "concept": {
+                "CONCEPT_CLASS_ID": "Clinical Finding",
+                "CONCEPT_CODE": "34095006",
+                "CONCEPT_ID": 435796,
+                "CONCEPT_NAME": "Dehydration",
+                "DOMAIN_ID": "Condition",
+                "INVALID_REASON": "V",
+                "INVALID_REASON_CAPTION": "Valid",
+                "STANDARD_CONCEPT": "S",
+                "STANDARD_CONCEPT_CAPTION": "Standard",
+                "VOCABULARY_ID": "SNOMED"
+              },
+              "includeDescendants": true
+            }
+          ]
+        }
+      }
+    ],
+    "PrimaryCriteria": {
+      "CriteriaList": [
+        {
+          "ConditionOccurrence": {
+            "CodesetId": 0
+          }
+        }
+      ],
+      "ObservationWindow": {
+        "PriorDays": 0,
+        "PostDays": 0
+      },
+      "PrimaryCriteriaLimit": {
+        "Type": "All"
+      }
+    },
+    "QualifiedLimit": {
+      "Type": "First"
+    },
+    "ExpressionLimit": {
+      "Type": "All"
+    },
+    "InclusionRules": [
+      {
+        "name": "Measurement",
+        "expression": {
+          "Type": "ALL",
+          "CriteriaList": [
+            {
+              "Criteria": {
+                "Measurement": {}
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1,
+                  "TimeUnit": "day"
+                },
+                "End": {
+                  "Coeff": 1,
+                  "TimeUnit": "day"
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            }
+          ],
+          "DemographicCriteriaList": [],
+          "Groups": []
+        }
+      },
+      {
+        "name": "Observation",
+        "expression": {
+          "Type": "ALL",
+          "CriteriaList": [
+            {
+              "Criteria": {
+                "Observation": {}
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1,
+                  "TimeUnit": "day"
+                },
+                "End": {
+                  "Coeff": 1,
+                  "TimeUnit": "day"
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            }
+          ],
+          "DemographicCriteriaList": [],
+          "Groups": []
+        }
+      },
+      {
+        "name": "Visit",
+        "expression": {
+          "Type": "ALL",
+          "CriteriaList": [
+            {
+              "Criteria": {
+                "VisitOccurrence": {}
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1,
+                  "TimeUnit": "day"
+                },
+                "End": {
+                  "Coeff": 1,
+                  "TimeUnit": "day"
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            }
+          ],
+          "DemographicCriteriaList": [],
+          "Groups": []
+        }
+      },
+      {
+        "name": "Measurement #2",
+        "expression": {
+          "Type": "ALL",
+          "CriteriaList": [
+            {
+              "Criteria": {
+                "Measurement": {
+                  "IntervalUnit": "minute"
+                }
+              },
+              "StartWindow": {
+                "Start": {
+                  "Coeff": -1,
+                  "TimeUnit": "minute"
+                },
+                "End": {
+                  "Coeff": 1,
+                  "TimeUnit": "minute"
+                },
+                "UseEventEnd": false
+              },
+              "Occurrence": {
+                "Type": 2,
+                "Count": 1
+              }
+            }
+          ],
+          "DemographicCriteriaList": [],
+          "Groups": []
+        }
+      }
+    ],
+    "EndStrategy": {
+      "DateOffset": {
+        "DateField": "EndDate",
+        "Offset": 1,
+        "OffsetUnitValue": 0,
+        "OffsetUnit": "day"
+      }
+    },
+    "CensoringCriteria": [],
+    "CollapseSettings": {
+      "CollapseType": "ERA",
+      "EraPad": 0,
+      "EraPadUnitValue": 0,
+      "EraPadUnit": "day"
+    },
+    "CensorWindow": {},
+    "cdmVersionRange": ">=5.0.0"
+  }

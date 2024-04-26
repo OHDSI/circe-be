@@ -100,6 +100,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     @JsonProperty("cohortId")
     public Integer cohortId;
+    
+    @JsonProperty("resultCohortId")
+    public Integer resultCohortId;
 
     @JsonProperty("cdmSchema")
     public String cdmSchema;
@@ -484,7 +487,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       if (options.cohortId != null) {
         resultSql = StringUtils.replace(resultSql, "@target_cohort_id", options.cohortId.toString());
       }
-
+      if (options.resultCohortId != null) {
+          resultSql = StringUtils.replace(resultSql, "@result_cohort_id", options.resultCohortId.toString());
+      }
+      
       resultSql = StringUtils.replace(resultSql, "@generateStats", options.generateStats ? "1" : "0");
 
       if (options.cohortIdFieldName != null) {

@@ -128,11 +128,11 @@ left join inclusion_events ie on qe.concept_id = ie.concept_id
 @leftjoinEraStrategy
 ;
 
--- If @results_database_schema."cohort_details_@target_cohort_id" exists, remove it and create new one.
-DROP TABLE IF EXISTS @results_database_schema."cohort_details_@target_cohort_id";
+-- If @results_database_schema."cohort_details_@result_cohort_id" exists, remove it and create new one.
+DROP TABLE IF EXISTS @results_database_schema."cohort_details_@result_cohort_id";
 
 select fc.*
-into @results_database_schema."cohort_details_@target_cohort_id"
+into @results_database_schema."cohort_details_@result_cohort_id"
 from #final_cohort_details fc
 ;
 -- END: Retain Cohort Covariates
