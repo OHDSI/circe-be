@@ -124,7 +124,7 @@ select qe.op_start_date, qe.op_end_date, qe.visit_occurrence_id,
       @strategy_ends_columns
 into #final_cohort_details
 from #qualified_events qe
-left join inclusion_events ie on qe.concept_id = ie.concept_id
+left join inclusion_events ie on qe.person_id = ie.person_id AND qe.event_id = ie.event_id
 @leftjoinEraStrategy
 ;
 
