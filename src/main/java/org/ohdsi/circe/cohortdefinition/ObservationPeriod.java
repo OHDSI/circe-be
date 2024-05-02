@@ -81,21 +81,6 @@ public class ObservationPeriod extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (periodType != null && periodType.length > 0) {
-          selectColsCQ.add(", CQ.period_type_concept_id");
-          selectColsG.add(", G.period_type_concept_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

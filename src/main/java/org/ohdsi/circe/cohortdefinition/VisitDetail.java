@@ -115,41 +115,6 @@ public class VisitDetail extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (visitDetailStartDate != null) {
-          selectColsCQ.add(", CQ.visit_detail_start_date");
-          selectColsG.add(", G.visit_detail_start_date");
-      }
-      
-      if (visitDetailEndDate != null) {
-          selectColsCQ.add(", CQ.visit_detail_end_date");
-          selectColsG.add(", G.visit_detail_end_date");
-      }
-      
-      if (visitDetailTypeCS != null) {
-          selectColsCQ.add(", CQ.visit_detail_type_concept_id");
-          selectColsG.add(", G.visit_detail_type_concept_id");
-      }
-      
-      if (visitDetailSourceConcept != null) {
-          selectColsCQ.add(", CQ.visit_detail_source_concept_id");
-          selectColsG.add(", G.visit_detail_source_concept_id");
-      }
-      
-      if (providerSpecialtyCS != null) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

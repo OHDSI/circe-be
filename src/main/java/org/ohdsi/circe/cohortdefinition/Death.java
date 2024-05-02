@@ -83,31 +83,6 @@ public class Death extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (occurrenceStartDate != null) {
-          selectColsCQ.add(", CQ.death_date");
-          selectColsG.add(", G.death_date");
-      }
-      
-      if (deathType != null && deathType.length > 0) {
-          selectColsCQ.add(", CQ.death_type_concept_id");
-          selectColsG.add(", G.death_type_concept_id");
-      }
-      
-      if (deathSourceConcept != null) {
-          selectColsCQ.add(", CQ.cause_concept_id");
-          selectColsG.add(", G.cause_concept_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

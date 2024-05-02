@@ -109,42 +109,6 @@ public class ProcedureOccurrence extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (procedureType != null && procedureType.length > 0) {
-          selectColsCQ.add(", CQ.procedure_type_concept_id");
-          selectColsG.add(", G.procedure_type_concept_id");
-      }
-      
-      if (modifier != null && modifier.length > 0) {
-          selectColsCQ.add(", CQ.modifier_concept_id");
-          selectColsG.add(", G.modifier_concept_id");
-      }
-      
-      if (quantity != null) {
-          selectColsCQ.add(", CQ.quantity");
-          selectColsG.add(", G.quantity");
-      }
-      
-      if (procedureSourceConcept != null) {
-          selectColsCQ.add(", CQ.procedure_source_concept_id");
-          selectColsG.add(", G.procedure_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       
       List<String> selectCols = new ArrayList<>();

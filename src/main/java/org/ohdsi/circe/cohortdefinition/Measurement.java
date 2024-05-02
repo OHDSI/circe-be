@@ -144,58 +144,6 @@ public class Measurement extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      selectColsCQ.add(", CQ.value_as_number");
-      selectColsG.add(", G.value_as_number");
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectColsCQ.add(", CQ.value_as_concept_id");
-          selectColsG.add(", G.value_as_concept_id");
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectColsCQ.add(", CQ.unit_concept_id");
-          selectColsG.add(", G.unit_concept_id");
-      }
-      
-      // range_low
-      if (rangeLow != null) {
-          selectColsCQ.add(", CQ.range_low");
-          selectColsG.add(", G.range_low");
-      }
-      
-      // range_high
-      if (rangeHigh != null) {
-          selectColsCQ.add(", CQ.range_high");
-          selectColsG.add(", G.range_high");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      // measurementType
-      if (measurementType != null && measurementType.length > 0) {
-          selectColsCQ.add(", CQ.measurement_type_concept_id");
-          selectColsG.add(", G.measurement_type_concept_id");
-      }
-      
-      // operator
-      if (operator != null && operator.length > 0) {
-          selectColsCQ.add(", CQ.operator_concept_id");
-          selectColsG.add(", G.operator_concept_id");
-      }
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

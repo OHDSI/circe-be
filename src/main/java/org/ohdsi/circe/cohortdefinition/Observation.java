@@ -126,52 +126,6 @@ public class Observation extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      selectColsCQ.add(", CQ.value_as_number");
-      selectColsG.add(", G.value_as_number");
-      
-      // observationType
-      if (observationType != null && observationType.length > 0) {
-          selectColsCQ.add(", CQ.observation_type_concept_id");
-          selectColsG.add(", G.observation_type_concept_id");
-      }
-      
-      if (valueAsString != null) {
-          selectColsCQ.add(", CQ.value_as_string");
-          selectColsG.add(", G.value_as_string");
-      }
-      
-      if (valueAsConcept != null && valueAsConcept.length > 0) {
-          selectColsCQ.add(", CQ.value_as_concept_id");
-          selectColsG.add(", G.value_as_concept_id");
-      }
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectColsCQ.add(", CQ.unit_concept_id");
-          selectColsG.add(", G.unit_concept_id");
-      }
-      
-      // qualifier
-      if (qualifier != null && qualifier.length > 0) {
-          selectColsCQ.add(", CQ.qualifier_concept_id");
-          selectColsG.add(", G.qualifier_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

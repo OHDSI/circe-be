@@ -147,62 +147,6 @@ public class DrugExposure extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (drugType != null && drugType.length > 0) {
-          selectColsCQ.add(", CQ.drug_type_concept_id");
-          selectColsG.add(", G.drug_type_concept_id");
-      }
-      
-      if (stopReason != null) {
-          selectColsCQ.add(", CQ.stop_reason");
-          selectColsG.add(", G.stop_reason");
-      }
-      
-      if (refills != null) {
-          selectColsCQ.add(", CQ.refills");
-          selectColsG.add(", G.refills");
-      }
-      
-      if (quantity != null) {
-          selectColsCQ.add(", CQ.quantity");
-          selectColsG.add(", G.quantity");
-      }
-      
-      if (daysSupply != null) {
-          selectColsCQ.add(", CQ.days_supply");
-          selectColsG.add(", G.days_supply");
-      }
-      
-      if (routeConcept != null && routeConcept.length > 0) {
-          selectColsCQ.add(", CQ.route_concept_id");
-          selectColsG.add(", G.route_concept_id");
-      }
-      
-      if (lotNumber != null) {
-          selectColsCQ.add(", CQ.lot_number");
-          selectColsG.add(", G.lot_number");
-      }
-      
-      if (drugSourceConcept != null) {
-          selectColsCQ.add(", CQ.drug_source_concept_id");
-          selectColsG.add(", G.drug_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

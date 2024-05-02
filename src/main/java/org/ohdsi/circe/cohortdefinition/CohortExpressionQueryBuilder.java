@@ -354,10 +354,16 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       // Add column field for inclusion group needed to listField
       for (int i = 0; i < expression.inclusionRules.size(); i++) {
           CriteriaGroup cg = expression.inclusionRules.get(i).expression;
-          for (CorelatedCriteria cc : cg.criteriaList) {
-              List<ColumnFieldData> fieldDatas = cc.criteria
-                      .getSelectedField(builderOptions.isRetainCohortCovariates());
-              listField.add(fieldDatas);
+          if (cg.criteriaList == null || cg.criteriaList.length == 0) {
+              listField.add(new ArrayList<>());
+          } else {
+              Map<String, ColumnFieldData> mapDistinctField = new HashMap<>();
+              for (CorelatedCriteria cc : cg.criteriaList) {
+                  cc.criteria.getSelectedField(options.retainCohortCovariates).forEach(c -> {
+                      mapDistinctField.put(c.getName(), c);
+                  });
+              }
+              listField.add(mapDistinctField.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList()));
           }
       }
       
@@ -537,37 +543,22 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         });
     }
     
-    for (CorelatedCriteria cc : group.criteriaList) {
-      cc.mapDistinctField = mapDistinctField;
-      String acQuery = this.getCorelatedlCriteriaQuery(cc, eventTable, retainCohortCovariates); //ac.accept(this);
-      acQuery = StringUtils.replace(acQuery, "@indexId", "" + indexId);
-      additionalCriteriaQueries.add(acQuery);
-      indexId++;
-
-		  if (retainCohortCovariates) {
-		  	if (cc.criteria instanceof Measurement) {
-		  		query = measurementSqlBuilder.embedCriteriaGroup(query, cc.criteria);
-		  	}
-		  	else if (cc.criteria instanceof Observation) {
-		  		query = observationSqlBuilder.embedCriteriaGroup(query, cc.criteria);
-		  	}else {
-          ArrayList<String> selectCols = new ArrayList<>();
-          selectCols.add(", CAST(null as numeric) value_as_number");
-          selectCols.add(", null as value_as_string");
-          selectCols.add(", CAST(null as int) value_as_concept_id");
-          selectCols.add(", CAST(null as int) unit_concept_id");
-          selectCols.add(", CAST(null as int) provider_id");
-          selectCols.add(", CAST(null as int) qualifier_concept_id");
-          selectCols.add(", CAST(null as int) observation_type_concept_id");
-          selectCols.add(", CAST(null as numeric) range_low");
-          selectCols.add(", CAST(null as numeric) range_high");
-          query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectCols, ""));
-          query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectCols, ""));
+    if (retainCohortCovariates) {
+        List<String> selectColsG = new ArrayList<>();
+        List<String> selectColsCQ = new ArrayList<>();
+        
+        for (Map.Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+            selectColsG.add(", G." + entry.getKey());
+            selectColsCQ.add(", CQ." + entry.getKey());
         }
-      }
-		  query = StringUtils.replace(query, "@e.additonColumns", "");
-		  query = StringUtils.replace(query, "@additonColumnsGroup", "");
-      query = StringUtils.replace(query, "@e.additonGroupColumns", "");    }
+        query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
+        query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
+    } else {
+        query = StringUtils.replace(query, "@e.additonColumns", "");
+        query = StringUtils.replace(query, "@additonColumnsGroup", "");
+    }
+    
+    for (CorelatedCriteria cc : group.criteriaList) {
 
     for (DemographicCriteria dc : group.demographicCriteriaList) {
       String dcQuery = this.getDemographicCriteriaQuery(dc, eventTable); //ac.accept(this);
@@ -619,11 +610,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     query = StringUtils.replace(query, "@eventTable", eventTable);
-
-    //If it does not exist in the Measurement or Observation table, remove it
-    query = StringUtils.replace(query, "@e.additonColumns", "");
-    query = StringUtils.replace(query, "@e.additonGroupColumns", "");
-    query = StringUtils.replace(query, "@additonColumnsGroup", "");
 
     return query;
   }

@@ -91,26 +91,6 @@ public class DrugEra extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (occurrenceCount != null) {
-          selectColsCQ.add(", CQ.drug_exposure_count");
-          selectColsG.add(", G.drug_exposure_count");
-      }
-      
-      if (gapDays != null) {
-          selectColsCQ.add(", CQ.gap_days");
-          selectColsG.add(", G.gap_days");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

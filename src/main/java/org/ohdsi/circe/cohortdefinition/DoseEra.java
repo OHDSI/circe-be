@@ -98,37 +98,6 @@ public class DoseEra extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (eraStartDate != null) {
-          selectColsCQ.add(", CQ.dose_era_start_date");
-          selectColsG.add(", G.dose_era_start_date");
-      }
-      
-      if (eraEndDate != null) {
-          selectColsCQ.add(", CQ.dose_era_end_date");
-          selectColsG.add(", G.dose_era_end_date");
-      }
-      
-      // unit
-      if (unit != null && unit.length > 0) {
-          selectColsCQ.add(", CQ.unit_concept_id");
-          selectColsG.add(", G.unit_concept_id");
-      }
-      
-      if (doseValue != null) {
-          selectColsCQ.add(", CQ.dose_value");
-          selectColsG.add(", G.dose_value");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();

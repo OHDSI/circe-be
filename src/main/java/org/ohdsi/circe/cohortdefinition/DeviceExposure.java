@@ -115,48 +115,6 @@ public class DeviceExposure extends Criteria {
   }
   
   @Override
-  public String embedCriteriaGroup(String query) {
-      ArrayList<String> selectColsCQ = new ArrayList<>();
-      ArrayList<String> selectColsG = new ArrayList<>();
-      
-      if (deviceType != null && deviceType.length > 0) {
-          selectColsCQ.add(", CQ.device_type_concept_id");
-          selectColsG.add(", G.device_type_concept_id");
-      }
-      
-      if (quantity != null) {
-          selectColsCQ.add(", CQ.quantity");
-          selectColsG.add(", G.quantity");
-      }
-      
-      if (uniqueDeviceId != null) {
-          selectColsCQ.add(", CQ.unique_device_id");
-          selectColsG.add(", G.unique_device_id");
-      }
-      
-      if (deviceSourceConcept != null) {
-          selectColsCQ.add(", CQ.device_source_concept_id");
-          selectColsG.add(", G.device_source_concept_id");
-      }
-      
-      // providerSpecialty
-      if (providerSpecialty != null && providerSpecialty.length > 0) {
-          selectColsCQ.add(", CQ.provider_id");
-          selectColsG.add(", G.provider_id");
-      }
-      
-      // unit
-      if (unitConceptId != null && unitConceptId.length > 0) {
-          selectColsCQ.add(", CQ.unit_concept_id");
-          selectColsG.add(", G.unit_concept_id");
-      }
-      
-      query = StringUtils.replace(query, "@e.additonColumns", StringUtils.join(selectColsCQ, ""));
-      query = StringUtils.replace(query, "@additonColumnsGroup", StringUtils.join(selectColsG, ""));
-      return query;
-  }
-  
-  @Override
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();
