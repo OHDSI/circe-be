@@ -110,7 +110,7 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
       }
       else {
         // if any specific business logic is necessary if procedure_end_datetime is empty it should be added accordingly
-        selectCols.add("po.procedure_datetime as start_date, po.procedure_end_datetime as end_date");
+        selectCols.add("po.procedure_datetime as start_date, po.procedure_datetime as end_date");
       }
     }
     return selectCols;
