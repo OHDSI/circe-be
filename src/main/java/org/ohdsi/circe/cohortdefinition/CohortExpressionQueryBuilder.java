@@ -445,7 +445,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       endDateSelects.add(String.format("-- End Date Strategy\n%s\n", "SELECT event_id, person_id, end_date from #strategy_ends"));
       if (options != null && options.retainCohortCovariates) {
         resultSql = StringUtils.replace(resultSql, "@strategy_ends_columns", ", se.end_date strategy_end_date");
-        resultSql = StringUtils.replace(resultSql, "@leftjoinEraStrategy", "left join strategy_ends se on qe.person_id = se.person_id AND qe.event_id = se.event_id");
+        resultSql = StringUtils.replace(resultSql, "@leftjoinEraStrategy", "left join #strategy_ends se on qe.person_id = se.person_id AND qe.event_id = se.event_id");
       }
     } else {
       // replace @trategy_ends placeholders with empty string
