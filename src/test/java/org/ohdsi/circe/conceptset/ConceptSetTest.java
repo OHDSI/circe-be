@@ -3,7 +3,6 @@ package org.ohdsi.circe.conceptset;
 import java.io.IOException;
 import org.junit.Test;
 import org.ohdsi.analysis.Utils;
-import org.ohdsi.circe.BaseTest;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
 import org.ohdsi.circe.vocabulary.ConceptSetExpression;
 
@@ -11,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import org.ohdsi.circe.BaseTest;
 
 public class ConceptSetTest extends BaseTest {
 
