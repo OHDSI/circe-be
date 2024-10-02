@@ -4,11 +4,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.helper.ResourceHelper;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -25,7 +32,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
   private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("m.person_id", "m.measurement_id", "m.measurement_concept_id", "m.visit_occurrence_id",
-          "m.value_as_number", "m.range_high", "m.range_low"));
+    "m.value_as_number", "m.range_high", "m.range_low"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -37,6 +44,34 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
     return MEASUREMENT_TEMPLATE;
   }
+
+/*
+  @Override
+  protected String embedAdditionalColumns(String query, T criteria, BuilderOptions options) {
+    if (criteria.measurementOperand != null) {
+      String additionalColumns = getAdditionalColumns(criteria, Optional.ofNullable(options).map(o -> o.additionalColumns).orElse(new ArrayList<>()));
+      return StringUtils.replace(query, "@additionalColumns", additionalColumns);
+    } else {
+      return super.embedAdditionalColumns(query, criteria, options);
+    }
+  }
+*/
+
+/*
+  @Override
+  protected String getAdditionalColumns(T criteria, List<CriteriaColumn> columns) {
+    return Stream.concat(
+        Stream.of(super.getAdditionalColumns(criteria, columns)),
+        Optional.ofNullable(criteria.measurementOperand).map(measurementOperand ->
+          Stream.of(
+            MessageFormat.format("row_number() over (PARTITION BY C.person_id ORDER BY SC.start_date, SC.event_id {0}) as ordinal",
+              Optional.ofNullable(measurementOperand.limit).map(limit -> limit.equals("Last") ? "DESC" : "").orElse(""))
+          )
+        ).orElse(Stream.empty())
+      )
+      .collect(Collectors.joining(","));
+  }
+*/
 
   @Override
   protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
@@ -60,10 +95,10 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
   protected String embedCodesetClause(String query, T criteria) {
 
     return StringUtils.replace(query, "@codesetClause",
-            getCodesetJoinExpression(criteria.codesetId,
-                    "m.measurement_concept_id",
-                    criteria.measurementSourceConcept,
-                    "m.measurement_source_concept_id")
+      getCodesetJoinExpression(criteria.codesetId,
+        "m.measurement_concept_id",
+        criteria.measurementSourceConcept,
+        "m.measurement_source_concept_id")
     );
   }
 
@@ -115,11 +150,12 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
+        criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
+        criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
     } else {
       selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
     }
+
     return selectCols;
   }
 
@@ -137,6 +173,15 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
+    }
+    if (criteria.measurementOperand != null && criteria.measurementOperand.measurement != null) {
+      BuilderOptions options = new BuilderOptions();
+      options.additionalColumns = Collections.singletonList(CriteriaColumn.VALUE_AS_NUMBER);
+      String subquery = getCriteriaSql((T) criteria.measurementOperand.measurement, options);
+      joinClauses.add(MessageFormat.format("JOIN (SELECT E.person_id, E.event_id, E.visit_occurrence_id, E.value_as_number, row_number() over (PARTITION BY E.person_id ORDER BY E.start_date, E.event_id {1}) as ordinal FROM (\n{0}\n) E) SC on C.person_id = SC.person_id",
+        subquery,
+        Optional.ofNullable(criteria.measurementOperand.limit).map(limit -> limit.equals("Last") ? "DESC" : "").orElse("")
+      ));
     }
 
     return joinClauses;
@@ -224,6 +269,18 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     // visitType
     if (criteria.visitType != null && criteria.visitType.length > 0) {
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
+    }
+
+    //Calculation
+    if (criteria.measurementOperand != null) {
+      whereClauses.add(buildNumericRangeClause(
+        MessageFormat.format("(C.value_as_number {0} SC.value_as_number)", criteria.measurementOperand.operator),
+        criteria.measurementOperand.valueAsNumber, ".4f")
+      );
+      if (Optional.ofNullable(criteria.measurementOperand.sameVisit).orElse(false)) {
+        whereClauses.add("SC.visit_occurrence_id = C.visit_occurrence_id");
+      }
+      whereClauses.add("SC.ordinal = 1");
     }
 
     return whereClauses;
