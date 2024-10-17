@@ -30,25 +30,29 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
     query = embedJoinClauses(query, joinClauses);
     query = embedWhereClauses(query, whereClauses);
 
-    if (options != null) {
-      List<CriteriaColumn> filteredColumns = options.additionalColumns.stream()
-              .filter((column) -> !this.getDefaultColumns().contains(column))
-              .collect(Collectors.toList());
-      if (filteredColumns.size() > 0) {
-        query = StringUtils.replace(query, "@additionalColumns", ", " + this.getAdditionalColumns(filteredColumns));
-      } else {
-        query = StringUtils.replace(query, "@additionalColumns", "");
-      }
-    } else {
-      query = StringUtils.replace(query, "@additionalColumns", "");
-    }
+    query = embedAdditionalColumns(query, criteria, options);
 
     return query;
   }
 
+  protected String embedAdditionalColumns(String query, T criteria, BuilderOptions options) {
+    if (options != null) {
+      List<CriteriaColumn> filteredColumns = options.additionalColumns.stream()
+        .filter((column) -> !this.getDefaultColumns().contains(column))
+        .collect(Collectors.toList());
+      if (filteredColumns.size() > 0) {
+        return StringUtils.replace(query, "@additionalColumns", ", " + this.getAdditionalColumns(criteria, filteredColumns));
+      } else {
+        return StringUtils.replace(query, "@additionalColumns", "");
+      }
+    } else {
+      return StringUtils.replace(query, "@additionalColumns", "");
+    }
+  }
+
   protected abstract String getTableColumnForCriteriaColumn(CriteriaColumn column);
 
-  protected String getAdditionalColumns(List<CriteriaColumn> columns) {
+  protected String getAdditionalColumns(T criteria, List<CriteriaColumn> columns) {
     String cols = String.join(", ", columns.stream()
             .map((column) -> {
               return String.format("%s as %s", getTableColumnForCriteriaColumn(column), column.columnName());
