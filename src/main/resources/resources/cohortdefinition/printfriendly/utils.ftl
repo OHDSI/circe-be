@@ -13,7 +13,7 @@ END Note!!!!
   <#return (options?filter(op -> op.id == id))?first.name>
 </#function>
 
-<#macro indent level=0><#list 1..((level*3)) as x> </#list></#macro>
+<#macro indent level=0><#list 1..((level*4)) as x> </#list></#macro>
 
 <#function codesetName codesetId defaultName>
   <#if !codesetId?has_content>
