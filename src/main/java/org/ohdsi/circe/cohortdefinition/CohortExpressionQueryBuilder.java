@@ -122,9 +122,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     @JsonProperty("retainCohortCovariates")
     public boolean retainCohortCovariates;
 
-    @JsonProperty("sourceKey")
-    public String sourceKey;
-
     public static CohortExpressionQueryBuilder.BuildExpressionQueryOptions fromJson(String json) {
       try {
         CohortExpressionQueryBuilder.BuildExpressionQueryOptions options
@@ -163,7 +160,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     ArrayList<String> selectColsPE = new ArrayList<>();
     if (options.isRetainCohortCovariates()) {
-		eventQuery = StringUtils.replace(eventQuery, "@concept_id", ", Q.concept_id");
+        eventQuery = StringUtils.replace(eventQuery, "@concept_id", ", Q.concept_id");
         eventQuery = criteria.embedWrapCriteriaQuery(eventQuery, selectColsPE, options);
     } else {
       eventQuery = StringUtils.replace(eventQuery, "@concept_id", "");
@@ -298,9 +295,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return this.buildExpressionQuery(CohortExpression.fromJson(expression), options);
   }
 
-	// Function all full field select for union all
+    // Function all full field select for union all
      private void addColumnFieldInclusionGroup(List<List<ColumnFieldData>> listFields, CriteriaGroup cg, int indexCG,
-			List<String> inclusionRuleInsertN, List<String> inclusionRuleGroupN) {
+            List<String> inclusionRuleInsertN, List<String> inclusionRuleGroupN) {
         
         listFields.forEach(l -> {
             if (listFields.indexOf(l) == indexCG) {
@@ -314,7 +311,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
                               + listFields.indexOf(l)));
           }
         });
-	}
+    }
+
   public String buildExpressionQuery(CohortExpression expression, BuildExpressionQueryOptions options) {
     String resultSql = COHORT_QUERY_TEMPLATE;
 
@@ -344,12 +342,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       resultSql = StringUtils.replace(resultSql, "@QualifiedLimitFilter", "");
     }
 
-    ArrayList<String> allInclusionColumnsInserts = new ArrayList<>();
-
+    List<List<ColumnFieldData>> listField = new ArrayList<>();
     if (expression.inclusionRules.size() > 0) {
       ArrayList<String> inclusionRuleInserts = new ArrayList<>();
       ArrayList<String> inclusionRuleTempTables = new ArrayList<>();
-      String allFieldInclusionNValues = "";
       
       // Add column field for inclusion group needed to listField
       for (int i = 0; i < expression.inclusionRules.size(); i++) {
@@ -380,7 +376,9 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@conceptid", ", pe.concept_id");
 
           this.addColumnFieldInclusionGroup(listField, cg, i, inclusionRuleInsertN, inclusionRuleGroupN);
-	      lstFieldRuleInsertNValues.add(StringUtils.join(inclusionRuleInsertN, ""));
+
+          lstFieldRuleInsertNValues.add(StringUtils.join(inclusionRuleInsertN, ""));
+
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsInclusionN", StringUtils.join(lstFieldRuleInsertNValues, " "));
           inclusionRuleInsert = StringUtils.replace(inclusionRuleInsert, "@additionalColumnsCriteriaQuery", StringUtils.join(inclusionRuleGroupN, " "));
         } else {
@@ -391,8 +389,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         }
         inclusionRuleInserts.add(inclusionRuleInsert);
 
-        allFieldInclusionNValues = String.format(", value_as_number_%d, value_as_string_%d, value_as_concept_id_%d, unit_concept_id_%d", i, i, i, i);
-        allInclusionColumnsInserts.add(allFieldInclusionNValues);
       }
       String irTempUnion = "";
       if (options != null && options.retainCohortCovariates) {
@@ -505,9 +501,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", DEFAULT_COHORT_ID_FIELD_NAME);
       }
       resultSql = StringUtils.replace(resultSql, "@retain_cohort_covariates", options != null && options.retainCohortCovariates ? "1" : "0");
-      if (options.sourceKey != null) {
-        resultSql = StringUtils.replace(resultSql, "@source_key", options.sourceKey);
-      }
     } else {
       resultSql = StringUtils.replaceAll(resultSql, "@cohort_id_field_name", DEFAULT_COHORT_ID_FIELD_NAME);
     }
@@ -516,6 +509,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       resultSql = StringUtils.replace(resultSql, "@concept_id", ", concept_id");
       resultSql = StringUtils.replace(resultSql, "@Qconcept_id", ", Q.concept_id");
       resultSql = StringUtils.replace(resultSql, "@pe_concept_id", ", pe.concept_id");
+      
+      List<String> allInclusionColumnsInserts = buildAllInclusionColumnsInserts(listField);
       resultSql = StringUtils.replace(resultSql, "@allInclusionColumnsInserts", StringUtils.join(allInclusionColumnsInserts, " "));
     } else {
       resultSql = StringUtils.replace(resultSql, "@conceptid", "");
@@ -528,7 +523,22 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     return resultSql;
   }
-  public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable, Boolean retainCohortCovariates) {
+  
+  private List<String> buildAllInclusionColumnsInserts(List<List<ColumnFieldData>> listField) {
+      List<String> result = new ArrayList<>();
+      listField.forEach(l -> {
+          if (l.size() > 0) {
+              String field = "";
+              for (ColumnFieldData s : l) {
+                  field = field + ", " + s.getName() + "_" + listField.indexOf(l);
+              }
+              result.add(field);
+          }
+      });
+      return result;
+  }
+  
+  public String getCriteriaGroupQuery(CriteriaGroup group, String eventTable, boolean retainCohortCovariates) {
     String query = GROUP_QUERY_TEMPLATE;
     ArrayList<String> additionalCriteriaQueries = new ArrayList<>();
     String joinType = "INNER";
@@ -559,6 +569,12 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
     
     for (CorelatedCriteria cc : group.criteriaList) {
+        cc.mapDistinctField = mapDistinctField;
+        String acQuery = this.getCorelatedlCriteriaQuery(cc, eventTable, retainCohortCovariates); // ac.accept(this);
+        acQuery = StringUtils.replace(acQuery, "@indexId", "" + indexId);
+        additionalCriteriaQueries.add(acQuery);
+        indexId++;
+    }
 
     for (DemographicCriteria dc : group.demographicCriteriaList) {
       String dcQuery = this.getDemographicCriteriaQuery(dc, eventTable); //ac.accept(this);
@@ -690,10 +706,10 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
         query = criteria.criteria.embedWindowedCriteriaQueryP(query);
     } else {
         query = StringUtils.replace(query, "@additionColumnscc", "");
-        query = StringUtils.replace(query, "@additionGroupColumnscc", "");    }
-	  query = StringUtils.replace(query, "@additionColumnscc", "");
-	  query = StringUtils.replace(query, "@additionColumnGroupscc", "");
-	  query = StringUtils.replace(query, "@p.additionColumns", "");
+        query = StringUtils.replace(query, "@additionGroupColumnscc", "");
+        query = StringUtils.replace(query, "@p.additionColumns", "");
+    }
+
     // build index date window expression
     String startExpression;
     String endExpression;
@@ -908,24 +924,6 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getCriteriaSql(LocationRegion criteria, BuilderOptions options) {
     return getCriteriaSql(locationRegionSqlBuilder, criteria, options);
-  }
-
-	public Boolean checkColumnTable(WindowedCriteria criteria, String column) {
-    try {
-          Class<?> criteriaClass = criteria.getClass();
-
-          // Get the criteria field
-          Field criteriaField = criteriaClass.getDeclaredField(column);
-
-          // Make the criteria field accessible, as it might be private
-          criteriaField.setAccessible(true);
-          Object criteriaValue = criteriaField.get(criteria);
-          return Arrays.stream(criteria.getClass().getDeclaredFields()).anyMatch(f -> f.getName().equals(column)) && criteriaValue != null;
-      } catch (NoSuchFieldException e) {
-          throw new RuntimeException(e);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-    }
   }
 
 // </editor-fold>

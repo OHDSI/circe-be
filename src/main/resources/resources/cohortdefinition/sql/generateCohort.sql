@@ -68,6 +68,7 @@ from (
   ) ST
 ) GR
 group by person_id, group_idx;
+
 DELETE FROM @target_database_schema.@target_cohort_table where @cohort_id_field_name = @target_cohort_id;
 INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name, subject_id, cohort_start_date, cohort_end_date)
 @finalCohortQuery

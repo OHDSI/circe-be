@@ -53,7 +53,6 @@ public class CohortGeneration_5_2_0_Test extends AbstractDatabaseTest {
     options.resultSchema = resultsSchema;
     options.targetTable = resultsSchema + ".cohort";
     options.retainCohortCovariates = false;
-    options.sourceKey = "'CDM'";
 
     return options;
   }

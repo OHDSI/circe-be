@@ -70,7 +70,6 @@ public abstract class Criteria {
   
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       query = StringUtils.replace(query, "@additionColumnscc", "");
-      query = StringUtils.replace(query, "@additionColumnGroupscc", "");
       return query;
   }
   

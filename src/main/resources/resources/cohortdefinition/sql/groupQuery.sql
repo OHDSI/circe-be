@@ -8,7 +8,7 @@ FROM
   (
     @criteriaQueries
   ) CQ on E.person_id = CQ.person_id and E.event_id = CQ.event_id
-  GROUP BY E.person_id, E.event_id@e.additonGroupColumns
+  GROUP BY E.person_id, E.event_id@e.additonColumns
   @occurrenceCountClause
 ) G
 -- End Criteria Group

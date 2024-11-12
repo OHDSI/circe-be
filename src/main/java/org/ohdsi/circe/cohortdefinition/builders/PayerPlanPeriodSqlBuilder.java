@@ -24,7 +24,7 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
-  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("ppp.person_id", "ppp.payer_plan_period_id", "ppp.payer_concept_id"));
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("ppp.person_id", "ppp.payer_plan_period_id"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {

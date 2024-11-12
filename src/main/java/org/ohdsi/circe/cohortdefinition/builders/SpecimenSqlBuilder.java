@@ -200,6 +200,34 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     } else {
       selectCols.add("s.specimen_date as start_date, DATEADD(day,1,s.specimen_date) as end_date");
     }
+    
+    if (criteria.quantity != null) {
+        selectCols.add("s.quantity");
+    }
+    
+    if (criteria.specimenType != null && criteria.specimenType.length > 0) {
+        selectCols.add("s.specimen_type_concept_id");
+    }
+    
+    // unit
+    if (criteria.unit != null && criteria.unit.length > 0) {
+        selectCols.add("s.unit_concept_id");
+    }
+    
+    // anatomicSite
+    if (criteria.anatomicSite != null && criteria.anatomicSite.length > 0) {
+        selectCols.add("s.anatomic_site_concept_id");
+    }
+
+    // diseaseStatus
+    if (criteria.diseaseStatus != null && criteria.diseaseStatus.length > 0) {
+        selectCols.add("s.disease_status_concept_id");
+    }
+    
+    // sourceId
+    if (criteria.sourceId != null) {
+        selectCols.add("s.specimen_source_id");
+    }    
     return selectCols;
   }
 

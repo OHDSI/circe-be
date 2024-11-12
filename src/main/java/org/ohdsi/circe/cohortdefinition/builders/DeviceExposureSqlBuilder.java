@@ -128,14 +128,6 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
       selectCols.add("de.provider_id");
     }
 
-    // unitConceptId
-    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
-      if (criteria.unitConceptId != null && criteria.unitConceptId.length > 0) {
-        selectCols.add("de.unit_concept_id");
-      }
-    }
-
-
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,

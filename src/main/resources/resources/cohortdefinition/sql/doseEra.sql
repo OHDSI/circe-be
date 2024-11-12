@@ -4,7 +4,7 @@ select C.person_id, C.dose_era_id as event_id, C.start_date, C.end_date,
 from 
 (
   select @selectClause @ordinalExpression
-  FROM @cdm_database_schema.DOSE_ERA dera
+  FROM @cdm_database_schema.DOSE_ERA de
 @codesetClause
 ) C
 @joinClause

@@ -129,7 +129,6 @@ public class Observation extends Criteria {
   public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
       List<String> selectCols = new ArrayList<>();
       List<String> groupCols = new ArrayList<>();
-      selectGroupCols.add(", cc.value_as_number");
       
       for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
           if (entry.getKey().equals("value_as_number")) {
@@ -156,7 +155,6 @@ public class Observation extends Criteria {
           } else {
               selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
           }
-          selectGroupCols.add(", cc.observation_type_concept_id");
       }
       
       query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
@@ -201,6 +199,7 @@ public class Observation extends Criteria {
   @Override
   public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
       ArrayList<String> selectCols = new ArrayList<>();
+      
       if(!options.isPrimaryCriteria()){
         selectCols.add(", Q.value_as_number");
         selectColsPE.add(", PE.value_as_number");
