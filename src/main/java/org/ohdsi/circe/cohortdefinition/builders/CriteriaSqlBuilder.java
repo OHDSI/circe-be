@@ -20,11 +20,11 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
     query = embedCodesetClause(query, criteria);
 
-    List<String> selectClauses = resolveSelectClauses(criteria);
+    List<String> selectClauses = resolveSelectClauses(criteria, options);
     List<String> joinClauses = resolveJoinClauses(criteria);
     List<String> whereClauses = resolveWhereClauses(criteria);
 
-    query = embedOrdinalExpression(query, criteria, whereClauses);
+    query = embedOrdinalExpression(query, criteria, whereClauses, options);
 
     query = embedSelectClauses(query, selectClauses);
     query = embedJoinClauses(query, joinClauses);
@@ -39,10 +39,10 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
       } else {
         query = StringUtils.replace(query, "@additionalColumns", "");
       }
+
     } else {
       query = StringUtils.replace(query, "@additionalColumns", "");
     }
-
     return query;
   }
 
@@ -80,9 +80,9 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
   protected abstract String embedCodesetClause(String query, T criteria);
 
-  protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
+  protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options);
 
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     return new ArrayList<String>();
   }
 
@@ -97,5 +97,9 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
     }
     
     return whereClauses;
+  }
+  
+  protected void addSelectedField(T criteria, BuilderOptions option) {
+      return;
   }
 }

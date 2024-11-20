@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -25,7 +26,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
   private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("m.person_id", "m.measurement_id", "m.measurement_concept_id", "m.visit_occurrence_id",
-          "m.value_as_number", "m.range_high", "m.range_low"));
+    "m.value_as_number", "m.range_high", "m.range_low"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -51,6 +52,11 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
         return "C.range_high";
       case RANGE_LOW:
         return "C.range_low";
+      case VALUE_AS_CONCEPT_ID:
+        return "C.value_as_concept_id";
+      case UNIT:
+        return "C.unit_concept_id";
+
       default:
         throw new IllegalArgumentException("Invalid CriteriaColumn for Measurement:" + column.toString());
     }
@@ -60,15 +66,15 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
   protected String embedCodesetClause(String query, T criteria) {
 
     return StringUtils.replace(query, "@codesetClause",
-            getCodesetJoinExpression(criteria.codesetId,
-                    "m.measurement_concept_id",
-                    criteria.measurementSourceConcept,
-                    "m.measurement_source_concept_id")
+      getCodesetJoinExpression(criteria.codesetId,
+        "m.measurement_concept_id",
+        criteria.measurementSourceConcept,
+        "m.measurement_source_concept_id")
     );
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first) {
@@ -78,12 +84,55 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
 
+    if (options != null && options.isRetainCohortCovariates()) {
+      List<String> cColumns = new ArrayList<>();
+      cColumns.add("C.concept_id");
+
+      if(!options.isPrimaryCriteria()){
+        cColumns.add("C.value_as_number");
+        if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+              cColumns.add("C.value_as_concept_id");
+        }
+        // unit
+        if (criteria.unit != null && criteria.unit.length > 0) {
+            cColumns.add("C.unit_concept_id");
+        }
+        // range_low
+        if (criteria.rangeLow != null) {
+            cColumns.add("C.range_low");
+        }
+
+        // range_high
+        if (criteria.rangeHigh != null) {
+            cColumns.add("C.range_high");
+        }
+
+        // providerSpecialty
+        if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+            cColumns.add("C.provider_id");
+        }
+        
+        // measurementType
+        if (criteria.measurementType != null && criteria.measurementType.length > 0) {
+            cColumns.add("C.measurement_type_concept_id");
+        }
+        
+        // operator
+        if (criteria.operator != null && criteria.operator.length > 0) {
+            cColumns.add("C.operator_concept_id");
+        }
+      }
+      
+      query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+      query = StringUtils.replace(query, "@c.additionalColumns", "");
+    }
     return query;
   }
 
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -115,10 +164,14 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     // dateAdjustment or default start/end dates
     if (criteria.dateAdjustment != null) {
       selectCols.add(BuilderUtils.getDateAdjustmentExpression(criteria.dateAdjustment,
-              criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
-              criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
+        criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)",
+        criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "m.measurement_date" : "DATEADD(day,1,m.measurement_date)"));
     } else {
       selectCols.add("m.measurement_date as start_date, DATEADD(day,1,m.measurement_date) as end_date");
+    }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+      selectCols.add("m.measurement_concept_id concept_id");
     }
     return selectCols;
   }

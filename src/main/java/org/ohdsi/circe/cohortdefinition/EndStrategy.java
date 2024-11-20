@@ -32,5 +32,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = CustomEraStrategy.class, name = "CustomEra")
 })
 public abstract class EndStrategy {
-  public abstract String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable);
+  public abstract String accept(IGetEndStrategySqlDispatcher dispatcher, String eventTable, Boolean retainCohortCovariates);
 }

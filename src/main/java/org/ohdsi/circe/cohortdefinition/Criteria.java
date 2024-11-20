@@ -22,7 +22,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 
 /**
  *
@@ -54,6 +63,25 @@ public abstract class Criteria {
   }
 
   public abstract String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options);
+  
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
+      return new ArrayList<>();
+  }
+  
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      query = StringUtils.replace(query, "@additionColumnscc", "");
+      return query;
+  }
+  
+  public String embedWindowedCriteriaQueryP(String query) {
+      query = StringUtils.replace(query, "@p.additionColumns", "");
+      return query;
+  }
+  
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", "");
+      return query;
+  }
 
   @JsonProperty("CorrelatedCriteria")
   public CriteriaGroup CorrelatedCriteria;

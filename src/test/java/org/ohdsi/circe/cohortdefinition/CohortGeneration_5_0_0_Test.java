@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import com.github.mjeanroy.dbunit.core.dataset.DataSetFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.IDatabaseConnection;
@@ -45,6 +44,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     options.generateStats = true;
     options.resultSchema = resultsSchema;
     options.targetTable = resultsSchema + ".cohort";
+    options.retainCohortCovariates = false;
 
     return options;
   }
@@ -100,6 +100,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
   public void rawJsonTest() throws SQLException {
 
     final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");
+    options.retainCohortCovariates = true;
 
     // prepare results schema
     prepareSchema(options.resultSchema, RESULTS_DDL_PATH);
@@ -115,7 +116,6 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // execute on database, expect no errors
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
   }
-
   /* Cohort Expression Tests */
   
   @Test
@@ -129,6 +129,26 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // load 'all' criteria json
     final CohortExpression expression = CohortExpression
         .fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/allCriteria/allCriteriaExpression.json"));
+
+    // build Sql
+    final String cohortSql = buildExpressionSql(expression, options);
+
+    // execute on database, expect no errors
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+  }
+
+  @Test
+  public void allCriteriaTestWithRetainingCohortCovariates() throws SQLException {
+
+    final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options = buildExpressionQueryOptions(1,"allCriteriaTest");
+    options.retainCohortCovariates = true;
+
+    // prepare results schema
+    prepareSchema(options.resultSchema, RESULTS_DDL_PATH);
+
+    // load 'all' criteria json
+    final CohortExpression expression = CohortExpression
+      .fromJson(ResourceHelper.GetResourceAsString("/cohortgeneration/allCriteria/allCriteriaExpression.json"));
 
     // build Sql
     final String cohortSql = buildExpressionSql(expression, options);
@@ -329,7 +349,6 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // execute on database, expect no errors
     jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
 
-
     // cohort 4: outer group 'ALL', change inner group to 'at most 0'
     // No one passes, since that arrangement is a contradiction
     expression.additionalCriteria.type = "ALL";
@@ -357,7 +376,7 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     final ITable expectedTable = expectedDataSet.getTable(RESULTS_SCHEMA + ".cohort");
 
     // Assert actual database table match expected table
-    Assertion.assertEquals(expectedTable, actualTable);    
+    Assertion.assertEquals(expectedTable, actualTable);
   }
   
 

@@ -21,35 +21,50 @@
       "person_id":1,
       "observation_concept_id":1,
       "observation_date":"2000-01-01",
-      "observation_type_concept_id":0
+      "observation_type_concept_id":0,
+      "unit_concept_id": 1,
+      "value_as_concept_id": 1,
+      "value_as_number": 1
     },
     {
       "observation_id": 2,
       "person_id":1,
       "observation_concept_id":1,
       "observation_date":"2000-06-01",
-      "observation_type_concept_id":0
+      "observation_type_concept_id":0,
+      "unit_concept_id": 2,
+      "value_as_concept_id": 2,
+      "value_as_number": 2
     },
     {
       "observation_id": 3,
       "person_id":1,
       "observation_concept_id":1,
       "observation_date":"2000-12-31",
-      "observation_type_concept_id":0
+      "observation_type_concept_id":0,
+      "unit_concept_id": 2,
+      "value_as_concept_id": 3,
+      "value_as_number": 4
     },
     {
       "observation_id": 4,
       "person_id":2,
       "observation_concept_id":1,
       "observation_date":"2000-01-01",
-      "observation_type_concept_id":0
+      "observation_type_concept_id":0,
+      "unit_concept_id": 1,
+      "value_as_concept_id": 2,
+      "value_as_number": 3
     },
     {
       "observation_id": 5,
       "person_id":2,
       "observation_concept_id":1,
       "observation_date":"2000-12-31",
-      "observation_type_concept_id":0
+      "observation_type_concept_id":0,
+      "unit_concept_id": 2,
+      "value_as_concept_id": 1,
+      "value_as_number": 4
     }
   ],
   "cdm.observation_period" : [

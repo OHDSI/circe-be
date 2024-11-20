@@ -35,7 +35,9 @@ public enum CriteriaColumn {
   UNIT("unit_concept_id"),
   VALUE_AS_NUMBER("value_as_number"),
   VISIT_ID("visit_occurrence_id"),
-  VISIT_DETAIL_ID("visit_detail_id");
+  VISIT_DETAIL_ID("visit_detail_id"),
+  VALUE_AS_STRING("value_as_string"),
+  VALUE_AS_CONCEPT_ID("value_as_concept_id");
 
   private final String columnName;
 

@@ -19,7 +19,16 @@
 package org.ohdsi.circe.cohortdefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldData;
+import org.ohdsi.circe.cohortdefinition.builders.ColumnFieldDataType;
 import org.ohdsi.circe.vocabulary.Concept;
 
 /**
@@ -57,4 +66,63 @@ public class ObservationPeriod extends Criteria {
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
     return dispatcher.getCriteriaSql(this, options);
   }  
+  
+  @Override
+  public List<ColumnFieldData> getSelectedField(Boolean retainCohortCovariates) {
+      List<ColumnFieldData> selectCols = new ArrayList<>();
+      
+      if (retainCohortCovariates) {
+          if (periodType != null && periodType.length > 0) {
+              selectCols.add(new ColumnFieldData("period_type_concept_id", ColumnFieldDataType.INTEGER));
+          }
+      }
+      
+      return selectCols;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQuery(String query, Map<String, ColumnFieldData> mapDistinctField) {
+      List<String> selectCols = new ArrayList<>();
+      List<String> groupCols = new ArrayList<>();
+      
+      for (Entry<String, ColumnFieldData> entry : mapDistinctField.entrySet()) {
+          if (entry.getKey().equals("period_type_concept_id") && periodType != null && periodType.length > 0) {
+              selectCols.add(", cc.period_type_concept_id");
+              groupCols.add(", cc.period_type_concept_id");
+          } else {
+              selectCols.add(", CAST(null as " + entry.getValue().getDataType().getType() + ") " + entry.getKey());
+          }
+      }
+      
+      query = StringUtils.replace(query, "@additionColumnscc", StringUtils.join(selectCols, ""));
+      query = StringUtils.replace(query, "@additionGroupColumnscc", StringUtils.join(groupCols, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWindowedCriteriaQueryP(String query) {
+      ArrayList<String> selectColsA = new ArrayList<>();
+      
+      if (periodType != null && periodType.length > 0) {
+          selectColsA.add(", A.period_type_concept_id");
+      }
+      
+      query = StringUtils.replace(query, "@p.additionColumns", StringUtils.join(selectColsA, ""));
+      return query;
+  }
+  
+  @Override
+  public String embedWrapCriteriaQuery(String query, List<String> selectColsPE, BuilderOptions options) {
+      ArrayList<String> selectCols = new ArrayList<>();
+      
+      if(!options.isPrimaryCriteria()){
+        if (periodType != null && periodType.length > 0) {
+            selectCols.add(", Q.period_type_concept_id");
+            selectColsPE.add(", PE.period_type_concept_id");
+        }
+      }
+      
+      query = StringUtils.replace(query, "@QAdditionalColumnsInclusionN", StringUtils.join(selectCols, ""));
+      return query;
+  }
 }

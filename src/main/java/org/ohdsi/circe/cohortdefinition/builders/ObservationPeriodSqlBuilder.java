@@ -73,13 +73,26 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
-
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
+      if (options != null && options.isRetainCohortCovariates()) {
+          List<String> cColumns = new ArrayList<>();
+          cColumns.add("C.concept_id");
+          
+          if(!options.isPrimaryCriteria()){
+            if (criteria.periodType != null && criteria.periodType.length > 0) {
+                cColumns.add("C.period_type_concept_id");
+            }
+          }
+          
+          query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+      } else {
+          query = StringUtils.replace(query, "@c.additionalColumns", "");
+      }
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -90,6 +103,10 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "op.observation_period_start_date" : "op.observation_period_end_date"));
     } else {
       selectCols.add("op.observation_period_start_date as start_date, op.observation_period_end_date as end_date");
+    }
+
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("op.period_type_concept_id concept_id");
     }
     return selectCols;
   }

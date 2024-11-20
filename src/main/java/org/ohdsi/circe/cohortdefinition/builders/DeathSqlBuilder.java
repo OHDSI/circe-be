@@ -41,7 +41,7 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   protected String getTableColumnForCriteriaColumn(CriteriaColumn column) {
     switch (column) {
       case DOMAIN_CONCEPT:
-        return "coalesce(C.cause_concept_id,0)";
+        return "coalesce(C.cause_concept_id ,0)";
       case DURATION:
         return "CAST(1 as int)";
       default:
@@ -61,13 +61,34 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
-
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
+      
+      if (options != null && options.isRetainCohortCovariates()) {
+          List<String> cColumns = new ArrayList<>();
+          cColumns.add("C.concept_id");
+          if(!options.isPrimaryCriteria()){    
+            if (criteria.occurrenceStartDate != null) {
+                cColumns.add("C.death_date");
+            }
+            
+            if (criteria.deathType != null && criteria.deathType.length > 0) {
+                cColumns.add("C.death_type_concept_id");
+            }
+            
+            if (criteria.deathSourceConcept != null) {
+                cColumns.add("C.cause_concept_id");
+            }
+          }
+          
+          query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+      } else {
+          query = StringUtils.replace(query, "@c.additionalColumns", "");
+      }
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
     if (criteria.deathType != null && criteria.deathType.length > 0) {
@@ -80,6 +101,15 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     } else {
       selectCols.add("d.death_date as start_date, DATEADD(day,1,d.death_date) as end_date");
     }
+
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("d.cause_concept_id concept_id");
+        if (criteria.occurrenceStartDate != null) {
+            selectCols.add("d.death_date");
+        }
+    }
+
     return selectCols;
   }
 

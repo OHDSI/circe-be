@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -26,7 +27,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
-  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.device_exposure_id", "de.device_concept_id", 
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.device_exposure_id", "de.device_concept_id",
           "de.visit_occurrence_id", "de.quantity"));
 
   @Override
@@ -66,7 +67,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first) {
@@ -75,11 +76,42 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    if (options != null && options.isRetainCohortCovariates()) {
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if(!options.isPrimaryCriteria()){
+          if (criteria.deviceType != null && criteria.deviceType.length > 0) {
+              cColumns.add("C.device_type_concept_id");
+          }
+          
+          if (criteria.quantity != null) {
+              cColumns.add("C.quantity");
+          }
+          
+          if (criteria.uniqueDeviceId != null) {
+              cColumns.add("C.unique_device_id");
+          }
+          
+          if (criteria.deviceSourceConcept != null) {
+              cColumns.add("C.device_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
+    }
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Device Type
     if (criteria.deviceType != null && criteria.deviceType.length > 0) {
@@ -104,6 +136,15 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     } else {
       selectCols.add("de.device_exposure_start_date as start_date, COALESCE(de.device_exposure_end_date, DATEADD(day,1,de.device_exposure_start_date)) as end_date");
     }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("de.device_concept_id concept_id");
+        
+        if (criteria.deviceSourceConcept != null) {
+            selectCols.add("de.device_source_concept_id");
+        }
+    }
+    
     return selectCols;
   }
   
@@ -175,6 +216,12 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     // visitType
     if (criteria.visitType != null && criteria.visitType.length > 0) {
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
+    }
+
+    // unitConceptId
+    if (criteria.unitConceptId != null && criteria.unitConceptId.length > 0) {
+      ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unitConceptId);
+      whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
     return whereClauses;

@@ -1,4 +1,4 @@
-SELECT p.person_id, p.event_id @additionalColumns
+SELECT p.person_id, p.event_id @additionalColumns @p.additionColumns
 FROM @eventTable P
 JOIN (
   @criteriaQuery

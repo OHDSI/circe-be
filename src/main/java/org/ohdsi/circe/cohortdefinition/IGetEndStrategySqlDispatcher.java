@@ -23,6 +23,6 @@ package org.ohdsi.circe.cohortdefinition;
  * @author Chris Knoll <cknoll@ohdsi.org>
  */
 interface IGetEndStrategySqlDispatcher {
-  public String getStrategySql(DateOffsetStrategy strategy, String eventTable);
-  public String getStrategySql(CustomEraStrategy strategy, String eventTable);
+  public String getStrategySql(DateOffsetStrategy strategy, String eventTable, Boolean retainCohortCovariates);
+  public String getStrategySql(CustomEraStrategy strategy, String eventTable, Boolean retainCohortCovariates);
 }

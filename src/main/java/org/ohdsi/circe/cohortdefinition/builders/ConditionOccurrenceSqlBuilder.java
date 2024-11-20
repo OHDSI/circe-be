@@ -64,7 +64,7 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first == true) {
@@ -73,12 +73,40 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     } else {
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
+    // If save covariates is included, add the concept_id column
+    if (options != null && options.isRetainCohortCovariates()) {
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if(!options.isPrimaryCriteria()){        
+          if (criteria.conditionType != null && criteria.conditionType.length > 0) {
+              cColumns.add("C.condition_type_concept_id");
+          }
+          
+          if (criteria.conditionSourceConcept != null) {
+              cColumns.add("C.condition_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
+          
+          if (criteria.conditionStatus != null && criteria.conditionStatus.length > 0) {
+              cColumns.add("C.condition_status_concept_id");
+          }
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
+    }
 
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
     if (criteria.conditionType != null && criteria.conditionType.length > 0) {
@@ -104,6 +132,15 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     } else {
       selectCols.add("co.condition_start_date as start_date, COALESCE(co.condition_end_date, DATEADD(day,1,co.condition_start_date)) as end_date");
     }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("co.condition_concept_id concept_id");
+        
+        if (criteria.conditionSourceConcept != null) {
+            selectCols.add("co.condition_source_concept_id");
+        }
+    }
+    
     return selectCols;
   }
 

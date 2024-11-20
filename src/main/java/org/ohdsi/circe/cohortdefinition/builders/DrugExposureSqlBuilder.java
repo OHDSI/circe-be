@@ -25,8 +25,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   private final Set<CriteriaColumn> DEFAULT_COLUMNS = new HashSet<>(Arrays.asList(CriteriaColumn.START_DATE, CriteriaColumn.END_DATE, CriteriaColumn.VISIT_ID));
 
   // default select columns are the columns that will always be returned from the subquery, but are added to based on the specific criteria
-  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.drug_exposure_id", "de.drug_concept_id", "de.visit_occurrence_id", 
-          "days_supply", "quantity", "refills"));
+  private final List<String> DEFAULT_SELECT_COLUMNS = new ArrayList<>(Arrays.asList("de.person_id", "de.drug_exposure_id", "de.drug_concept_id", "de.visit_occurrence_id",
+    "days_supply", "quantity", "refills"));
 
   @Override
   protected Set<CriteriaColumn> getDefaultColumns() {
@@ -69,7 +69,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
   }
 
   @Override
-  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses) {
+  protected String embedOrdinalExpression(String query, T criteria, List<String> whereClauses, BuilderOptions options) {
 
     // first
     if (criteria.first != null && criteria.first) {
@@ -79,11 +79,59 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
       query = StringUtils.replace(query, "@ordinalExpression", "");
     }
 
+    if (options != null && options.isRetainCohortCovariates()) {
+        List<String> cColumns = new ArrayList<>();
+        cColumns.add("C.concept_id");
+        
+        if(!options.isPrimaryCriteria()){
+          if (criteria.drugType != null && criteria.drugType.length > 0) {
+              cColumns.add("C.drug_type_concept_id");
+          }
+          
+          if (criteria.stopReason != null) {
+              cColumns.add("C.stop_reason");
+          }
+          
+          if (criteria.refills != null) {
+              cColumns.add("C.refills");
+          }
+          
+          if (criteria.quantity != null) {
+              cColumns.add("C.quantity");
+          }
+          
+          if (criteria.daysSupply != null) {
+              cColumns.add("C.days_supply");
+          }
+          
+          if (criteria.routeConcept != null && criteria.routeConcept.length > 0) {
+              cColumns.add("C.route_concept_id");
+          }
+          
+          if (criteria.lotNumber != null) {
+              cColumns.add("C.lot_number");
+          }
+          
+          if (criteria.drugSourceConcept != null) {
+              cColumns.add("C.drug_source_concept_id");
+          }
+          
+          // providerSpecialty
+          if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+              cColumns.add("C.provider_id");
+          }
+        }
+        
+        query = StringUtils.replace(query, "@c.additionalColumns", ", " + StringUtils.join(cColumns, ","));
+    } else {
+        query = StringUtils.replace(query, "@c.additionalColumns", "");
+    }
+
     return query;
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -131,6 +179,14 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
                       "COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date))"));
     } else {
       selectCols.add("de.drug_exposure_start_date as start_date, COALESCE(de.drug_exposure_end_date, DATEADD(day,de.days_supply,de.drug_exposure_start_date), DATEADD(day,1,de.drug_exposure_start_date)) as end_date");
+    }
+    // If save covariates is included, add the concept_id column
+    if (builderOptions != null && builderOptions.isRetainCohortCovariates()) {
+        selectCols.add("de.drug_concept_id concept_id");
+        
+        if (criteria.drugSourceConcept != null) {
+            selectCols.add("de.drug_source_concept_id");
+        }
     }
     return selectCols;
   }
