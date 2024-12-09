@@ -79,7 +79,7 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 

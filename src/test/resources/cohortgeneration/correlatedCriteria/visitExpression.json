@@ -53,6 +53,8 @@
           },
           "End": {
             "Days": 1,
+            "TimeUnitValue": 1,
+            "TimeUnit": "day",
             "Coeff": -1
           },
           "UseEventEnd": false
@@ -60,6 +62,8 @@
         "EndWindow": {
           "Start": {
             "Days": 1,
+            "TimeUnitValue": 1,
+            "TimeUnit": "day",
             "Coeff": 1
           },
           "End": {
@@ -86,7 +90,9 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0
+    "EraPad": 0,
+    "EraPadUnit": "day",
+    "EraPadUnitValue": 0
   },
   "CensorWindow": {}
 }

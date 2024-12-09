@@ -14,6 +14,7 @@
       "person_id":1,
       "condition_concept_id":2,
       "condition_start_date":"2000-01-01",
+      "condition_start_datetime":"2000-01-01 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -21,6 +22,7 @@
       "person_id":1,
       "condition_concept_id":2,
       "condition_start_date":"2005-01-01",
+      "condition_start_datetime":"2005-01-01 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -28,6 +30,7 @@
       "person_id":1,
       "condition_concept_id":2,
       "condition_start_date":"2005-02-01",
+      "condition_start_datetime":"2005-02-01 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -35,6 +38,7 @@
       "person_id":1,
       "condition_concept_id":2,
       "condition_start_date":"2005-03-01",
+      "condition_start_datetime":"2005-03-01 00:00:00",
       "condition_type_concept_id":0
     },
     {
@@ -42,6 +46,7 @@
       "person_id":1,
       "condition_concept_id":2,
       "condition_start_date":"2005-04-01",
+      "condition_start_datetime":"2005-04-01 00:00:00",
       "condition_type_concept_id":0
     }
   ],

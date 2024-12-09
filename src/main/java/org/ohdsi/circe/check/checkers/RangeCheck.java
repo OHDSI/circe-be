@@ -25,6 +25,7 @@ import org.ohdsi.circe.cohortdefinition.ObservationFilter;
 import org.ohdsi.circe.cohortdefinition.Window;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class RangeCheck extends BaseValueCheck {
     private static final String NEGATIVE_VALUE_ERROR = "Time window in criteria \"%s\" has negative value %d at %s";
@@ -52,19 +53,24 @@ public class RangeCheck extends BaseValueCheck {
     }
 
     private void checkWindow(Window window, WarningReporter reporter, String name) {
+        if (Objects.isNull(window)) {
+            return;
+        }
+        checkAndReportIfNegative(window.start, reporter, name, "start");
+        checkAndReportIfNegative(window.end, reporter, name, "end");
 
-        if (Objects.nonNull(window)) {
-            if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days) && window.start.days < 0) {
-                reporter.add(NEGATIVE_VALUE_ERROR, name, window.start.days, "start");
-            }
-            if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days) && window.end.days < 0) {
-                reporter.add(NEGATIVE_VALUE_ERROR, name, window.end.days, "end");
-            }
+    }
+
+    private void checkAndReportIfNegative(Window.Endpoint windowDetails, WarningReporter reporter, String name, String type) {
+        if (Objects.nonNull(windowDetails) && Objects.nonNull(windowDetails.days) && windowDetails.days < 0) {
+            reporter.add(NEGATIVE_VALUE_ERROR, name, windowDetails.days, type);
+        } else if (Objects.nonNull(windowDetails) && Objects.nonNull(windowDetails.timeUnitValue) && windowDetails.timeUnitValue < 0) {
+            reporter.add(NEGATIVE_VALUE_ERROR, name, windowDetails.timeUnitValue, type);
         }
     }
 
-    private void checkObservationFilter(ObservationFilter filter, WarningReporter reporter, String name) {
 
+    private void checkObservationFilter(ObservationFilter filter, WarningReporter reporter, String name) {
         if (Objects.nonNull(filter)) {
             if (filter.priorDays < 0) {
                 reporter.add(NEGATIVE_VALUE_ERROR, name, filter.priorDays, "prior days");

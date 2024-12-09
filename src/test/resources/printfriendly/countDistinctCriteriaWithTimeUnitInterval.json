@@ -1,0 +1,181 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Empty Concept Set",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 0,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "gte"
+          }
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {}
+                },
+                "StartWindow": {
+                  "Start": {
+                    "TimeUnitValue": 2592000,
+                    "TimeUnit": "second",
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "TimeUnitValue": 720,
+                    "TimeUnit": "hour",
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "IsDistinct": true,
+                  "Type": 2,
+                  "Count": 1
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0,
+          "Age": {
+            "Value": 18,
+            "Extent": 64,
+            "Op": "bt"
+          }
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CorrelatedCriteria": {
+            "Type": "ALL",
+            "CriteriaList": [
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CodesetId": 0,
+                    "Age": {
+                      "Value": 18,
+                      "Op": "gt"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "TimeUnitValue": 0,
+                    "TimeUnit": "day",
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "IsDistinct": true,
+                  "Type": 2,
+                  "Count": 1,
+                  "CountColumn": "DOMAIN_CONCEPT"
+                }
+              },
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "CodesetId": 0,
+                    "Age": {
+                      "Value": 18,
+                      "Op": "gt"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "TimeUnitValue": 0,
+                    "TimeUnit": "day",
+                    "Coeff": -1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "IsDistinct": true,
+                  "Type": 2,
+                  "Count": 1,
+                  "CountColumn": "START_DATE"
+                }
+              },
+              {
+                "Criteria": {
+                  "ConditionOccurrence": {
+                    "Age": {
+                      "Value": 64,
+                      "Op": "lt"
+                    }
+                  }
+                },
+                "StartWindow": {
+                  "Start": {
+                    "TimeUnitValue": 0,
+                    "TimeUnit": "day",
+                    "Coeff": -1
+                  },
+                  "End": {
+                    "Coeff": 1
+                  },
+                  "UseEventEnd": false
+                },
+                "Occurrence": {
+                  "IsDistinct": true,
+                  "Type": 2,
+                  "Count": 1,
+                  "CountColumn": "VISIT_ID"
+                }
+              }
+            ],
+            "DemographicCriteriaList": [],
+            "Groups": []
+          },
+          "CodesetId": 0
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPadUnit": "day",
+    "EraPadUnitValue": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.0.0"
+}

@@ -20,7 +20,7 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
     query = embedCodesetClause(query, criteria);
 
-    List<String> selectClauses = resolveSelectClauses(criteria);
+    List<String> selectClauses = resolveSelectClauses(criteria, options);
     List<String> joinClauses = resolveJoinClauses(criteria);
     List<String> whereClauses = resolveWhereClauses(criteria);
 
@@ -82,7 +82,7 @@ public abstract class CriteriaSqlBuilder<T extends Criteria> {
 
   protected abstract String embedOrdinalExpression(String query, T criteria, List<String> whereClauses);
 
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
     return new ArrayList<String>();
   }
 

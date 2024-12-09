@@ -37,8 +37,8 @@
       }
     ],
     "ObservationWindow":{
-      "PriorDays":0,
-      "PostDays":0
+      "PriorDays": 0,
+      "PostDays": 0
     },
     "PrimaryCriteriaLimit":{
       "Type":"First"
@@ -398,6 +398,8 @@
   ],
   "CollapseSettings":{
     "CollapseType":"ERA",
-    "EraPad":0
+    "EraPad":0,
+    "EraPadUnit": "days",
+    "EraPadUnitValue": 0
   }
 }

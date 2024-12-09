@@ -72,6 +72,13 @@ public class CohortExpression implements CdmCompatibilitySpec {
 
   @JsonProperty("CensorWindow")
   public Period censorWindow;
+  
+  /**
+   * If specified the datetime columns should be used in Criteria instead of date
+   */
+  @JsonProperty("UseDatetime")
+  public Boolean useDatetime;
+  
 
   @Override
   public String getCdmVersionRange() {

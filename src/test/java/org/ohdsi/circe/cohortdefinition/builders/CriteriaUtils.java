@@ -15,6 +15,7 @@
  */
 package org.ohdsi.circe.cohortdefinition.builders;
 
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.cohortdefinition.Occurrence;
 import org.ohdsi.circe.cohortdefinition.Window;
 
@@ -30,15 +31,48 @@ public class CriteriaUtils {
     Window.Endpoint startPoint = new Window.Endpoint();
     startPoint.coeff = -1;
     startPoint.days = 365;
+    startPoint.timeUnitValue = null;
     prior365Window.start = startPoint;
     // ... and 0 days before
     Window.Endpoint endPoint = new Window.Endpoint();
     endPoint.coeff = -1;
     endPoint.days = 0;
+    endPoint.timeUnitValue = 0;
     prior365Window.end = endPoint;
     return prior365Window;
   }
-  
+
+  public static Window getPrior365WindowTimeUnitInterval(String timeUnit) {
+    Window prior365Window = new Window();
+    // index starts between 365d before
+    Window.Endpoint startPoint = new Window.Endpoint();
+    startPoint.coeff = -1;
+    startPoint.timeUnit = timeUnit;
+    startPoint.timeUnitValue = getTimeUnitValue(timeUnit, 365);
+    prior365Window.start = startPoint;
+    // ... and 0 days before
+    Window.Endpoint endPoint = new Window.Endpoint();
+    endPoint.coeff = -1;
+    endPoint.days = getTimeUnitValue(timeUnit, 0);
+    prior365Window.end = endPoint;
+    return prior365Window;
+  }
+
+  private static int getTimeUnitValue(String timeUnit, Integer timeUnitValueInDay) {
+    int timeUnitValue = timeUnitValueInDay;
+    if (IntervalUnit.HOUR.getName().equals(timeUnit)) {
+      timeUnitValue = timeUnitValueInDay * 24;
+    }
+    if (IntervalUnit.MINUTE.getName().equals(timeUnit)) {
+      timeUnitValue = timeUnitValueInDay * 24 * 60;
+    }
+    if (IntervalUnit.SECOND.getName().equals(timeUnit)) {
+      timeUnitValue = timeUnitValueInDay * 24 * 60 * 60;
+    }
+    return timeUnitValue;
+  }
+
+
   public static Window getAnyTimeWindow() {
     Window anytimeWindow = new Window();  
     // index starts between 365d before
