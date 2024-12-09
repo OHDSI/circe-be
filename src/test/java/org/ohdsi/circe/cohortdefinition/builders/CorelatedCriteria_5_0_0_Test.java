@@ -71,7 +71,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     
     // translate to PG
     String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, RESULTS_SCHEMA + ".cohort", "cdm", 1);
-    String inclusionQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String inclusionQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     String translatedInclusionQuery = SqlRender.renderSql(SqlTranslate.translateSql(inclusionQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
@@ -87,7 +87,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     // perform exclusion query by changing the occurrence type in the CorelatedCriteria
     // Note this is still  an 'inclusion', just only include those with exactly 0 counts
     cc.occurrence = CriteriaUtils.getAtExactly0Occurrence();
-    String exclusionQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String exclusionQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     String translatedExclusionQuery = SqlRender.renderSql(SqlTranslate.translateSql(exclusionQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
@@ -132,7 +132,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     
     // translate to PG
     String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, RESULTS_SCHEMA + ".cohort", "cdm", 1);
-    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     String translatedCountQuery = SqlRender.renderSql(SqlTranslate.translateSql(countQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
@@ -178,7 +178,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     
     // translate to PG
     String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, RESULTS_SCHEMA + ".cohort", "cdm", 1);
-    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     String translatedCountQuery = SqlRender.renderSql(SqlTranslate.translateSql(countQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});
@@ -224,7 +224,7 @@ public class CorelatedCriteria_5_0_0_Test extends AbstractDatabaseTest {
     
     // translate to PG
     String eventTable = String.format(CriteriaUtils.EVENT_TABLE_TEMPLATE, RESULTS_SCHEMA + ".cohort", "cdm", 1);
-    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable);
+    String countQuery = queryBuilder.getCriteriaGroupQuery(cg, eventTable, null);
     String translatedCountQuery = SqlRender.renderSql(SqlTranslate.translateSql(countQuery, "postgresql"),
             new String[] {"cdm_database_schema", "indexId"}, 
             new String[] {"cdm", "0"});

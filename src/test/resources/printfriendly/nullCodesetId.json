@@ -376,7 +376,9 @@
   "CensoringCriteria": [],
   "CollapseSettings": {
     "CollapseType": "ERA",
-    "EraPad": 0
+    "EraPad": 0,
+    "EraPadUnit": "day",
+    "EraPadUnitValue": 0
   },
   "CensorWindow": {}
 }

@@ -53,7 +53,7 @@ from ( -- first_ends
 ) FE;
 
 
-select person_id, min(start_date) as start_date, DATEADD(day,-1 * @eraconstructorpad, max(end_date)) as end_date
+select person_id, min(start_date) as start_date, DATEADD(@era_pad_unit,-1 * @eraconstructorpad, max(end_date)) as end_date
 into #final_cohort
 from (
   select person_id, start_date, end_date, sum(is_start) over (partition by person_id order by start_date, is_start desc rows unbounded preceding) group_idx
@@ -61,13 +61,12 @@ from (
     select person_id, start_date, end_date, 
       case when max(end_date) over (partition by person_id order by start_date rows between unbounded preceding and 1 preceding) >= start_date then 0 else 1 end is_start
     from (
-      select person_id, start_date, DATEADD(day,@eraconstructorpad,end_date) as end_date
+      select person_id, start_date, DATEADD(@era_pad_unit,@eraconstructorpad,end_date) as end_date
       from #cohort_rows
     ) CR
   ) ST
 ) GR
 group by person_id, group_idx;
-
 DELETE FROM @target_database_schema.@target_cohort_table where @cohort_id_field_name = @target_cohort_id;
 INSERT INTO @target_database_schema.@target_cohort_table (@cohort_id_field_name, subject_id, cohort_start_date, cohort_end_date)
 @finalCohortQuery

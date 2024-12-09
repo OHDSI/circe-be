@@ -1,6 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.cohortdefinition.VisitOccurrence;
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends CriteriaSqlBuilder<T> {
@@ -67,7 +69,7 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -92,9 +94,15 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "vo.visit_start_date" : "vo.visit_end_date"));
     } else {
-      selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("vo.visit_start_date as start_date, vo.visit_end_date as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if visit_end_datetime is empty it should be added accordingly
+        selectCols.add("vo.visit_start_datetime as start_date, vo.visit_end_datetime as end_date");
+      }
     }
-
     return selectCols;
   }
 

@@ -1,6 +1,7 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ohdsi.circe.cohortdefinition.IntervalUnit;
 import org.ohdsi.circe.cohortdefinition.Observation;
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -80,7 +82,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
   }
 
   @Override
-  protected List<String> resolveSelectClauses(T criteria) {
+  protected List<String> resolveSelectClauses(T criteria, BuilderOptions builderOptions) {
 
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
@@ -119,7 +121,14 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
               criteria.dateAdjustment.startWith == DateAdjustment.DateType.START_DATE ? "o.observation_date" : "DATEADD(day,1,o.observation_date)",
               criteria.dateAdjustment.endWith == DateAdjustment.DateType.START_DATE ? "o.observation_date" : "DATEADD(day,1,o.observation_date)"));
     } else {
-      selectCols.add("o.observation_date as start_date, DATEADD(day,1,o.observation_date) as end_date");
+        if ((builderOptions == null || !builderOptions.isUseDatetime()) && 
+            (criteria.intervalUnit == null || IntervalUnit.DAY.getName().equals(criteria.intervalUnit))) {
+          selectCols.add("o.observation_date as start_date, DATEADD(day,1,o.observation_date) as end_date");
+      }
+      else {
+        // if any specific business logic is necessary if observation_datetime is empty it should be added accordingly
+        selectCols.add("o.observation_datetime as start_date, o.observation_datetime as end_date");
+      }
     }
     return selectCols;
   }

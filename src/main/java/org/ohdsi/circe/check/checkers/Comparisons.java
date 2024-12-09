@@ -102,18 +102,48 @@ public class Comparisons {
                 .build();
     }
 
-    public static int compareTo(ObservationFilter filter, Window window) {
-
-        int range1 = filter.postDays + filter.priorDays;
-        int range2Start = 0, range2End = 0;
-        if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days)) {
-            range2Start = window.start.coeff * window.start.days;
-        }
-        if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days)) {
-            range2End = window.end.coeff * window.end.days;
-        }
-        return range1 - (range2End - range2Start);
+  /**
+   * If timeUnit is equal to values such as Hours, Minutes, Seconds, the values will be converted to seconds
+   * Otherwise it will return to the previous logic.
+   * @param filter
+   * @param window
+   * @return
+   */
+  public static int compareTo(ObservationFilter filter, Window window) {
+    int range1, range2Start = 0, range2End = 0;
+    if (Objects.nonNull(window.start) && Objects.nonNull(window.start.timeUnit) && !IntervalUnit.DAY.getName().equals(window.start.timeUnit)) {
+      range1 = (filter.postDays + filter.priorDays) * 24 * 60 * 60;
+      range2Start = getTimeInSeconds(window.start);
+      range2End = getTimeInSeconds(window.end);
+    } else {
+      range1 = filter.postDays + filter.priorDays;
+      if (Objects.nonNull(window.start) && Objects.nonNull(window.start.days)) {
+        range2Start = window.start.coeff * window.start.days;
+      }
+      if (Objects.nonNull(window.end) && Objects.nonNull(window.end.days)) {
+        range2End = window.end.coeff * window.end.days;
+      }
     }
+    return range1 - (range2End - range2Start);
+  }
+
+  /**
+   * @return Convert values to seconds.
+   */
+  private static int getTimeInSeconds(Window.Endpoint endpoint) {
+    if (Objects.isNull(endpoint)) {
+      return 0;
+    }
+    int convertRate;
+    if (IntervalUnit.HOUR.getName().equals(endpoint.timeUnit)) {
+      convertRate = 60 * 60;
+    } else if (IntervalUnit.MINUTE.getName().equals(endpoint.timeUnit)) {
+      convertRate = 60;
+    } else convertRate = 1;
+    return Objects.nonNull(endpoint.timeUnitValue)
+      ? endpoint.coeff * endpoint.timeUnitValue * convertRate
+      : 0;
+  }
 
     public static boolean compare(Criteria c1, Criteria c2) {
 

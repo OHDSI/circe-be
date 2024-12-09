@@ -1,0 +1,562 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Aspirin",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Ingredient",
+              "CONCEPT_CODE": "1191",
+              "CONCEPT_ID": 1112807,
+              "CONCEPT_NAME": "Aspirin",
+              "DOMAIN_ID": "Drug",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "RxNorm"
+            },
+            "includeDescendants": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "AdditionalCriteria": {
+    "Type": "ALL",
+    "CriteriaList": [],
+    "DemographicCriteriaList": [],
+    "Groups": [
+      {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "ConditionEra": {
+                "CorrelatedCriteria": {
+                  "Type": "ALL",
+                  "CriteriaList": [
+                    {
+                      "Criteria": {
+                        "ConditionOccurrence": {
+                          "CorrelatedCriteria": {
+                            "Type": "ALL",
+                            "CriteriaList": [
+                              {
+                                "Criteria": {
+                                  "Measurement": {
+                                    "OccurrenceStartDate": {
+                                      "Value": "2020-01-03",
+                                      "Op": "lt"
+                                    },
+                                    "MeasurementType": [
+                                      {
+                                        "CONCEPT_CODE": "10221000000101",
+                                        "CONCEPT_ID": 44787754,
+                                        "CONCEPT_NAME": "FP70A postgraduate training allowance form",
+                                        "DOMAIN_ID": "Type Concept",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ],
+                                    "Operator": [
+                                      {
+                                        "CONCEPT_CODE": "276139006",
+                                        "CONCEPT_ID": 4171756,
+                                        "CONCEPT_NAME": "<",
+                                        "DOMAIN_ID": "Meas Value Operator",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ],
+                                    "ValueAsNumber": {
+                                      "Value": 3,
+                                      "Op": "gt"
+                                    },
+                                    "ValueAsConcept": [
+                                      {
+                                        "CONCEPT_CODE": "17511009",
+                                        "CONCEPT_ID": 4068402,
+                                        "CONCEPT_NAME": "Normal absence",
+                                        "DOMAIN_ID": "Meas Value",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ],
+                                    "Unit": [
+                                      {
+                                        "CONCEPT_CODE": "%{abnormal}",
+                                        "CONCEPT_ID": 9216,
+                                        "CONCEPT_NAME": "percent abnormal",
+                                        "DOMAIN_ID": "Unit",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "UCUM"
+                                      }
+                                    ],
+                                    "RangeLow": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "RangeHigh": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "RangeLowRatio": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "RangeHighRatio": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "Age": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "Gender": [
+                                      {
+                                        "CONCEPT_CODE": "703118005",
+                                        "CONCEPT_ID": 45766035,
+                                        "CONCEPT_NAME": "Feminine gender",
+                                        "DOMAIN_ID": "Gender",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ],
+                                    "ProviderSpecialty": [
+                                      {
+                                        "CONCEPT_CODE": "101YS0200X",
+                                        "CONCEPT_ID": 38003628,
+                                        "CONCEPT_NAME": "Behavioral Health & Social Service Providers, Counselor, School",
+                                        "DOMAIN_ID": "Provider Specialty",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "NUCC"
+                                      }
+                                    ],
+                                    "VisitType": [
+                                      {
+                                        "CONCEPT_CODE": "OP",
+                                        "CONCEPT_ID": 9202,
+                                        "CONCEPT_NAME": "Outpatient Visit",
+                                        "DOMAIN_ID": "Visit",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "Visit"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "timeUnitValue": "1440",
+                                    "TimeUnit": "minute",
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "timeUnitValue": "0",
+                                    "TimeUnit": "minute",
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
+                              },
+                              {
+                                "Criteria": {
+                                  "DoseEra": {
+                                    "EraStartDate": {
+                                      "Value": "2019-12-31",
+                                      "Op": "lt"
+                                    },
+                                    "EraEndDate": {
+                                      "Value": "2020-01-01",
+                                      "Op": "lt"
+                                    },
+                                    "DoseValue": {
+                                      "Value": 2,
+                                      "Op": "gt"
+                                    },
+                                    "EraLength": {
+                                      "Value": 3,
+                                      "Op": "gt"
+                                    },
+                                    "AgeAtStart": {
+                                      "Value": 4,
+                                      "Op": "gt"
+                                    },
+                                    "AgeAtEnd": {
+                                      "Value": 5,
+                                      "Op": "gt"
+                                    },
+                                    "Gender": [
+                                      {
+                                        "CONCEPT_CODE": "407378000",
+                                        "CONCEPT_ID": 4251434,
+                                        "CONCEPT_NAME": "Surgically transgendered transsexual, male-to-female",
+                                        "DOMAIN_ID": "Gender",
+                                        "INVALID_REASON_CAPTION": "Unknown",
+                                        "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                        "VOCABULARY_ID": "SNOMED"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "timeUnitValue": "2880",
+                                    "TimeUnit": "minute",
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "timeUnitValue": "0",
+                                    "TimeUnit": "minute",
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
+                              },
+                              {
+                                "Criteria": {
+                                  "DeviceExposure": {
+                                    "UniqueDeviceId": {
+                                      "Text": "13",
+                                      "Op": "contains"
+                                    }
+                                  }
+                                },
+                                "StartWindow": {
+                                  "Start": {
+                                    "Coeff": -1
+                                  },
+                                  "End": {
+                                    "Coeff": 1
+                                  },
+                                  "UseEventEnd": false
+                                },
+                                "Occurrence": {
+                                  "Type": 2,
+                                  "Count": 1
+                                }
+                              }
+                            ],
+                            "DemographicCriteriaList": [
+                              {
+                                "Age": {
+                                  "Value": 2,
+                                  "Op": "gt"
+                                },
+                                "Gender": [
+                                  {
+                                    "CONCEPT_CODE": "394744001",
+                                    "CONCEPT_ID": 4215271,
+                                    "CONCEPT_NAME": "Gender unspecified",
+                                    "DOMAIN_ID": "Gender",
+                                    "INVALID_REASON_CAPTION": "Unknown",
+                                    "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                    "VOCABULARY_ID": "SNOMED"
+                                  }
+                                ],
+                                "Race": [
+                                  {
+                                    "CONCEPT_CODE": "2.01",
+                                    "CONCEPT_ID": 38003574,
+                                    "CONCEPT_NAME": "Asian Indian",
+                                    "DOMAIN_ID": "Race",
+                                    "INVALID_REASON_CAPTION": "Unknown",
+                                    "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                    "VOCABULARY_ID": "Race"
+                                  }
+                                ],
+                                "Ethnicity": [
+                                  {
+                                    "CONCEPT_CODE": "Not Hispanic",
+                                    "CONCEPT_ID": 38003564,
+                                    "CONCEPT_NAME": "Not Hispanic or Latino",
+                                    "DOMAIN_ID": "Ethnicity",
+                                    "INVALID_REASON_CAPTION": "Unknown",
+                                    "STANDARD_CONCEPT_CAPTION": "Unknown",
+                                    "VOCABULARY_ID": "Ethnicity"
+                                  }
+                                ],
+                                "OccurrenceStartDate": {
+                                  "Value": "2020-01-01",
+                                  "Op": "lt"
+                                },
+                                "OccurrenceEndDate": {
+                                  "Value": "2020-01-02",
+                                  "Op": "lt"
+                                }
+                              }
+                            ],
+                            "Groups": []
+                          },
+                          "OccurrenceStartDate": {
+                            "Value": "2019-12-31",
+                            "Op": "lt"
+                          },
+                          "OccurrenceEndDate": {
+                            "Value": "2020-01-01",
+                            "Op": "lt"
+                          },
+                          "ConditionType": [
+                            {
+                              "CONCEPT_CODE": "10251000000106",
+                              "CONCEPT_ID": 45770878,
+                              "CONCEPT_NAME": "FP75 leave payment form",
+                              "DOMAIN_ID": "Type Concept",
+                              "INVALID_REASON_CAPTION": "Unknown",
+                              "STANDARD_CONCEPT_CAPTION": "Unknown",
+                              "VOCABULARY_ID": "SNOMED"
+                            }
+                          ],
+                          "StopReason": {
+                            "Text": "stop",
+                            "Op": "contains"
+                          },
+                          "Age": {
+                            "Value": 1,
+                            "Op": "lt"
+                          },
+                          "Gender": [
+                            {
+                              "CONCEPT_CODE": "703117000",
+                              "CONCEPT_ID": 45766034,
+                              "CONCEPT_NAME": "Masculine gender",
+                              "DOMAIN_ID": "Gender",
+                              "INVALID_REASON_CAPTION": "Unknown",
+                              "STANDARD_CONCEPT_CAPTION": "Unknown",
+                              "VOCABULARY_ID": "SNOMED"
+                            }
+                          ],
+                          "VisitType": [
+                            {
+                              "CONCEPT_CODE": "LTCP",
+                              "CONCEPT_ID": 42898160,
+                              "CONCEPT_NAME": "Long Term Care Visit",
+                              "DOMAIN_ID": "Visit",
+                              "INVALID_REASON_CAPTION": "Unknown",
+                              "STANDARD_CONCEPT_CAPTION": "Unknown",
+                              "VOCABULARY_ID": "Visit"
+                            }
+                          ]
+                        }
+                      },
+                      "StartWindow": {
+                        "Start": {
+                          "timeUnitValue": "4320",
+                          "TimeUnit": "minute",
+                          "Coeff": -1
+                        },
+                        "End": {
+                          "timeUnitValue": "0",
+                          "TimeUnit": "minute",
+                          "Coeff": 1
+                        },
+                        "UseEventEnd": false
+                      },
+                      "Occurrence": {
+                        "Type": 2,
+                        "Count": 1
+                      }
+                    }
+                  ],
+                  "DemographicCriteriaList": [
+                    {
+                      "Age": {
+                        "Value": 2,
+                        "Op": "lt"
+                      },
+                      "Gender": [
+                        {
+                          "CONCEPT_CODE": "407379008",
+                          "CONCEPT_ID": 4231242,
+                          "CONCEPT_NAME": "Surgically transgendered transsexual, female-to-male",
+                          "DOMAIN_ID": "Gender",
+                          "INVALID_REASON_CAPTION": "Unknown",
+                          "STANDARD_CONCEPT_CAPTION": "Unknown",
+                          "VOCABULARY_ID": "SNOMED"
+                        }
+                      ],
+                      "Race": [
+                        {
+                          "CONCEPT_CODE": "2.01",
+                          "CONCEPT_ID": 38003574,
+                          "CONCEPT_NAME": "Asian Indian",
+                          "DOMAIN_ID": "Race",
+                          "INVALID_REASON_CAPTION": "Unknown",
+                          "STANDARD_CONCEPT_CAPTION": "Unknown",
+                          "VOCABULARY_ID": "Race"
+                        }
+                      ],
+                      "Ethnicity": [
+                        {
+                          "CONCEPT_CODE": "Not Hispanic",
+                          "CONCEPT_ID": 38003564,
+                          "CONCEPT_NAME": "Not Hispanic or Latino",
+                          "DOMAIN_ID": "Ethnicity",
+                          "INVALID_REASON_CAPTION": "Unknown",
+                          "STANDARD_CONCEPT_CAPTION": "Unknown",
+                          "VOCABULARY_ID": "Ethnicity"
+                        }
+                      ],
+                      "OccurrenceStartDate": {
+                        "Value": "2019-12-31",
+                        "Op": "lt"
+                      },
+                      "OccurrenceEndDate": {
+                        "Value": "2020-01-01",
+                        "Op": "lt"
+                      }
+                    }
+                  ],
+                  "Groups": []
+                },
+                "EraStartDate": {
+                  "Value": "2019-12-31",
+                  "Op": "lt"
+                },
+                "EraEndDate": {
+                  "Value": "2019-12-31",
+                  "Op": "lt"
+                },
+                "OccurrenceCount": {
+                  "Value": 1,
+                  "Op": "lt"
+                },
+                "EraLength": {
+                  "Value": 1,
+                  "Op": "lt"
+                },
+                "AgeAtStart": {
+                  "Value": 2,
+                  "Op": "lt"
+                },
+                "AgeAtEnd": {
+                  "Value": 2,
+                  "Op": "lt"
+                },
+                "Gender": [
+                  {
+                    "CONCEPT_CODE": "407375002",
+                    "CONCEPT_ID": 4234363,
+                    "CONCEPT_NAME": "Surgically transgendered transsexual",
+                    "DOMAIN_ID": "Gender",
+                    "INVALID_REASON_CAPTION": "Unknown",
+                    "STANDARD_CONCEPT_CAPTION": "Unknown",
+                    "VOCABULARY_ID": "SNOMED"
+                  }
+                ]
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "timeUnitValue": "5460",
+                "TimeUnit": "minute",
+                "Coeff": -1
+              },
+              "End": {
+                "timeUnitValue": "0",
+                "TimeUnit": "minute",
+                "Coeff": 1
+              },
+              "UseEventEnd": false
+            },
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1
+            }
+          }
+        ],
+        "DemographicCriteriaList": [
+          {
+            "Age": {
+              "Value": 1,
+              "Op": "gt"
+            },
+            "Gender": [
+              {
+                "CONCEPT_CODE": "407375002",
+                "CONCEPT_ID": 4234363,
+                "CONCEPT_NAME": "Surgically transgendered transsexual",
+                "DOMAIN_ID": "Gender",
+                "INVALID_REASON_CAPTION": "Unknown",
+                "STANDARD_CONCEPT_CAPTION": "Unknown",
+                "VOCABULARY_ID": "SNOMED"
+              }
+            ],
+            "Race": [
+              {
+                "CONCEPT_CODE": "2.02",
+                "CONCEPT_ID": 38003575,
+                "CONCEPT_NAME": "Bangladeshi",
+                "DOMAIN_ID": "Race",
+                "INVALID_REASON_CAPTION": "Unknown",
+                "STANDARD_CONCEPT_CAPTION": "Unknown",
+                "VOCABULARY_ID": "Race"
+              }
+            ],
+            "Ethnicity": [
+              {
+                "CONCEPT_CODE": "Hispanic",
+                "CONCEPT_ID": 38003563,
+                "CONCEPT_NAME": "Hispanic or Latino",
+                "DOMAIN_ID": "Ethnicity",
+                "INVALID_REASON_CAPTION": "Unknown",
+                "STANDARD_CONCEPT_CAPTION": "Unknown",
+                "VOCABULARY_ID": "Ethnicity"
+              }
+            ],
+            "OccurrenceStartDate": {
+              "Value": "2019-12-31",
+              "Op": "lt"
+            },
+            "OccurrenceEndDate": {
+              "Value": "2019-12-31",
+              "Op": "lt"
+            }
+          }
+        ],
+        "Groups": []
+      }
+    ]
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 1
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=6.1.0"
+}
