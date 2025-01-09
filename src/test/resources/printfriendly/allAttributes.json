@@ -294,31 +294,6 @@
       },
       {
         "ConditionOccurrence": {
-          "CodesetId": 1,
-          "OccurrenceStartDate": {
-            "Value": "2010-01-01",
-            "Op": "gte"
-          },
-          "First": true,
-          "GenderCS" : {
-            "CodesetId": 0
-          },
-          "ConditionTypeCS" : {
-            "CodesetId": 0
-          },
-          "ProviderSpecialtyCS" : {
-            "CodesetId": 0
-          },
-          "VisitTypeCS" : {
-            "CodesetId": 0
-          },
-          "ConditionStatusCS" : {
-            "CodesetId": 0
-          }
-        }
-      },
-      {
-        "ConditionOccurrence": {
           "CorrelatedCriteria": {
             "Type": "ALL",
             "CriteriaList": [
@@ -452,6 +427,31 @@
             }
           ],
           "GenderCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 1,
+          "OccurrenceStartDate": {
+            "Value": "2010-01-01",
+            "Op": "gte"
+          },
+          "First": true,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "ConditionTypeCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          },
+          "ConditionStatusCS" : {
             "CodesetId": 0
           }
         }
