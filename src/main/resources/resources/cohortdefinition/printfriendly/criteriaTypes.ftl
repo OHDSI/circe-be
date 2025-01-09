@@ -63,6 +63,7 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#macro Death c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
 <#local temp><@AgeGenderCriteria ageAtStart=c.age!{} gender=c.gender!{} genderCS=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
 <#local temp><@EventDateCriteria c.occurrenceStartDate!{} c.occurrenceEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
 c.deathType??><#local temp>a death type that<#if c.deathTypeExclude!false> is not:<#else> is:</#if> <@inputTypes.ConceptList list=c.deathType/></#local><#local attrs+=[temp]></#if><#if 
 c.deathTypeCS??><#local temp>a death type concept <@inputTypes.ConceptSetSelection selection=c.deathTypeCS /> concept set</#local><#local attrs+=[temp]></#if>
