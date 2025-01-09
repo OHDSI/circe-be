@@ -14,6 +14,7 @@ import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends CriteriaSqlBuilder<T> {
@@ -135,7 +136,11 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
 
     List<String> joinClauses = new ArrayList<>();
 
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.ageAtStart != null || 
+      criteria.ageAtEnd != null || 
+      (criteria.gender != null && criteria.gender.length > 0) ||
+      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
 
@@ -196,6 +201,11 @@ public class PayerPlanPeriodSqlBuilder<T extends PayerPlanPeriod> extends Criter
     if (criteria.gender != null && criteria.gender.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.gender);
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+    }
+
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
     }
 
     // payer concept

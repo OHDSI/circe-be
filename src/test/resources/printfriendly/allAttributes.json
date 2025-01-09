@@ -299,7 +299,22 @@
             "Value": "2010-01-01",
             "Op": "gte"
           },
-          "First": true
+          "First": true,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "ConditionTypeCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          },
+          "ConditionStatusCS" : {
+            "CodesetId": 0
+          }
         }
       },
       {
@@ -435,7 +450,10 @@
               "STANDARD_CONCEPT_CAPTION": "Unknown",
               "VOCABULARY_ID": "Gender"
             }
-          ]
+          ],
+          "GenderCS" : {
+            "CodesetId": 0
+          }
         }
       },
       {
@@ -517,7 +535,209 @@
               "STANDARD_CONCEPT_CAPTION": "Unknown",
               "VOCABULARY_ID": "Gender"
             }
-          ]
+          ],
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "DeathTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "DeviceExposure" : {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "DeviceTypeCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "DoseEra" : {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "UnitCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "DrugEra" : {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "DrugExposure": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "DrugTypeCS" : {
+            "CodesetId": 0
+          },
+          "RouteConceptCS" : {
+            "CodesetId": 0
+          },
+          "DoseUnitCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          },
+          "ConditionStatusCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "Measurement": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "MeasurementTypeCS" : {
+            "CodesetId": 0
+          },
+          "OperatorCS" : {
+            "CodesetId": 0
+          },
+          "UnitCS" : {
+            "CodesetId": 0
+          },
+          "ValueAsConceptCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "Observation": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "ObservationTypeCS" : {
+            "CodesetId": 0
+          },
+          "QualifierCS" : {
+            "CodesetId": 0
+          },
+          "UnitCS" : {
+            "CodesetId": 0
+          },
+          "ValueAsConceptCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "ObservationPeriod": {
+          "CodesetId": 1,
+          "PeriodTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "ProcedureOccurrence": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "ProcedureTypeCS" : {
+            "CodesetId": 0
+          },
+          "ModifierCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "Specimen": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "SpecimenTypeCS" : {
+            "CodesetId": 0
+          },
+          "UnitCS" : {
+            "CodesetId": 0
+          },
+          "AnatomicSiteCS" : {
+            "CodesetId": 0
+          },
+          "DiseaseStatusCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "VisitOccurrence": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "VisitTypeCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "PlaceOfServiceCS" : {
+            "CodesetId": 0
+          }
+        }
+      },
+      {
+        "VisitDetail": {
+          "CodesetId": 1,
+          "GenderCS" : {
+            "CodesetId": 0
+          },
+          "VisitDetailTypeCS" : {
+            "CodesetId": 0
+          },
+          "ProviderSpecialtyCS" : {
+            "CodesetId": 0
+          },
+          "PlaceOfServiceCS" : {
+            "CodesetId": 0
+          }
         }
       }
     ],

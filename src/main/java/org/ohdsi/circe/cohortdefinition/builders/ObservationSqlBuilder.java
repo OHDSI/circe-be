@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
@@ -85,7 +86,9 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
     // measurementType
-    if (criteria.observationType != null && criteria.observationType.length > 0) {
+    if ((criteria.observationType != null && criteria.observationType.length > 0) ||
+      (criteria.observationTypeCS != null && criteria.observationTypeCS.codesetId != null)
+    ) {
       selectCols.add("o.observation_type_concept_id");
     }
 
@@ -95,21 +98,29 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // valueAsConcept
-    if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+    if ((criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) ||
+      (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null)
+    ) {
       selectCols.add("o.value_as_concept_id");
     }
 
     // qualifier
-    if (criteria.qualifier != null && criteria.qualifier.length > 0) {
+    if ((criteria.qualifier != null && criteria.qualifier.length > 0) ||
+      (criteria.qualifierCS != null && criteria.qualifierCS.codesetId != null)
+    ) {
       selectCols.add("o.qualifier_concept_id");
     }
 
     // unit
-    if (criteria.unit != null && criteria.unit.length > 0) {
+    if ((criteria.unit != null && criteria.unit.length > 0) ||
+      (criteria.unitCS != null && criteria.unitCS.codesetId != null)
+    ) {
       selectCols.add("o.unit_concept_id");
     }
     // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       selectCols.add("o.provider_id");
     }
 
@@ -130,13 +141,20 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.age != null || 
+      (criteria.gender != null && criteria.gender.length > 0) || 
+      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
-    if (criteria.visitType != null && criteria.visitType.length > 0) {
+    if ((criteria.visitType != null && criteria.visitType.length > 0) ||
+      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
 
@@ -158,6 +176,11 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.observationType);
       whereClauses.add(String.format("C.observation_type_concept_id %s in (%s)", (criteria.observationTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
+    
+    // conditionTypeCS
+    if (criteria.observationTypeCS != null && criteria.observationTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.observationTypeCS.codesetId, "C.observation_type_concept_id", criteria.observationTypeCS.isExclusion));
+    }
 
     // valueAsNumber
     if (criteria.valueAsNumber != null) {
@@ -175,18 +198,33 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
       whereClauses.add(String.format("C.value_as_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
+    // valueAsConceptCS
+    if (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.valueAsConceptCS.codesetId, "C.value_as_concept_id", criteria.valueAsConceptCS.isExclusion));
+    }
+    
     // qualifier
     if (criteria.qualifier != null && criteria.qualifier.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.qualifier);
       whereClauses.add(String.format("C.qualifier_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
+    // qualifierCS
+    if (criteria.qualifierCS != null && criteria.qualifierCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.qualifierCS.codesetId, "C.qualifier_concept_id", criteria.qualifierCS.isExclusion));
+    }
+    
     // unit
     if (criteria.unit != null && criteria.unit.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
       whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
+    // unitCS
+    if (criteria.unitCS != null && criteria.unitCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.unitCS.codesetId, "C.unit_concept_id", criteria.unitCS.isExclusion));
+    }
+    
     // age
     if (criteria.age != null) {
       whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
@@ -197,14 +235,29 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
     }
 
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    }
+
     // providerSpecialty
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
       whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty), ",")));
     }
 
+    // providerSpecialtyCS
+    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    }
+
     // visitType
     if (criteria.visitType != null && criteria.visitType.length > 0) {
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
+    }
+
+    // visitTypeCS
+    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
     }
 
     return whereClauses;

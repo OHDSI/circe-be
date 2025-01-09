@@ -404,8 +404,6 @@ public class PrintFriendlyTest {
             "a visit type that is: \"admission note\" or \"ancillary report\";",
             //provider specialty
             "a provider specialty that is: \"general practice\" or \"general surgery\";",
-            // visit type
-            "a visit type that is: \"admission note\" or \"ancillary report\";",
             // visit length
             "with length &gt; 12 days",
             // nested criteria
@@ -421,8 +419,9 @@ public class PrintFriendlyTest {
             // concept set name and first in history attribute
             "1. visit detail of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history,",
             // age/gender criteria
-            "who are  between 18 and 64 years old, and who have gender concept in 'Concept Set 2' concept set;",
-            // start date/end date
+            "who are between 18 and 64 years old;",
+            "who have gender in 'Concept Set 2' concept set;",
+            //start date/end date
             "starting before January 1, 2010 and ending after January 7, 2010;",
             // visit type 
             "a visit detail type that is in 'Concept Set 2' concept set;",

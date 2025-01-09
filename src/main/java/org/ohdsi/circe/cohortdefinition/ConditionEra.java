@@ -55,7 +55,9 @@ public class ConditionEra extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;  
   
-  
+  @JsonProperty("GenderCS")
+    public ConceptSetSelection  genderCS;
+
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {
     return dispatcher.getCriteriaSql(this, options);

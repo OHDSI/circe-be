@@ -29,5 +29,5 @@ public class ConceptSetSelection {
   public Integer codesetId;
 
   @JsonProperty("IsExclusion")
-  public Boolean isExclusion;
+  public boolean isExclusion = false;
 }

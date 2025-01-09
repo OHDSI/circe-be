@@ -58,6 +58,8 @@ public class DrugEra extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;  
   
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;  
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {

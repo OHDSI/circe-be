@@ -109,3 +109,4 @@ p.endDate?has_content><#if !p.startDate?has_content>a user defined</#if> end dat
 <#macro DateAdjustment da><#if 
 da?has_content>starting ${(da.startOffset != 0)?then((da.startOffset?abs + " days " + (da.startOffset < 0)?then("before","after")), "on")}${(da.startWith != da.endWith)?then(" the event ${toDatePart(da.startWith)}","")}<#--
 --> and ending ${(da.endOffset != 0)?then((da.endOffset?abs + " days " + (da.endOffset < 0)?then("before","after")), "on")} the event ${toDatePart(da.endWith)}</#if></#macro>
+

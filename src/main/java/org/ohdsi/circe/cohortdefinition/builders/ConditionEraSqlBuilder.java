@@ -14,6 +14,7 @@ import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 
 public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlBuilder<T> {
 
@@ -93,7 +94,10 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.ageAtStart != null || criteria.ageAtEnd != null || 
+      (criteria.gender != null && criteria.gender.length > 0) ||
+      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
 
@@ -138,6 +142,11 @@ public class ConditionEraSqlBuilder<T extends ConditionEra> extends CriteriaSqlB
     // gender
     if (criteria.gender != null && criteria.gender.length > 0) {
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
+    }
+    
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
     }
 
     return whereClauses;

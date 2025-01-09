@@ -14,6 +14,7 @@ import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends CriteriaSqlBuilder<T> {
@@ -145,6 +146,12 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
     if (criteria.periodType != null && criteria.periodType.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.periodType);
       whereClauses.add(String.format("C.period_type_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+    }
+
+    
+    // periodTypeCS
+    if (criteria.periodTypeCS != null && criteria.periodTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.periodTypeCS.codesetId, "C.period_type_concept_id", criteria.periodTypeCS.isExclusion));
     }
 
     // periodLength

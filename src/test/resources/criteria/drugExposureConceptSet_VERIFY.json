@@ -1,0 +1,12 @@
+{
+  "drugExposure.conceptset": [
+    {
+      "person_id": 1,
+      "event_id": 1,
+      "start_date": "2000-01-01",
+      "end_date": "2000-01-02",
+      "visit_occurrence_id": 1,
+      "sort_date": "2000-01-01"
+    }
+  ]
+}

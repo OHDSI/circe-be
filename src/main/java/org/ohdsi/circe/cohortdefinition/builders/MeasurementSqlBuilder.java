@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
@@ -88,27 +90,37 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
     // measurementType
-    if (criteria.measurementType != null && criteria.measurementType.length > 0) {
+    if ((criteria.measurementType != null && criteria.measurementType.length > 0) ||
+      (criteria.measurementTypeCS != null && criteria.measurementTypeCS.codesetId != null)
+    ) {
       selectCols.add("m.measurement_type_concept_id");
     }
 
     // operator
-    if (criteria.operator != null && criteria.operator.length > 0) {
+    if ((criteria.operator != null && criteria.operator.length > 0) ||
+      (criteria.operatorCS != null && criteria.operatorCS.codesetId != null)
+    ) {
       selectCols.add("m.operator_concept_id");
     }
 
     // valueAsConcept
-    if (criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) {
+    if ((criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) ||
+      (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null)
+    ) {
       selectCols.add("m.value_as_concept_id");
     }
 
     // unit
-    if (criteria.unit != null && criteria.unit.length > 0) {
+    if ((criteria.unit != null && criteria.unit.length > 0) ||
+      (criteria.unitCS != null && criteria.unitCS.codesetId != null)
+    ) {
       selectCols.add("m.unit_concept_id");
     }
 
     // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       selectCols.add("m.provider_id");
     }
 
@@ -129,13 +141,20 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.age != null || 
+      (criteria.gender != null && criteria.gender.length > 0) ||
+      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
-    if (criteria.visitType != null && criteria.visitType.length > 0) {
+    if ((criteria.visitType != null && criteria.visitType.length > 0) ||
+      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
 
@@ -158,10 +177,20 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
       whereClauses.add(String.format("C.measurement_type_concept_id %s in (%s)", (criteria.measurementTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
+    // measurementTypeCS
+    if (criteria.measurementTypeCS != null && criteria.measurementTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.measurementTypeCS.codesetId, "C.measurement_type_concept_id", criteria.measurementTypeCS.isExclusion));
+    }
+
     // operator
     if (criteria.operator != null && criteria.operator.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.operator);
       whereClauses.add(String.format("C.operator_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
+    }
+
+    // operatorCS
+    if (criteria.operatorCS != null && criteria.operatorCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.operatorCS.codesetId, "C.operator_concept_id", criteria.operatorCS.isExclusion));
     }
 
     // valueAsNumber
@@ -175,12 +204,22 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
       whereClauses.add(String.format("C.value_as_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
+    // valueAsConceptCS
+    if (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.valueAsConceptCS.codesetId, "C.value_as_concept_id", criteria.valueAsConceptCS.isExclusion));
+    }
+    
     // unit
     if (criteria.unit != null && criteria.unit.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
       whereClauses.add(String.format("C.unit_concept_id in (%s)", StringUtils.join(conceptIds, ",")));
     }
 
+    // unitCS
+    if (criteria.unitCS != null && criteria.unitCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.unitCS.codesetId, "C.unit_concept_id", criteria.unitCS.isExclusion));
+    }
+    
     // rangeLow
     if (criteria.rangeLow != null) {
       whereClauses.add(buildNumericRangeClause("C.range_low", criteria.rangeLow, ".4f"));
@@ -216,14 +255,29 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
     }
 
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    }
+
     // providerSpecialty
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
       whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty), ",")));
     }
 
+    // providerSpecialtyCS
+    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    }
+
     // visitType
     if (criteria.visitType != null && criteria.visitType.length > 0) {
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
+    }
+
+    // visitTypeCS
+    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
     }
 
     return whereClauses;

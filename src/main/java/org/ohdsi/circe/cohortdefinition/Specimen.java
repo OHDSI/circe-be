@@ -39,7 +39,10 @@ public class Specimen extends Criteria {
   
   @JsonProperty("SpecimenType")  
   public Concept[] specimenType;
-	
+
+  @JsonProperty("SpecimenTypeCS")  
+  public ConceptSetSelection specimenTypeCS;
+
   @JsonProperty("SpecimenTypeExclude")
   public boolean specimenTypeExclude = false;
 
@@ -49,11 +52,20 @@ public class Specimen extends Criteria {
   @JsonProperty("Unit")  
   public Concept[] unit;
 
+  @JsonProperty("UnitCS")  
+  public ConceptSetSelection unitCS;
+
   @JsonProperty("AnatomicSite")  
   public Concept[] anatomicSite;
 
+  @JsonProperty("AnatomicSiteCS")  
+  public ConceptSetSelection anatomicSiteCS;
+
   @JsonProperty("DiseaseStatus")  
   public Concept[] diseaseStatus;
+  
+  @JsonProperty("DiseaseStatusCS")  
+  public ConceptSetSelection diseaseStatusCS;
   
   @JsonProperty("SourceId")  
   public TextFilter sourceId;
@@ -66,6 +78,9 @@ public class Specimen extends Criteria {
   
   @JsonProperty("Gender")
   public Concept[] gender;
+
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

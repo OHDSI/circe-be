@@ -39,12 +39,18 @@ public class ProcedureOccurrence extends Criteria {
 
   @JsonProperty("ProcedureType")
   public Concept[] procedureType;
-	
+  
+  @JsonProperty("ProcedureTypeCS")
+  public ConceptSetSelection procedureTypeCS;
+  
   @JsonProperty("ProcedureTypeExclude")
   public boolean procedureTypeExclude = false;
 
   @JsonProperty("Modifier")
   public Concept[] modifier;
+
+  @JsonProperty("ModifierCS")
+  public ConceptSetSelection modifierCS;
 
   @JsonProperty("Quantity")
   public NumericRange quantity;
@@ -57,12 +63,21 @@ public class ProcedureOccurrence extends Criteria {
   
   @JsonProperty("Gender")
   public Concept[] gender;
-  
+
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {

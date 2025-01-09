@@ -44,6 +44,9 @@ public class VisitOccurrence extends Criteria {
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
+
   @JsonProperty("VisitTypeExclude")
   public boolean visitTypeExclude = false;
 	
@@ -59,11 +62,20 @@ public class VisitOccurrence extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;
   
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+  
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("PlaceOfService")
   public Concept[] placeOfService;
+
+  @JsonProperty("PlaceOfServiceCS")
+  public ConceptSetSelection placeOfServiceCS;
 
   /**
    * ID of Codeset which defines Geo concepts.

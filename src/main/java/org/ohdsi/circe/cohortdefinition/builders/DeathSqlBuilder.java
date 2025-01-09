@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
@@ -70,7 +71,9 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
   protected List<String> resolveSelectClauses(T criteria) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
-    if (criteria.deathType != null && criteria.deathType.length > 0) {
+    if ((criteria.deathType != null && criteria.deathType.length > 0) ||
+      criteria.deathTypeCS != null
+    ) {
       selectCols.add("d.death_type_concept_id");
     }
  
@@ -89,7 +92,10 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.age != null || 
+      (criteria.gender != null && criteria.gender.length > 0) ||
+      criteria.genderCS != null
+     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
 
@@ -112,6 +118,11 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
       whereClauses.add(String.format("C.death_type_concept_id %s in (%s)", (criteria.deathTypeExclude ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
 
+    // deathTypeCS
+    if (criteria.deathTypeCS != null && criteria.deathTypeCS.codesetId != null) { 
+      whereClauses.add(getCodesetInExpression(criteria.deathTypeCS.codesetId, "C.death_type_concept_id", criteria.deathTypeCS.isExclusion));
+    }
+
     // age
     if (criteria.age != null) {
       whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.age));
@@ -120,6 +131,11 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     // gender
     if (criteria.gender != null && criteria.gender.length > 0) {
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
+    }
+
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
     }
 
     return whereClauses;
