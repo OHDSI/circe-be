@@ -43,6 +43,9 @@ public class ObservationPeriod extends Criteria {
   @JsonProperty("PeriodType")
   public Concept[] periodType;
   
+  @JsonProperty("PeriodTypeCS")
+  public ConceptSetSelection periodTypeCS;
+  
   @JsonProperty("PeriodLength")
   public NumericRange periodLength;  
 

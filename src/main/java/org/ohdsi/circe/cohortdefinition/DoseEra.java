@@ -43,6 +43,9 @@ public class DoseEra extends Criteria {
   @JsonProperty("Unit")  
   public Concept[] unit;
 
+  @JsonProperty("UnitCS")  
+  public ConceptSetSelection unitCS;
+
   @JsonProperty("DoseValue")  
   public NumericRange doseValue;
 
@@ -57,6 +60,9 @@ public class DoseEra extends Criteria {
 
   @JsonProperty("Gender")
   public Concept[] gender;  
+  
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;  
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {

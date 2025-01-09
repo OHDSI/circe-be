@@ -15,6 +15,7 @@ import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildTextFilterClause;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetJoinExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
@@ -81,7 +82,9 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
   protected List<String> resolveSelectClauses(T criteria) {
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Condition Type
-    if (criteria.conditionType != null && criteria.conditionType.length > 0) {
+    if ((criteria.conditionType != null && criteria.conditionType.length > 0) ||
+      (criteria.conditionTypeCS != null && criteria.conditionTypeCS.codesetId != null)
+    ) {
       selectCols.add("co.condition_type_concept_id");
     }
     // Stop Reason
@@ -89,7 +92,9 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       selectCols.add("co.stop_reason");
     }
     // providerSpecialty
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       selectCols.add("co.provider_id");
     }
     // conditionStatus
@@ -113,13 +118,20 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.age != null || (criteria.gender != null && criteria.gender.length > 0)) {
+    if (criteria.age != null || 
+      (criteria.gender != null && criteria.gender.length > 0) ||
+      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
-    if (criteria.visitType != null && criteria.visitType.length > 0) {
+    if ((criteria.visitType != null && criteria.visitType.length > 0) ||
+      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+    ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
-    if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
+    if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
+      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+    ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
 
@@ -146,6 +158,11 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.conditionType);
       whereClauses.add(String.format("C.condition_type_concept_id %s in (%s)", (Optional.ofNullable(criteria.conditionTypeExclude).orElse(false) ? "not" : ""), StringUtils.join(conceptIds, ",")));
     }
+    
+    // conditionTypeCS
+    if (criteria.conditionTypeCS != null && criteria.conditionTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.conditionTypeCS.codesetId, "C.condition_type_concept_id", criteria.conditionTypeCS.isExclusion));
+    }
 
     // Stop Reason
     if (criteria.stopReason != null) {
@@ -162,9 +179,19 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
     }
 
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    }
+
     // providerSpecialty
     if (criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) {
       whereClauses.add(String.format("PR.specialty_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.providerSpecialty), ",")));
+    }
+
+    // providerSpecialtyCS
+    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
     }
 
     // visitType
@@ -172,9 +199,19 @@ public class ConditionOccurrenceSqlBuilder<T extends ConditionOccurrence> extend
       whereClauses.add(String.format("V.visit_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.visitType), ",")));
     }
 
+    // visitTypeCS
+    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    }
+
     // conditionStatus
     if (criteria.conditionStatus != null && criteria.conditionStatus.length > 0) {
       whereClauses.add(String.format("C.condition_status_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.conditionStatus), ",")));
+    }
+
+    // conditionStatus
+    if (criteria.conditionStatusCS != null && criteria.conditionStatusCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.conditionStatusCS.codesetId, "C.condition_status_concept_id", criteria.conditionStatusCS.isExclusion));
     }
 
     return whereClauses;

@@ -36,6 +36,9 @@ public class Death extends Criteria {
   @JsonProperty("DeathType")
   public Concept[] deathType;
 
+  @JsonProperty("DeathTypeCS")
+  public ConceptSetSelection deathTypeCS;
+
   @JsonProperty("DeathTypeExclude")
   public boolean deathTypeExclude = false;
 
@@ -47,6 +50,9 @@ public class Death extends Criteria {
   
   @JsonProperty("Gender")
   public Concept[] gender;
+  
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
   
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {

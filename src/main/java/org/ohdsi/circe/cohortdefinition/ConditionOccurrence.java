@@ -46,6 +46,9 @@ public class ConditionOccurrence extends Criteria {
   @JsonProperty("ConditionType")
   public Concept[] conditionType;
 
+  @JsonProperty("ConditionTypeCS")
+  public ConceptSetSelection conditionTypeCS;
+  
   @JsonProperty("ConditionTypeExclude")
   public Boolean conditionTypeExclude;
 
@@ -61,14 +64,26 @@ public class ConditionOccurrence extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;
 
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
+
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
 
   @JsonProperty("VisitType")
   public Concept[] visitType;
 
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
+
   @JsonProperty("ConditionStatus")
   public Concept[] conditionStatus;
+
+  @JsonProperty("ConditionStatusCS")
+  public ConceptSetSelection conditionStatusCS;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

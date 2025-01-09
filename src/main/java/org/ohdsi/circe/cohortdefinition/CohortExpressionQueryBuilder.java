@@ -33,6 +33,7 @@ import org.ohdsi.circe.vocabulary.ConceptSetExpressionQueryBuilder;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.dateStringToSql;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getConceptIdsFromConcepts;
 
 /**
@@ -486,6 +487,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
       whereClauses.add(String.format("P.gender_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.gender), ",")));
     }
 
+    // genderCS
+    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    }
+
     // Race
     if (criteria.race != null && criteria.race.length > 0) {
       whereClauses.add(String.format("P.race_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.race), ",")));
@@ -494,11 +500,21 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     // Race
     if (criteria.race != null && criteria.race.length > 0) {
       whereClauses.add(String.format("P.race_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.race), ",")));
+    }
+
+    // raceCS
+    if (criteria.raceCS != null && criteria.raceCS.codesetId != null) {
+      whereClauses.add(getCodesetInExpression(criteria.raceCS.codesetId, "P.gender_concept_id", criteria.raceCS.isExclusion));
     }
 
     // Ethnicity
     if (criteria.ethnicity != null && criteria.ethnicity.length > 0) {
       whereClauses.add(String.format("P.ethnicity_concept_id in (%s)", StringUtils.join(getConceptIdsFromConcepts(criteria.ethnicity), ",")));
+    }
+
+    //EthnicityCS
+    if (criteria.ethnicityCS != null) {
+      whereClauses.add(getCodesetInExpression(criteria.ethnicityCS.codesetId, "P.gender_concept_id", criteria.ethnicityCS.isExclusion));
     }
 
     // occurrenceStartDate

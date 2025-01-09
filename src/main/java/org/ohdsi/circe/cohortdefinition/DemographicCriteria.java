@@ -32,11 +32,20 @@ public class DemographicCriteria {
   @JsonProperty("Gender")
   public Concept[] gender;  
 
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;  
+
   @JsonProperty("Race")
   public Concept[] race;  
 
+  @JsonProperty("RaceCS")
+  public ConceptSetSelection raceCS;  
+
   @JsonProperty("Ethnicity")
   public Concept[] ethnicity;  
+  
+  @JsonProperty("EthnicityCS")
+  public ConceptSetSelection ethnicityCS;  
   
   @JsonProperty("OccurrenceStartDate")
   public DateRange occurrenceStartDate;

@@ -44,6 +44,9 @@ public class DrugExposure extends Criteria {
   @JsonProperty("DrugType")
   public Concept[] drugType;
 
+  @JsonProperty("DrugTypeCS")
+  public ConceptSetSelection drugTypeCS;
+
   @JsonProperty("DrugTypeExclude")
   public boolean drugTypeExclude = false;
 	
@@ -62,11 +65,17 @@ public class DrugExposure extends Criteria {
   @JsonProperty("RouteConcept")
   public Concept[] routeConcept;
 
+  @JsonProperty("RouteConceptCS")
+  public ConceptSetSelection routeConceptCS;
+
   @JsonProperty("EffectiveDrugDose")
   public NumericRange effectiveDrugDose;  
 
   @JsonProperty("DoseUnit")
   public Concept[] doseUnit;
+
+  @JsonProperty("DoseUnitCS")
+  public ConceptSetSelection doseUnitCS;
 
   @JsonProperty("LotNumber")
   public TextFilter lotNumber;  
@@ -80,11 +89,20 @@ public class DrugExposure extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;
   
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+  
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

@@ -43,6 +43,9 @@ public class DeviceExposure extends Criteria {
   @JsonProperty("DeviceType")
   public Concept[] deviceType;
 
+  @JsonProperty("DeviceTypeCS")
+  public ConceptSetSelection deviceTypeCS;
+
   @JsonProperty("DeviceTypeExclude")
   public boolean deviceTypeExclude = false;
 
@@ -61,11 +64,20 @@ public class DeviceExposure extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;
 
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options) {

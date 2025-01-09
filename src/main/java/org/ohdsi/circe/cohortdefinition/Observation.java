@@ -40,6 +40,9 @@ public class Observation extends Criteria {
   @JsonProperty("ObservationType")
   public Concept[] observationType;
 	
+  @JsonProperty("ObservationTypeCS")
+  public ConceptSetSelection observationTypeCS;
+	
   @JsonProperty("ObservationTypeExclude")
   public boolean observationTypeExclude = false;
 
@@ -52,11 +55,20 @@ public class Observation extends Criteria {
   @JsonProperty("ValueAsConcept")
   public Concept[] valueAsConcept;
 
+  @JsonProperty("ValueAsConceptCS")
+  public ConceptSetSelection valueAsConceptCS;
+
   @JsonProperty("Qualifier")
   public Concept[] qualifier;
   
+  @JsonProperty("QualifierCS")
+  public ConceptSetSelection qualifierCS;
+  
   @JsonProperty("Unit")
   public Concept[] unit;
+   
+  @JsonProperty("UnitCS")
+  public ConceptSetSelection unitCS;
    
   @JsonProperty("ObservationSourceConcept")
   public Integer observationSourceConcept;
@@ -67,11 +79,21 @@ public class Observation extends Criteria {
   @JsonProperty("Gender")
   public Concept[] gender;
   
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
+
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)

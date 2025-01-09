@@ -40,20 +40,32 @@ public class Measurement extends Criteria {
   @JsonProperty("MeasurementType")
   public Concept[] measurementType;
 
+  @JsonProperty("MeasurementTypeCS")
+  public ConceptSetSelection measurementTypeCS;
+
   @JsonProperty("MeasurementTypeExclude")
   public boolean measurementTypeExclude = false;
 	
   @JsonProperty("Operator")
   public Concept[] operator;
 
+  @JsonProperty("OperatorCS")
+  public ConceptSetSelection operatorCS;
+
   @JsonProperty("ValueAsNumber")
   public NumericRange valueAsNumber;
 
   @JsonProperty("ValueAsConcept")
   public Concept[] valueAsConcept;
-  
+
+  @JsonProperty("ValueAsConceptCS")
+  public ConceptSetSelection valueAsConceptCS;
+
   @JsonProperty("Unit")
   public Concept[] unit;
+  
+  @JsonProperty("UnitCS")
+  public ConceptSetSelection unitCS;
   
   @JsonProperty("RangeLow")
   public NumericRange rangeLow;
@@ -78,12 +90,22 @@ public class Measurement extends Criteria {
   
   @JsonProperty("Gender")
   public Concept[] gender;
-  
+
+  @JsonProperty("GenderCS")
+  public ConceptSetSelection genderCS;
+
   @JsonProperty("ProviderSpecialty")
   public Concept[] providerSpecialty;
 
+  @JsonProperty("ProviderSpecialtyCS")
+  public ConceptSetSelection providerSpecialtyCS;
+
   @JsonProperty("VisitType")
   public Concept[] visitType;
+
+  @JsonProperty("VisitTypeCS")
+  public ConceptSetSelection visitTypeCS;
+
 
   @Override
   public String accept(IGetCriteriaSqlDispatcher dispatcher, BuilderOptions options)
