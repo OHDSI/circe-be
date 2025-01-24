@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -119,8 +118,8 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     }
 
     // deathTypeCS
-    if (criteria.deathTypeCS != null && criteria.deathTypeCS.codesetId != null) { 
-      whereClauses.add(getCodesetInExpression(criteria.deathTypeCS.codesetId, "C.death_type_concept_id", criteria.deathTypeCS.isExclusion));
+    if (criteria.deathTypeCS != null) { 
+      whereClauses.add(getCodesetInExpression("C.death_type_concept_id", criteria.deathTypeCS));
     }
 
     // age
@@ -134,8 +133,8 @@ public class DeathSqlBuilder<T extends Death> extends CriteriaSqlBuilder<T> {
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     return whereClauses;

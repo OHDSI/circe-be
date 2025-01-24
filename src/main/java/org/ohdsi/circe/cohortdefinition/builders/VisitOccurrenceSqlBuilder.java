@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
@@ -75,21 +74,21 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
     // visitType
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       selectCols.add("vo.visit_type_concept_id");
     }
 
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("vo.provider_id");
     }
 
     // placeOfService
     if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) ||
-      (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null)
+      criteria.placeOfServiceCS != null
     ) {
       selectCols.add("vo.care_site_id");
     }
@@ -113,19 +112,19 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
 
     if (criteria.age != null ||
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) // join to PERSON
     {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.placeOfService != null && criteria.placeOfService.length > 0) ||
-      (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) ||
+      criteria.placeOfServiceCS != null ||
       criteria.placeOfServiceLocation != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.CARE_SITE CS on C.care_site_id = CS.care_site_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -159,8 +158,8 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     }
 
     // conditionTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "C.visit_type_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.visit_type_concept_id", criteria.visitTypeCS));
     }
 
     // visitLength
@@ -179,8 +178,8 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // providerSpecialty
@@ -189,8 +188,8 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // placeOfService
@@ -199,8 +198,8 @@ public class VisitOccurrenceSqlBuilder<T extends VisitOccurrence> extends Criter
     }
 
     // placeOfServiceCS
-    if (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.placeOfServiceCS.codesetId, "CS.place_of_service_concept_id", criteria.placeOfServiceCS.isExclusion));
+    if (criteria.placeOfServiceCS != null) {
+      whereClauses.add(getCodesetInExpression("CS.place_of_service_concept_id", criteria.placeOfServiceCS));
     }
 
     return whereClauses;

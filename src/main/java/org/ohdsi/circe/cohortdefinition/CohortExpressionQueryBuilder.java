@@ -488,8 +488,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // Race
@@ -503,8 +503,8 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     }
 
     // raceCS
-    if (criteria.raceCS != null && criteria.raceCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.raceCS.codesetId, "P.gender_concept_id", criteria.raceCS.isExclusion));
+    if (criteria.raceCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.raceCS));
     }
 
     // Ethnicity
@@ -514,7 +514,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
 
     //EthnicityCS
     if (criteria.ethnicityCS != null) {
-      whereClauses.add(getCodesetInExpression(criteria.ethnicityCS.codesetId, "P.gender_concept_id", criteria.ethnicityCS.isExclusion));
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.ethnicityCS));
     }
 
     // occurrenceStartDate

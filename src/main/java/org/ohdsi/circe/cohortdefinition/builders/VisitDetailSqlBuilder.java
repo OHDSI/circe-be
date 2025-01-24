@@ -7,6 +7,7 @@ import org.ohdsi.circe.helper.ResourceHelper;
 
 import java.util.*;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 
 public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBuilder<T> {
 
@@ -70,17 +71,17 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
 
     // visitType
-    if (criteria.visitDetailTypeCS != null && criteria.visitDetailTypeCS.codesetId != null) {
+    if (criteria.visitDetailTypeCS != null) {
       selectCols.add("vd.visit_detail_type_concept_id");
     }
 
     // providerSpecialty
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+    if (criteria.providerSpecialtyCS != null) {
       selectCols.add("vd.provider_id");
     }
 
     // placeOfService
-    if (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) {
+    if (criteria.placeOfServiceCS != null) {
       selectCols.add("vd.care_site_id");
     }
 
@@ -135,7 +136,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
 
     // visitType
-    if (criteria.visitDetailTypeCS != null && criteria.visitDetailTypeCS.codesetId != null) {
+    if (criteria.visitDetailTypeCS != null) {
       addWhereClause(whereClauses, criteria.visitDetailTypeCS, "C.visit_detail_type_concept_id");
     }
 
@@ -150,17 +151,17 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
     }
 
     // gender
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
+    if (criteria.genderCS != null) {
       addWhereClause(whereClauses, criteria.genderCS, "P.gender_concept_id");
     }
 
     // providerSpecialty
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
+    if (criteria.providerSpecialtyCS != null) {
       addWhereClause(whereClauses, criteria.providerSpecialtyCS, "PR.specialty_concept_id");
     }
 
     // placeOfService
-    if (criteria.placeOfServiceCS != null && criteria.placeOfServiceCS.codesetId != null) {
+    if (criteria.placeOfServiceCS != null) {
       addWhereClause(whereClauses, criteria.placeOfServiceCS, "CS.place_of_service_concept_id");
     }
 
@@ -175,8 +176,7 @@ public class VisitDetailSqlBuilder<T extends VisitDetail> extends CriteriaSqlBui
   }
 
   private void addWhereClause(List<String> whereClauses, ConceptSetSelection conceptSetSelection, String conceptColumn) {
-    whereClauses.add(String.format("%s %s in (select concept_id from #Codesets where codeset_id = %s)",
-            conceptColumn, (conceptSetSelection.isExclusion ? "not" : ""), conceptSetSelection.codesetId));
+    whereClauses.add(getCodesetInExpression(conceptColumn, conceptSetSelection));
   }
 
   private void addFiltering(List<String> joinClauses, Integer codesetId, String standardConceptColumn) {

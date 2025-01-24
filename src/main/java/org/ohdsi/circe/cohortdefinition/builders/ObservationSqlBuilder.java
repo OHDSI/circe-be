@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
@@ -87,7 +86,7 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
 
     // measurementType
     if ((criteria.observationType != null && criteria.observationType.length > 0) ||
-      (criteria.observationTypeCS != null && criteria.observationTypeCS.codesetId != null)
+      criteria.observationTypeCS != null
     ) {
       selectCols.add("o.observation_type_concept_id");
     }
@@ -99,27 +98,27 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
 
     // valueAsConcept
     if ((criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) ||
-      (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null)
+      criteria.valueAsConceptCS != null
     ) {
       selectCols.add("o.value_as_concept_id");
     }
 
     // qualifier
     if ((criteria.qualifier != null && criteria.qualifier.length > 0) ||
-      (criteria.qualifierCS != null && criteria.qualifierCS.codesetId != null)
+      criteria.qualifierCS != null
     ) {
       selectCols.add("o.qualifier_concept_id");
     }
 
     // unit
     if ((criteria.unit != null && criteria.unit.length > 0) ||
-      (criteria.unitCS != null && criteria.unitCS.codesetId != null)
+      criteria.unitCS != null
     ) {
       selectCols.add("o.unit_concept_id");
     }
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("o.provider_id");
     }
@@ -143,17 +142,17 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     // join to PERSON
     if (criteria.age != null || 
       (criteria.gender != null && criteria.gender.length > 0) || 
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -178,8 +177,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
     
     // conditionTypeCS
-    if (criteria.observationTypeCS != null && criteria.observationTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.observationTypeCS.codesetId, "C.observation_type_concept_id", criteria.observationTypeCS.isExclusion));
+    if (criteria.observationTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.observation_type_concept_id", criteria.observationTypeCS));
     }
 
     // valueAsNumber
@@ -199,8 +198,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // valueAsConceptCS
-    if (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.valueAsConceptCS.codesetId, "C.value_as_concept_id", criteria.valueAsConceptCS.isExclusion));
+    if (criteria.valueAsConceptCS != null) {
+      whereClauses.add(getCodesetInExpression("C.value_as_concept_id", criteria.valueAsConceptCS));
     }
     
     // qualifier
@@ -210,8 +209,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // qualifierCS
-    if (criteria.qualifierCS != null && criteria.qualifierCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.qualifierCS.codesetId, "C.qualifier_concept_id", criteria.qualifierCS.isExclusion));
+    if (criteria.qualifierCS != null) {
+      whereClauses.add(getCodesetInExpression("C.qualifier_concept_id", criteria.qualifierCS));
     }
     
     // unit
@@ -221,8 +220,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // unitCS
-    if (criteria.unitCS != null && criteria.unitCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.unitCS.codesetId, "C.unit_concept_id", criteria.unitCS.isExclusion));
+    if (criteria.unitCS != null) {
+      whereClauses.add(getCodesetInExpression("C.unit_concept_id", criteria.unitCS));
     }
     
     // age
@@ -236,8 +235,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // providerSpecialty
@@ -246,8 +245,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // visitType
@@ -256,8 +255,8 @@ public class ObservationSqlBuilder<T extends Observation> extends CriteriaSqlBui
     }
 
     // visitTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("V.visit_concept_id", criteria.visitTypeCS));
     }
 
     return whereClauses;

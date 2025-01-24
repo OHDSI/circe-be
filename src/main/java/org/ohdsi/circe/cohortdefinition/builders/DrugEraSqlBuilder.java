@@ -105,7 +105,7 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
     if (criteria.ageAtStart != null || 
       criteria.ageAtEnd != null ||
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)) {
+      criteria.genderCS != null) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
 
@@ -158,8 +158,8 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     return whereClauses;

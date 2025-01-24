@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
@@ -85,21 +84,21 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
 
     // procedureType
     if ((criteria.procedureType != null && criteria.procedureType.length > 0) ||
-      (criteria.procedureTypeCS != null && criteria.procedureTypeCS.codesetId != null)
+      criteria.procedureTypeCS != null
     ) {
       selectCols.add("po.procedure_type_concept_id");
     }
 
     // modifier
     if ((criteria.modifier != null && criteria.modifier.length > 0) ||
-      (criteria.modifierCS != null && criteria.modifierCS.codesetId != null)
+      criteria.modifierCS != null
     ) {
       selectCols.add("po.modifier_concept_id");
     }
 
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("po.provider_id");
     }
@@ -123,17 +122,17 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     // join to PERSON
     if (criteria.age != null || 
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -158,8 +157,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     // procedureTypeCS
-    if (criteria.procedureTypeCS != null && criteria.procedureTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.procedureTypeCS.codesetId, "C.procedure_type_concept_id", criteria.procedureTypeCS.isExclusion));
+    if (criteria.procedureTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.procedure_type_concept_id", criteria.procedureTypeCS));
     }
     
     // modifier
@@ -169,8 +168,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     // modifierCS
-    if (criteria.modifierCS != null && criteria.modifierCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.modifierCS.codesetId, "C.modifier_concept_id", criteria.modifierCS.isExclusion));
+    if (criteria.modifierCS != null) {
+      whereClauses.add(getCodesetInExpression("C.modifier_concept_id", criteria.modifierCS));
     }
 
     // quantity
@@ -189,8 +188,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // providerSpecialty
@@ -199,8 +198,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // visitType
@@ -209,8 +208,8 @@ public class ProcedureOccurrenceSqlBuilder<T extends ProcedureOccurrence> extend
     }
 
     // visitTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("V.visit_concept_id", criteria.visitTypeCS));
     }
 
     return whereClauses;

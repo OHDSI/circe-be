@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
@@ -91,7 +90,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
     // drugType
     if ((criteria.drugType != null && criteria.drugType.length > 0) ||
-      (criteria.drugTypeCS != null && criteria.drugTypeCS.codesetId != null)
+      criteria.drugTypeCS != null
     ) {
       selectCols.add("de.drug_type_concept_id");
     }
@@ -103,8 +102,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
     // routeConcept
     if ((criteria.routeConcept != null && criteria.routeConcept.length > 0) ||
-      (criteria.routeConceptCS != null && criteria.routeConceptCS.codesetId != null)
-
+      criteria.routeConceptCS != null
     ) {
       selectCols.add("de.route_concept_id");
     }
@@ -116,7 +114,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
     // doseUnit
     if ((criteria.doseUnit != null && criteria.doseUnit.length > 0) ||
-      (criteria.doseUnitCS != null && criteria.doseUnitCS.codesetId != null)
+      criteria.doseUnitCS != null
     ) {
       selectCols.add("de.dose_unit_concept_id");
     }
@@ -128,7 +126,7 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
 
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("de.provider_id");
     }
@@ -154,18 +152,18 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     // join to PERSON
     if (criteria.age != null || 
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
 
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -195,8 +193,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
     // conditionTypeCS
-    if (criteria.drugTypeCS != null && criteria.drugTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.drugTypeCS.codesetId, "C.drug_type_concept_id", criteria.drugTypeCS.isExclusion));
+    if (criteria.drugTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.drug_type_concept_id", criteria.drugTypeCS));
     }
     // Stop Reason
     if (criteria.stopReason != null) {
@@ -224,8 +222,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
     // routeConceptCS
-    if (criteria.routeConceptCS != null && criteria.routeConceptCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.routeConceptCS.codesetId, "C.route_concept_id", criteria.routeConceptCS.isExclusion));
+    if (criteria.routeConceptCS != null) {
+      whereClauses.add(getCodesetInExpression("C.route_concept_id", criteria.routeConceptCS));
     }
 
     // effectiveDrugDose
@@ -239,8 +237,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
     // doseUnitCS
-    if (criteria.doseUnitCS != null && criteria.doseUnitCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.doseUnitCS.codesetId, "C.dose_unit_concept_id", criteria.doseUnitCS.isExclusion));
+    if (criteria.doseUnitCS != null) {
+      whereClauses.add(getCodesetInExpression("C.dose_unit_concept_id", criteria.doseUnitCS));
     }
 
     // LotNumber
@@ -259,8 +257,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
         // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
 // providerSpecialty
@@ -269,8 +267,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // visitType
@@ -279,8 +277,8 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     }
 
     // visitTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("V.visit_concept_id", criteria.visitTypeCS));
     }
 
     return whereClauses;

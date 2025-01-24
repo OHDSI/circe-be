@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
@@ -77,7 +76,7 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     // join to PERSON
     if (criteria.age != null ||
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
@@ -101,8 +100,8 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     }
 
     // specimenTypeCS
-    if (criteria.specimenTypeCS != null && criteria.specimenTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.specimenTypeCS.codesetId, "C.specimen_type_concept_id", criteria.specimenTypeCS.isExclusion));
+    if (criteria.specimenTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.specimen_type_concept_id", criteria.specimenTypeCS));
     }
 
     // quantity
@@ -117,8 +116,8 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     }
 
     // unitCS
-    if (criteria.unitCS != null && criteria.unitCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.unitCS.codesetId, "C.unit_concept_id", criteria.unitCS.isExclusion));
+    if (criteria.unitCS != null) {
+      whereClauses.add(getCodesetInExpression("C.unit_concept_id", criteria.unitCS));
     }
 
     // anatomicSite
@@ -128,8 +127,8 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     }
 
     // anatomicSiteCS
-    if (criteria.anatomicSiteCS != null && criteria.anatomicSiteCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.anatomicSiteCS.codesetId, "C.anatomic_site_concept_id", criteria.anatomicSiteCS.isExclusion));
+    if (criteria.anatomicSiteCS != null) {
+      whereClauses.add(getCodesetInExpression("C.anatomic_site_concept_id", criteria.anatomicSiteCS));
     }
 
     // diseaseStatus
@@ -139,8 +138,8 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     }
 
     // diseaseStatusCS
-    if (criteria.diseaseStatusCS != null && criteria.diseaseStatusCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.diseaseStatusCS.codesetId, "C.disease_status_concept_id", criteria.diseaseStatusCS.isExclusion));
+    if (criteria.diseaseStatusCS != null) {
+      whereClauses.add(getCodesetInExpression("C.disease_status_concept_id", criteria.diseaseStatusCS));
     }
 
     // sourceId
@@ -159,8 +158,8 @@ public class SpecimenSqlBuilder<T extends Specimen> extends CriteriaSqlBuilder<T
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     return whereClauses;

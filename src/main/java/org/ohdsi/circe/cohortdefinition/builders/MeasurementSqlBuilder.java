@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 
@@ -91,35 +90,35 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
 
     // measurementType
     if ((criteria.measurementType != null && criteria.measurementType.length > 0) ||
-      (criteria.measurementTypeCS != null && criteria.measurementTypeCS.codesetId != null)
+      criteria.measurementTypeCS != null
     ) {
       selectCols.add("m.measurement_type_concept_id");
     }
 
     // operator
     if ((criteria.operator != null && criteria.operator.length > 0) ||
-      (criteria.operatorCS != null && criteria.operatorCS.codesetId != null)
+      criteria.operatorCS != null
     ) {
       selectCols.add("m.operator_concept_id");
     }
 
     // valueAsConcept
     if ((criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) ||
-      (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null)
+      criteria.valueAsConceptCS != null
     ) {
       selectCols.add("m.value_as_concept_id");
     }
 
     // unit
     if ((criteria.unit != null && criteria.unit.length > 0) ||
-      (criteria.unitCS != null && criteria.unitCS.codesetId != null)
+      criteria.unitCS != null
     ) {
       selectCols.add("m.unit_concept_id");
     }
 
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("m.provider_id");
     }
@@ -143,17 +142,17 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     // join to PERSON
     if (criteria.age != null || 
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -178,8 +177,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // measurementTypeCS
-    if (criteria.measurementTypeCS != null && criteria.measurementTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.measurementTypeCS.codesetId, "C.measurement_type_concept_id", criteria.measurementTypeCS.isExclusion));
+    if (criteria.measurementTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.measurement_type_concept_id", criteria.measurementTypeCS));
     }
 
     // operator
@@ -189,8 +188,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // operatorCS
-    if (criteria.operatorCS != null && criteria.operatorCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.operatorCS.codesetId, "C.operator_concept_id", criteria.operatorCS.isExclusion));
+    if (criteria.operatorCS != null) {
+      whereClauses.add(getCodesetInExpression("C.operator_concept_id", criteria.operatorCS));
     }
 
     // valueAsNumber
@@ -205,8 +204,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // valueAsConceptCS
-    if (criteria.valueAsConceptCS != null && criteria.valueAsConceptCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.valueAsConceptCS.codesetId, "C.value_as_concept_id", criteria.valueAsConceptCS.isExclusion));
+    if (criteria.valueAsConceptCS != null) {
+      whereClauses.add(getCodesetInExpression("C.value_as_concept_id", criteria.valueAsConceptCS));
     }
     
     // unit
@@ -216,8 +215,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // unitCS
-    if (criteria.unitCS != null && criteria.unitCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.unitCS.codesetId, "C.unit_concept_id", criteria.unitCS.isExclusion));
+    if (criteria.unitCS != null) {
+      whereClauses.add(getCodesetInExpression("C.unit_concept_id", criteria.unitCS));
     }
     
     // rangeLow
@@ -256,8 +255,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // providerSpecialty
@@ -266,8 +265,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // visitType
@@ -276,8 +275,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     }
 
     // visitTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("V.visit_concept_id", criteria.visitTypeCS));
     }
 
     return whereClauses;
