@@ -150,8 +150,8 @@ public class ObservationPeriodSqlBuilder<T extends ObservationPeriod> extends Cr
 
     
     // periodTypeCS
-    if (criteria.periodTypeCS != null && criteria.periodTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.periodTypeCS.codesetId, "C.period_type_concept_id", criteria.periodTypeCS.isExclusion));
+    if (criteria.periodTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.period_type_concept_id", criteria.periodTypeCS));
     }
 
     // periodLength

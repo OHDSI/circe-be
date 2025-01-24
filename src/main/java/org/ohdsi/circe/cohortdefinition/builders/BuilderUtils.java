@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.ohdsi.circe.cohortdefinition.ConceptSetSelection;
 
 import org.ohdsi.circe.helper.ResourceHelper;
 
@@ -18,6 +19,8 @@ public abstract class BuilderUtils {
 
   private final static String CODESET_JOIN_TEMPLATE = "JOIN #Codesets %s on (%s = %s.concept_id and %s.codeset_id = %d)";
   private final static String CODESET_IN_TEMPLATE = "%s %s in (select concept_id from #Codesets where codeset_id = %d)";
+  private final static String CODESET_NULL_TEMPLATE = "%s is %s null";
+  
   private final static String DATE_ADJUSTMENT_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/dateAdjustment.sql");
   ;
     private final static String STANARD_ALIAS = "cs";
@@ -52,8 +55,12 @@ public abstract class BuilderUtils {
     return joinExpression;
   }
 
-  public static String getCodesetInExpression(Integer codesetId, String conceptColumn, boolean isNegated) {
-    return String.format(CODESET_IN_TEMPLATE, isNegated ? "not":"", conceptColumn, codesetId);
+  public static String getCodesetInExpression(String conceptColumn, ConceptSetSelection csSelection) {
+    if (csSelection.codesetId != null) {
+      return String.format(CODESET_IN_TEMPLATE, conceptColumn, csSelection.isExclusion ? "not":"", csSelection.codesetId);
+    } else {
+      return String.format(CODESET_NULL_TEMPLATE, conceptColumn, csSelection.isExclusion ? "" : "not");
+    }
   }
 
   public static String getOperator(String op) {

@@ -83,7 +83,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     ArrayList<String> selectCols = new ArrayList<>(DEFAULT_SELECT_COLUMNS);
     // Device Type
     if ((criteria.deviceType != null && criteria.deviceType.length > 0) ||
-      (criteria.deviceTypeCS != null && criteria.deviceTypeCS.codesetId != null)
+      criteria.deviceTypeCS != null
     ) {
       selectCols.add("de.device_type_concept_id");
     }
@@ -95,7 +95,7 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
 
     // providerSpecialty
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       selectCols.add("de.provider_id");
     }
@@ -119,17 +119,17 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     // join to PERSON
     if (criteria.age != null || 
       (criteria.gender != null && criteria.gender.length > 0) ||
-      (criteria.genderCS != null && criteria.genderCS.codesetId != null)
+      criteria.genderCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id");
     }
     if ((criteria.visitType != null && criteria.visitType.length > 0) ||
-      (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null)
+      criteria.visitTypeCS != null
     ) {
       joinClauses.add("JOIN @cdm_database_schema.VISIT_OCCURRENCE V on C.visit_occurrence_id = V.visit_occurrence_id and C.person_id = V.person_id");
     }
     if ((criteria.providerSpecialty != null && criteria.providerSpecialty.length > 0) ||
-      (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null)
+      criteria.providerSpecialtyCS != null
     ) {
       joinClauses.add("LEFT JOIN @cdm_database_schema.PROVIDER PR on C.provider_id = PR.provider_id");
     }
@@ -159,8 +159,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     }
 
     // deviceTypeCS
-    if (criteria.deviceTypeCS != null && criteria.deviceTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.deviceTypeCS.codesetId, "C.device_type_concept_id", criteria.deviceTypeCS.isExclusion));
+    if (criteria.deviceTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("C.device_type_concept_id", criteria.deviceTypeCS));
     }
 
     // uniqueDeviceId
@@ -184,8 +184,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     }
 
     // genderCS
-    if (criteria.genderCS != null && criteria.genderCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.genderCS.codesetId, "P.gender_concept_id", criteria.genderCS.isExclusion));
+    if (criteria.genderCS != null) {
+      whereClauses.add(getCodesetInExpression("P.gender_concept_id", criteria.genderCS));
     }
 
     // providerSpecialty
@@ -194,8 +194,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     }
 
     // providerSpecialtyCS
-    if (criteria.providerSpecialtyCS != null && criteria.providerSpecialtyCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.providerSpecialtyCS.codesetId, "PR.specialty_concept_id", criteria.providerSpecialtyCS.isExclusion));
+    if (criteria.providerSpecialtyCS != null) {
+      whereClauses.add(getCodesetInExpression("PR.specialty_concept_id", criteria.providerSpecialtyCS));
     }
 
     // visitType
@@ -204,8 +204,8 @@ public class DeviceExposureSqlBuilder<T extends DeviceExposure> extends Criteria
     }
 
     // visitTypeCS
-    if (criteria.visitTypeCS != null && criteria.visitTypeCS.codesetId != null) {
-      whereClauses.add(getCodesetInExpression(criteria.visitTypeCS.codesetId, "V.visit_concept_id", criteria.visitTypeCS.isExclusion));
+    if (criteria.visitTypeCS != null) {
+      whereClauses.add(getCodesetInExpression("V.visit_concept_id", criteria.visitTypeCS));
     }
 
     return whereClauses;
