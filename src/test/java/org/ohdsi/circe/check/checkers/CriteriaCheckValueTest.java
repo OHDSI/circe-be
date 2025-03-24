@@ -58,7 +58,7 @@ public class CriteriaCheckValueTest {
   private static final int CONCEPT_PRIMARY_WARNING_COUNT = 61;
   private static final int TEXT_PRIMARY_WARNING_COUNT = 5;
 
-  private static final int RANGE_ADDITIONAL_WARNING_COUNT = 34;
+  private static final int RANGE_ADDITIONAL_WARNING_COUNT = 33;
   private static final int CONCEPT_ADDITIONAL_WARNING_COUNT = 23;
   private static final int TEXT_ADDITIONAL_WARNING_COUNT = 2;
 
