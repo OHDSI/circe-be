@@ -1038,6 +1038,9 @@
     "CollapseType": "ERA",
     "EraPad": 0
   },
-  "CensorWindow": {},
+  "CensorWindow": {
+    "StartDate": "2025-03-16",
+    "EndDate": "2025-03-18"
+  },
   "cdmVersionRange": ">=5.0.0"
 }
