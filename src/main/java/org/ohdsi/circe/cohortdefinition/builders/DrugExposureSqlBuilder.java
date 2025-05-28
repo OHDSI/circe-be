@@ -107,11 +107,6 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
       selectCols.add("de.route_concept_id");
     }
 
-    // effectiveDrugDose
-    if (criteria.effectiveDrugDose != null) {
-      selectCols.add("de.effective_drug_dose");
-    }
-
     // doseUnit
     if ((criteria.doseUnit != null && criteria.doseUnit.length > 0) ||
       criteria.doseUnitCS != null
@@ -224,11 +219,6 @@ public class DrugExposureSqlBuilder<T extends DrugExposure> extends CriteriaSqlB
     // routeConceptCS
     if (criteria.routeConceptCS != null) {
       whereClauses.add(getCodesetInExpression("C.route_concept_id", criteria.routeConceptCS));
-    }
-
-    // effectiveDrugDose
-    if (criteria.effectiveDrugDose != null) {
-      whereClauses.add(buildNumericRangeClause("C.effective_drug_dose", criteria.effectiveDrugDose, ".4f"));
     }
 
     // doseUnit
