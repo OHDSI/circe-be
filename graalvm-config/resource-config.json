@@ -1,8 +1,8 @@
 {
   "resources": [
-    { "glob": "**/*.json" },
-    { "glob": "**/*.properties" },
-    { "glob": "**/*.sql" },
-    { "glob": "**/*.ftl" }
+    { "pattern": "**/*.json" },
+    { "pattern": "**/*.properties" },
+    { "pattern": "**/*.sql" },
+    { "pattern": "**/*.ftl" }
   ]
 }
