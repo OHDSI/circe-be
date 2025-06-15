@@ -1,14 +1,8 @@
-[
-  {
-    "glob": "**/*.json"
-  },
-  {
-    "glob": "**/*.properties"
-  },
-  {
-    "glob": "**/*.sql"
-  },
-  {
-    "glob": "**/*.ftl"
-  }
-]
+{
+  "resources": [
+    { "glob": "**/*.json" },
+    { "glob": "**/*.properties" },
+    { "glob": "**/*.sql" },
+    { "glob": "**/*.ftl" }
+  ]
+}
