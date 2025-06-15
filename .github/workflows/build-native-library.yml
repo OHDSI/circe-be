@@ -10,25 +10,10 @@ on:
         type: choice
         options:
           - linux-x86_64
-          - macos-x86_64
-          - macos-aarch64
-          - windows-x86_64
 
 jobs:
   build-native-library:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - target_platform: linux-x86_64
-            os: ubuntu-latest
-          - target_platform: macos-x86_64
-            os: macos-13
-          - target_platform: macos-aarch64
-            os: macos-latest
-          - target_platform: windows-x86_64
-            os: windows-latest
-    if: ${{ matrix.target_platform == github.event.inputs.target_platform }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
