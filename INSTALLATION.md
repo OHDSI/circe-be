@@ -109,12 +109,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### For Git Dependency Method:
 - **Rust 1.70+** with Cargo
-- **Java 17+** (for runtime functionality)
 - **Internet connection** (for initial download only)
+- **No Java or Maven required** (native implementation included)
 
 ### For Release Package Method:
 - **Rust 1.70+** with Cargo
-- **Java 17+** (for runtime functionality)
+- **No Java or Maven required** (native implementation included)
 
 ## Build From Source (Development)
 
@@ -125,23 +125,17 @@ If you want to contribute or modify the library:
 git clone https://github.com/p-hoffmann/circe-be.git
 cd circe-be
 
-# Build Java components
-mvn package -DskipTests
-
-# Build Rust library
+# Build Rust library (includes native implementation)
 cargo build --release
 
 # Run tests
 cargo test
 ```
 
-## Troubleshooting
-
-### "circe-cli.jar not found"
-This means the Java components haven't been built yet. Run:
-```bash
-mvn package -DskipTests
+**Note:** No Java build step is required. The library includes a native implementation.
 ```
+
+## Troubleshooting
 
 ### Network Issues with Git Dependencies
 If your organization blocks Git access, use the release package method instead.

@@ -1,7 +1,67 @@
 use std::process::Command;
+use std::path::PathBuf;
 
 #[cfg(test)]
 mod tests;
+
+/// Get the path to the native executable
+/// This function looks for the native executable in the expected locations
+fn get_native_executable_path() -> Result<PathBuf, CirceError> {
+    let native_binary_name = if cfg!(target_os = "windows") { "circe-cli-native.exe" } else { "circe-cli-native" };
+    
+    // First, try to find it in the same directory as the current executable (for bundled distribution)
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            let native_path = exe_dir.join(native_binary_name);
+            if native_path.exists() {
+                return Ok(native_path);
+            }
+        }
+    }
+    
+    // Next, try the native-binaries directory (for development/packaging)
+    if let Ok(current_dir) = std::env::current_dir() {
+        // Try linux-x86_64 directory first (most common)
+        let native_linux_path = current_dir.join("native-binaries").join("linux-x86_64").join(native_binary_name);
+        if native_linux_path.exists() {
+            return Ok(native_linux_path);
+        }
+        
+        // Try to find any platform-specific directory
+        if let Ok(native_dir) = std::fs::read_dir(current_dir.join("native-binaries")) {
+            for entry in native_dir.flatten() {
+                if entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false) {
+                    let platform_native_path = entry.path().join(native_binary_name);
+                    if platform_native_path.exists() {
+                        return Ok(platform_native_path);
+                    }
+                }
+            }
+        }
+    }
+    
+    // Next, try the OUT_DIR from build (for cargo build/install)
+    if let Ok(out_dir) = std::env::var("OUT_DIR") {
+        let out_native_path = PathBuf::from(out_dir).join(native_binary_name);
+        if out_native_path.exists() {
+            return Ok(out_native_path);
+        }
+    }
+    
+    // Finally, try PATH (if installed globally)
+    if let Ok(output) = Command::new("which").arg(native_binary_name).output() {
+        if output.status.success() {
+            let path_output = String::from_utf8_lossy(&output.stdout);
+            let path_str = path_output.trim();
+            if !path_str.is_empty() {
+                return Ok(PathBuf::from(path_str));
+            }
+        }
+    }
+    
+    // Return a default path for error reporting
+    Ok(PathBuf::from(native_binary_name))
+}
 
 /// Error type for Circe operations
 #[derive(Debug)]
@@ -81,22 +141,29 @@ impl BuildExpressionQueryOptions {
     }
 }
 
-/// Initialize the Java environment (placeholder for now)
+/// Initialize the Circe environment using the native executable
 pub fn init_jvm() -> Result<(), CirceError> {
-    // Check if the JAR file exists
-    let jar_path = std::env::current_dir()
-        .map_err(|e| CirceError::InitializationError(format!("Cannot get current directory: {}", e)))?
-        .join("target")
-        .join("circe-cli.jar");
+    // Check if the native executable exists
+    let native_path = get_native_executable_path()?;
 
-    if !jar_path.exists() {
+    if !native_path.exists() {
         return Err(CirceError::InitializationError(
-            "circe-cli.jar not found in target/ directory. Please run 'mvn package' first.".to_string()
+            format!("circe-cli-native not found at {}. Native library may not be properly installed.", native_path.display())
         ));
     }
 
-    // For now, we just verify the JAR exists
-    // In a full implementation with JNI, this would initialize the JVM
+    // Test the native executable by running version command
+    let output = Command::new(&native_path)
+        .arg("version")
+        .output()
+        .map_err(|e| CirceError::InitializationError(format!("Failed to execute native library: {}", e)))?;
+
+    if !output.status.success() {
+        return Err(CirceError::InitializationError(
+            "Native library failed to execute properly".to_string()
+        ));
+    }
+
     Ok(())
 }
 
@@ -106,35 +173,21 @@ pub fn init_jvm() -> Result<(), CirceError> {
 /// In a full implementation with JNI dependencies available, this would directly
 /// call the Java CohortExpressionQueryBuilder.buildExpressionQuery method.
 pub fn build_expression_query(expression_json: &str, options: BuildExpressionQueryOptions) -> Result<String, CirceError> {
-    // For now, we use a hybrid approach: call the Java CLI but prepare for JNI
-    let jar_path = std::env::current_dir()
-        .map_err(|e| CirceError::InitializationError(format!("Cannot get current directory: {}", e)))?
-        .join("target")
-        .join("circe-cli.jar");
+    // Use the native executable approach
+    let native_path = get_native_executable_path()?;
 
-    if !jar_path.exists() {
+    if !native_path.exists() {
         return Err(CirceError::InitializationError(
-            "circe-cli.jar not found. Please run 'mvn package' first.".to_string()
+            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
         ));
     }
 
-    // Create a temporary file with the expression JSON
-    let temp_dir = std::env::temp_dir();
-    let temp_file = temp_dir.join(format!("circe_expr_{}.json", std::process::id()));
-    std::fs::write(&temp_file, expression_json)
-        .map_err(|e| CirceError::ProcessError(format!("Failed to write temp file: {}", e)))?;
-
     // For demonstration, we'll validate the cohort (the closest thing our CLI can do)
-    let output = Command::new("java")
-        .arg("-jar")
-        .arg(&jar_path)
+    let output = Command::new(&native_path)
         .arg("validate-cohort")
-        .arg(temp_file.to_string_lossy().as_ref())
+        .arg(expression_json)
         .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute Java command: {}", e)))?;
-
-    // Clean up temp file
-    let _ = std::fs::remove_file(&temp_file);
+        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -228,35 +281,21 @@ pub fn build_and_render_cohort_sql(
     render_and_translate_sql(&cohort_sql, target_dialect)
 }
 
-/// Validate a cohort definition JSON using the Java CLI
+/// Validate a cohort definition JSON using the native CLI
 pub fn validate_cohort_expression(expression_json: &str) -> Result<String, CirceError> {
-    let jar_path = std::env::current_dir()
-        .map_err(|e| CirceError::InitializationError(format!("Cannot get current directory: {}", e)))?
-        .join("target")
-        .join("circe-cli.jar");
+    let native_path = get_native_executable_path()?;
 
-    if !jar_path.exists() {
+    if !native_path.exists() {
         return Err(CirceError::InitializationError(
-            "circe-cli.jar not found. Please run 'mvn package' first.".to_string()
+            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
         ));
     }
 
-    // Create a temporary file with the expression JSON
-    let temp_dir = std::env::temp_dir();
-    let temp_file = temp_dir.join(format!("circe_expr_{}.json", std::process::id()));
-    std::fs::write(&temp_file, expression_json)
-        .map_err(|e| CirceError::ProcessError(format!("Failed to write temp file: {}", e)))?;
-
-    let output = Command::new("java")
-        .arg("-jar")
-        .arg(&jar_path)
+    let output = Command::new(&native_path)
         .arg("validate-cohort")
-        .arg(temp_file.to_string_lossy().as_ref())
+        .arg(expression_json)
         .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute Java command: {}", e)))?;
-
-    // Clean up temp file
-    let _ = std::fs::remove_file(&temp_file);
+        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -268,33 +307,19 @@ pub fn validate_cohort_expression(expression_json: &str) -> Result<String, Circe
 
 /// Validate a concept set expression JSON using the Java CLI  
 pub fn validate_concept_set_expression(expression_json: &str) -> Result<String, CirceError> {
-    let jar_path = std::env::current_dir()
-        .map_err(|e| CirceError::InitializationError(format!("Cannot get current directory: {}", e)))?
-        .join("target")
-        .join("circe-cli.jar");
+    let native_path = get_native_executable_path()?;
 
-    if !jar_path.exists() {
+    if !native_path.exists() {
         return Err(CirceError::InitializationError(
-            "circe-cli.jar not found. Please run 'mvn package' first.".to_string()
+            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
         ));
     }
 
-    // Create a temporary file with the expression JSON
-    let temp_dir = std::env::temp_dir();
-    let temp_file = temp_dir.join(format!("circe_conceptset_{}.json", std::process::id()));
-    std::fs::write(&temp_file, expression_json)
-        .map_err(|e| CirceError::ProcessError(format!("Failed to write temp file: {}", e)))?;
-
-    let output = Command::new("java")
-        .arg("-jar")
-        .arg(&jar_path)
+    let output = Command::new(&native_path)
         .arg("validate-conceptset")
-        .arg(temp_file.to_string_lossy().as_ref())
+        .arg(expression_json)
         .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute Java command: {}", e)))?;
-
-    // Clean up temp file
-    let _ = std::fs::remove_file(&temp_file);
+        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);

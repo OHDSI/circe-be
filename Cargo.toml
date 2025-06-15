@@ -9,6 +9,15 @@ description = "A Rust wrapper for the OHDSI Circe library for building OMOP CDM 
 keywords = ["omop", "cohort", "sql", "healthcare", "ohdsi"]
 categories = ["database", "api-bindings"]
 license = "Apache-2.0"
+build = "build.rs"
+include = [
+    "src/**/*",
+    "build.rs",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE",
+    "native-binaries/**/*"
+]
 
 [lib]
 name = "circe"

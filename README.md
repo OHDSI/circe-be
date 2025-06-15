@@ -230,9 +230,8 @@ serde_json = "1.0"
 
 ### Requirements
 
-- **Java 17+** - The library requires Java to run the underlying Circe components
-- **Maven** - For building the Java components (`mvn package`)
 - **Rust 1.70+** - For building the Rust wrapper
+- **No Java or Maven required** - The library now includes a native implementation
 
 ### Building from Source
 
@@ -241,15 +240,14 @@ serde_json = "1.0"
 git clone https://github.com/p-hoffmann/circe-be.git
 cd circe-be
 
-# Build Java components
-mvn package -DskipTests
-
-# Build Rust library
+# Build Rust library (includes native implementation)
 cargo build --release
 
 # Run tests
 cargo test
 ```
+
+**Note:** No Java or Maven build is required. The library includes a native implementation that provides all necessary functionality.
 
 License
 =======

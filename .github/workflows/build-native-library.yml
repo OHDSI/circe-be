@@ -1,0 +1,211 @@
+name: Build Native Library
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_platform:
+        description: 'Target platform to build for'
+        required: true
+        default: 'linux-x86_64'
+        type: choice
+        options:
+          - linux-x86_64
+          - macos-x86_64
+          - macos-aarch64
+          - windows-x86_64
+
+jobs:
+  build-native-library:
+    runs-on: ${{ 
+      github.event.inputs.target_platform == 'linux-x86_64' && 'ubuntu-latest' ||
+      github.event.inputs.target_platform == 'macos-x86_64' && 'macos-13' ||
+      github.event.inputs.target_platform == 'macos-aarch64' && 'macos-latest' ||
+      github.event.inputs.target_platform == 'windows-x86_64' && 'windows-latest' ||
+      'ubuntu-latest'
+    }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        version: 'latest'
+        java-version: '17'
+        components: 'native-image'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Fix pom.xml repository configuration (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        # Fix invalid XML tags in repository configuration
+        python3 -c "
+        import re
+        with open('pom.xml', 'r') as f:
+            content = f.read()
+        # Fix the invalid n tags
+        content = re.sub(r'<n>([^<]+)</n>', r'<n>\1</n>', content)
+        # Remove the redundant central plugin repository
+        content = re.sub(r'\s*<pluginRepository>\s*<id>central</id>.*?</pluginRepository>\s*', '', content, flags=re.DOTALL)
+        with open('pom.xml', 'w') as f:
+            f.write(content)
+        "
+
+    - name: Fix pom.xml repository configuration (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        # Fix invalid XML tags in repository configuration
+        python -c "
+        import re
+        with open('pom.xml', 'r') as f:
+            content = f.read()
+        # Fix the invalid n tags
+        content = re.sub(r'<n>([^<]+)</n>', r'<n>\1</n>', content)
+        # Remove the redundant central plugin repository
+        content = re.sub(r'\s*<pluginRepository>\s*<id>central</id>.*?</pluginRepository>\s*', '', content, flags=re.DOTALL)
+        with open('pom.xml', 'w') as f:
+            f.write(content)
+        "
+
+    - name: Configure Maven to allow HTTP repositories (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p ~/.m2
+        cat > ~/.m2/settings.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" 
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+                  http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <mirrors>
+            <mirror>
+              <id>maven-default-http-blocker</id>
+              <n>Pseudo repository to mirror external repositories initially using HTTP.</n>
+              <url>http://0.0.0.0/</url>
+              <mirrorOf>external:http:*,!ohdsi</mirrorOf>
+            </mirror>
+          </mirrors>
+        </settings>
+        EOF
+
+    - name: Configure Maven to allow HTTP repositories (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        if (-not (Test-Path "$env:USERPROFILE\.m2")) {
+          New-Item -ItemType Directory -Path "$env:USERPROFILE\.m2" -Force
+        }
+        @"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" 
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+                  http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <mirrors>
+            <mirror>
+              <id>maven-default-http-blocker</id>
+              <n>Pseudo repository to mirror external repositories initially using HTTP.</n>
+              <url>http://0.0.0.0/</url>
+              <mirrorOf>external:http:*,!ohdsi</mirrorOf>
+            </mirror>
+          </mirrors>
+        </settings>
+        "@ | Out-File -FilePath "$env:USERPROFILE\.m2\settings.xml" -Encoding UTF8
+
+    - name: Build Maven project
+      run: |
+        echo "Building Maven project..."
+        timeout 10m mvn clean package -DskipTests -q || {
+          echo "Maven build with dependencies failed, trying offline compile..."
+          timeout 5m mvn compile -q -o || {
+            echo "Maven compile failed, but this may be expected due to dependency issues"
+            exit 1
+          }
+        }
+
+    - name: Build native image (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        echo "Building native image..."
+        chmod +x build-graalvm.sh
+        ./build-graalvm.sh || {
+          echo "Native image build failed"
+          echo "Checking if JAR file exists..."
+          ls -la target/ || echo "No target directory"
+          exit 1
+        }
+
+    - name: Build native image (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        echo "Building native image..."
+        # Run the GraalVM native-image build directly on Windows
+        if (-not (Test-Path "target\circe-cli.jar")) {
+          Write-Error "JAR file not found at target\circe-cli.jar"
+          Get-ChildItem target\ -ErrorAction SilentlyContinue
+          exit 1
+        }
+        
+        native-image `
+          --no-fallback `
+          --enable-all-security-services `
+          --allow-incomplete-classpath `
+          --report-unsupported-elements-at-runtime `
+          -H:+ReportExceptionStackTraces `
+          -H:ConfigurationFileDirectories="graalvm-config" `
+          -jar "target\circe-cli.jar" `
+          "target\circe-cli-native"
+
+    - name: Verify native binary
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ls -la target/circe-cli-native.exe
+          ./target/circe-cli-native.exe version
+        else
+          ls -la target/circe-cli-native
+          ./target/circe-cli-native version
+        fi
+
+    - name: Prepare native binary directory
+      run: |
+        mkdir -p native-binaries/${{ github.event.inputs.target_platform }}
+
+    - name: Copy native binary to platform directory
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          cp target/circe-cli-native.exe native-binaries/${{ github.event.inputs.target_platform }}/
+        else
+          cp target/circe-cli-native native-binaries/${{ github.event.inputs.target_platform }}/
+        fi
+
+    - name: Configure git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Commit native binary
+      env:
+        BINARY_NAME: ${{ runner.os == 'Windows' && 'circe-cli-native.exe' || 'circe-cli-native' }}
+      run: |
+        git add native-binaries/${{ github.event.inputs.target_platform }}/${BINARY_NAME}
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update native binary for ${{ github.event.inputs.target_platform }}"
+          git push
+        fi
+
+    - name: Upload native binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: circe-cli-native-${{ github.event.inputs.target_platform }}
+        path: native-binaries/${{ github.event.inputs.target_platform }}/${{ runner.os == 'Windows' && 'circe-cli-native.exe' || 'circe-cli-native' }}
+        retention-days: 30

@@ -93,3 +93,24 @@ If the build fails:
 2. Ensure the JAR file was built successfully
 3. Review the error messages for missing reflection configuration
 4. Add additional configuration to `graalvm-config/` as needed
+
+## GitHub Actions Automated Build
+
+A GitHub Actions workflow is available to automatically build and commit native binaries to the repository:
+
+1. **Manual Trigger**: Go to the "Actions" tab in the GitHub repository
+2. **Select Workflow**: Choose "Build Native Library"
+3. **Run Workflow**: Select the target platform and run the workflow
+4. **Available Platforms**:
+   - `linux-x86_64` (Ubuntu)
+   - `macos-x86_64` (Intel Mac)
+   - `macos-aarch64` (Apple Silicon Mac)
+   - `windows-x86_64` (Windows)
+
+The workflow will:
+- Build the Java project with Maven
+- Create a GraalVM native image
+- Commit the binary to `native-binaries/{platform}/`
+- Upload the binary as a workflow artifact
+
+This ensures that the latest native binaries are always available in the repository for the Rust wrapper to use.
