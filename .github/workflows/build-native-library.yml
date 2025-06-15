@@ -16,14 +16,19 @@ on:
 
 jobs:
   build-native-library:
-    runs-on: ${{ 
-      github.event.inputs.target_platform == 'linux-x86_64' && 'ubuntu-latest' ||
-      github.event.inputs.target_platform == 'macos-x86_64' && 'macos-13' ||
-      github.event.inputs.target_platform == 'macos-aarch64' && 'macos-latest' ||
-      github.event.inputs.target_platform == 'windows-x86_64' && 'windows-latest' ||
-      'ubuntu-latest'
-    }}
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - target_platform: linux-x86_64
+            os: ubuntu-latest
+          - target_platform: macos-x86_64
+            os: macos-13
+          - target_platform: macos-aarch64
+            os: macos-latest
+          - target_platform: windows-x86_64
+            os: windows-latest
+    if: ${{ matrix.target_platform == github.event.inputs.target_platform }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
