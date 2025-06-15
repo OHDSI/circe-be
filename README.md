@@ -228,6 +228,22 @@ serde_json = "1.0"
 
 **Note:** With Method 1 (Git dependency), Cargo automatically handles downloading and building the library. You don't need to manually build anything!
 
+### Automatic Native Binary Download
+
+The library now automatically downloads native binaries from the GitHub repository when they're not available locally. This feature:
+
+- ✅ **Reduces repository size** - No need to store large binaries in your project
+- ✅ **Always gets latest binaries** - Downloads from the repository during build
+- ✅ **Smart caching** - Caches downloaded binaries to avoid repeated downloads
+- ✅ **Fallback support** - Tries multiple sources and gracefully handles failures
+- ✅ **Cross-platform** - Works on Linux, macOS, and Windows
+
+When you build the project, it will:
+1. First try to use local native binaries (if available)
+2. If not found, automatically download from GitHub repository 
+3. Cache the downloaded binary for future builds
+4. Fall back to system PATH if download fails
+
 ### Requirements
 
 - **Rust 1.70+** - For building the Rust wrapper

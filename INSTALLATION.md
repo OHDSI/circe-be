@@ -16,6 +16,7 @@ circe = { git = "https://github.com/p-hoffmann/circe-be.git", package = "circe-r
 - ✅ Always gets the latest version
 - ✅ Cargo handles everything automatically
 - ✅ Works with `cargo build`, `cargo run`, etc.
+- ✅ **New**: Automatically downloads native binaries from GitHub if needed
 
 ## Option 2: Release Package (For Offline/Controlled Environments)
 
@@ -111,10 +112,36 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **Rust 1.70+** with Cargo
 - **Internet connection** (for initial download only)
 - **No Java or Maven required** (native implementation included)
+- **curl or wget** (for automatic binary download if needed)
 
 ### For Release Package Method:
 - **Rust 1.70+** with Cargo
 - **No Java or Maven required** (native implementation included)
+
+## Automatic Native Binary Download (New Feature)
+
+Starting with this version, the library automatically downloads native binaries from the GitHub repository during the build process when they're not available locally. This provides several benefits:
+
+### How It Works
+
+1. **Local First**: Checks for native binaries in the project directory
+2. **Auto-Download**: If not found, downloads from GitHub repository automatically
+3. **Smart Caching**: Caches downloaded binaries in `~/.cargo/circe-native-cache/`
+4. **Multiple Fallbacks**: Tries different branches and sources
+5. **Graceful Degradation**: Falls back to system PATH if all else fails
+
+### Cache Location
+
+Downloaded binaries are cached in:
+- `$CARGO_HOME/circe-native-cache/` (if CARGO_HOME is set)
+- `~/.cargo/circe-native-cache/` (default)
+- Current directory (fallback)
+
+### Network Requirements
+
+- **curl** or **wget** must be available on the system
+- Internet connection required only for initial download
+- Subsequent builds use cached binaries
 
 ## Build From Source (Development)
 

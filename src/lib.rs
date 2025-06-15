@@ -4,6 +4,9 @@ use std::path::PathBuf;
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
+mod build_test;
+
 /// Get the path to the native executable
 /// This function looks for the native executable in the expected locations
 fn get_native_executable_path() -> Result<PathBuf, CirceError> {
