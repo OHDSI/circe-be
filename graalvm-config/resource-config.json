@@ -1,8 +1,8 @@
 {
   "resources": [
-    { "pattern": "**/*.json" },
-    { "pattern": "**/*.properties" },
-    { "pattern": "**/*.sql" },
-    { "pattern": "**/*.ftl" }
+    { "pattern": ".*\.json" },
+    { "pattern": ".*\.properties" },
+    { "pattern": ".*\.sql" },
+    { "pattern": ".*\.ftl" }
   ]
 }
