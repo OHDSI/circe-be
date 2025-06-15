@@ -1,0 +1,26 @@
+[package]
+name = "circe-rust-wrapper"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/p-hoffmann/circe-be"
+homepage = "https://github.com/p-hoffmann/circe-be"
+documentation = "https://docs.rs/circe-rust-wrapper"
+description = "A Rust wrapper for the OHDSI Circe library for building OMOP CDM cohort queries"
+keywords = ["omop", "cohort", "sql", "healthcare", "ohdsi"]
+categories = ["database", "api-bindings"]
+license = "Apache-2.0"
+
+[lib]
+name = "circe"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "circe-rust-wrapper"
+path = "src/main.rs"
+
+[dependencies]
+# Using only standard library to avoid dependency issues in CI
+# In a real environment, uncomment these lines:
+# serde = { version = "1.0", features = ["derive"] }
+# serde_json = "1.0"
+# jni = "0.21"

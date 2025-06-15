@@ -112,7 +112,12 @@
       <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
     </repository>
   </repositories>
-  <pluginRepositories><pluginRepository>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
       <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
@@ -146,20 +151,21 @@
       <artifactId>hamcrest</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.ohdsi</groupId>
       <artifactId>standardized-analysis-utils</artifactId>
       <version>1.4.0</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.ohdsi.sql</groupId>
       <artifactId>SqlRender</artifactId>
       <version>1.6.8</version>
-    </dependency>
+      <scope>test</scope>
+    </dependency>-->
     <dependency>
       <groupId>com.opentable.components</groupId>
       <artifactId>otj-pg-embedded</artifactId>

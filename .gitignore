@@ -6,3 +6,9 @@ target
 /.settings
 /nbactions.xml
 /nb-configuration.xml
+
+# Rust compiled binaries and artifacts
+Cargo.lock
+target/
+debug/
+release/

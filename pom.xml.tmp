@@ -112,7 +112,8 @@
       <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
     </repository>
   </repositories>
-  <pluginRepositories><pluginRepository>
+  <pluginRepositories>
+    <pluginRepository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
       <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
@@ -159,6 +160,7 @@
       <groupId>org.ohdsi.sql</groupId>
       <artifactId>SqlRender</artifactId>
       <version>1.6.8</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.opentable.components</groupId>

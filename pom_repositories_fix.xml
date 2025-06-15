@@ -1,0 +1,14 @@
+  <repositories>
+    <repository>
+      <id>ohdsi</id>
+      <name>repo.ohdsi.org</name>
+      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>ohdsi</id>
+      <name>repo.ohdsi.org</name>
+      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+    </pluginRepository>
+  </pluginRepositories>

@@ -1,0 +1,14 @@
+[
+  {
+    "glob": "**/*.json"
+  },
+  {
+    "glob": "**/*.properties"
+  },
+  {
+    "glob": "**/*.sql"
+  },
+  {
+    "glob": "**/*.ftl"
+  }
+]
