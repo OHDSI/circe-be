@@ -26,7 +26,7 @@
     "allPublicFields": true
   },
   {
-    "name": "org.ohdsi.circe.jni.CirceNativeLibrary",
+    "name": "org.ohdsi.circe.CirceNativeLibrary",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

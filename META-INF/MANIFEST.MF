@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: Maven Archiver 3.4.0
+Build-Jdk-Spec: 21
+Main-Class: org.ohdsi.circe.CirceNativeLibrary
+

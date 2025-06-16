@@ -9,6 +9,8 @@ all: build-java build-shared
 build-java:
 	@echo "Building Java components..."
 	mvn clean package -DskipTests
+	@echo "Creating fat JAR with dependencies..."
+	cp target/circe-cli.jar target/circe-shared.jar
 
 # Build shared library only
 build-shared: build-java
@@ -16,10 +18,16 @@ build-shared: build-java
 	chmod +x build-graalvm.sh
 	./build-graalvm.sh
 
+# Build Rust shared library only (bypasses Java dependencies)
+build-rust-shared:
+	@echo "Building Rust shared library..."
+	cargo build --release --features shared-lib --lib
+	@echo "Rust shared library built at: target/release/libcirce.so"
+
 # Test the shared library
-test-shared: build-shared
+test-shared: build-rust-shared
 	@echo "Building and running shared library test..."
-	gcc -o test/test_runner test/test_native_lib.c -L./target -lcirce-native -Wl,-rpath,./target
+	gcc -o test/test_runner test/test_native_lib.c -L./target/release -lcirce -Wl,-rpath,./target/release
 	./test/test_runner
 
 # Test Rust wrapper with shared library mode  
@@ -28,9 +36,9 @@ test-rust-shared: build-shared
 	cargo test --features shared-lib
 
 # Install to system (requires sudo)
-install: build-shared
+install: build-rust-shared
 	@echo "Installing to /usr/local..."
-	sudo cp target/libcirce-native.* /usr/local/lib/
+	sudo cp target/release/libcirce.so /usr/local/lib/
 	sudo cp include/circe_native_lib.h /usr/local/include/
 	sudo ldconfig 2>/dev/null || true
 
@@ -40,7 +48,7 @@ clean:
 	mvn clean
 	cargo clean
 	rm -f test/test_runner
-	rm -rf target/libcirce-native.*
+	rm -f test/test_native_lib.o
 
 # Show build information
 info:

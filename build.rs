@@ -3,6 +3,29 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+fn main() {
+    // Configure linking to GraalVM native library
+    println!("cargo:rustc-link-search=native=target");
+    println!("cargo:rustc-link-lib=dylib=circe-native");
+    
+    // Add rpath for runtime library loading
+    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let target_dir = format!("{}/target", manifest_dir);
+    println!("cargo:rustc-link-arg=-Wl,-rpath,{}", target_dir);
+    
+    // For development builds, also set the library path
+    if let Ok(profile) = env::var("PROFILE") {
+        if profile == "debug" {
+            println!("cargo:rustc-env=LD_LIBRARY_PATH={}", target_dir);
+        }
+    }
+    
+    // Check if the native library exists
+    if !std::path::Path::new("target/libcirce-native.so").exists() {
+        println!("cargo:warning=GraalVM native library not found. Please run: ./build-graalvm.sh");
+    }
+}
+
 /// Get the cache directory for downloaded binaries
 fn get_cache_dir() -> PathBuf {
     let cache_base = if let Ok(cache_dir) = env::var("CARGO_HOME") {
@@ -135,7 +158,8 @@ fn try_download_with_tools(url: &str, dest_path: &Path) -> Result<(), Box<dyn st
     Err("Failed to download native binary using curl or wget".into())
 }
 
-fn main() {
+/// Download or build native binary for the current platform
+fn download_or_build_native_binary() -> Result<(), Box<dyn std::error::Error>> {
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "unknown".to_string());
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_else(|_| "unknown".to_string());
     
@@ -181,4 +205,6 @@ fn main() {
             }
         }
     }
+    
+    Ok(())
 }

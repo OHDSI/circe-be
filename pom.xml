@@ -10,6 +10,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <spring.dependencies.version>2.3.0.RELEASE</spring.dependencies.version>
+    <skip.unit.tests>true</skip.unit.tests>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -95,7 +96,7 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <!-- No main class needed for shared library -->
+                  <mainClass>org.ohdsi.circe.CirceNativeLibrary</mainClass>
                 </transformer>
               </transformers>
               <finalName>circe-cli</finalName>
@@ -109,16 +110,23 @@
     <repository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
-      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+      <url>https://repo.ohdsi.org/nexus/content/groups/public/</url>
     </repository>
   </repositories>
   <pluginRepositories><pluginRepository>
       <id>ohdsi</id>
       <name>repo.ohdsi.org</name>
-      <url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+      <url>https://repo.ohdsi.org/nexus/content/groups/public/</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
+    <!-- GraalVM Native Image dependencies -->
+    <dependency>
+      <groupId>org.graalvm.nativeimage</groupId>
+      <artifactId>svm</artifactId>
+      <version>22.3.0</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>

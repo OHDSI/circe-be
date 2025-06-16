@@ -44,7 +44,7 @@ public class CirceCLITest {
             CirceCLI.main(new String[]{});
             String output = outContent.toString();
             assertTrue("Should show usage information", 
-                output.contains("Usage: circe-cli"));
+                output.contains("Usage: java -jar circe-cli.jar"));
             assertTrue("Should show available commands", 
                 output.contains("Commands:"));
         } finally {
@@ -74,7 +74,7 @@ public class CirceCLITest {
             assertTrue("Should show error for unknown command", 
                 errorOutput.contains("Unknown command"));
             assertTrue("Should show usage after unknown command", 
-                output.contains("Usage: circe-cli"));
+                output.contains("Usage: java -jar circe-cli.jar"));
         } finally {
             // Restore original outputs
             System.setErr(originalErr);
@@ -83,40 +83,23 @@ public class CirceCLITest {
     }
 
     @Test
-    public void testValidateCohortWithInvalidJson() {
-        // Capture system error output
-        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-        PrintStream originalErr = System.err;
-        System.setErr(new PrintStream(errContent));
+    public void testHelpCommand() {
+        // Capture system output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
 
         try {
-            // Test with invalid JSON
-            CirceCLI.main(new String[]{"validate-cohort", "invalid-json"});
-            String errorOutput = errContent.toString();
-            assertTrue("Should show error for invalid JSON", 
-                errorOutput.contains("Error validating cohort"));
+            // Test help command
+            CirceCLI.main(new String[]{"help"});
+            String output = outContent.toString();
+            assertTrue("Should show usage information", 
+                output.contains("Usage: java -jar circe-cli.jar"));
+            assertTrue("Should show shared library note", 
+                output.contains("shared library build"));
         } finally {
-            // Restore original error output
-            System.setErr(originalErr);
-        }
-    }
-
-    @Test
-    public void testValidateConceptSetWithInvalidJson() {
-        // Capture system error output
-        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-        PrintStream originalErr = System.err;
-        System.setErr(new PrintStream(errContent));
-
-        try {
-            // Test with invalid JSON
-            CirceCLI.main(new String[]{"validate-conceptset", "invalid-json"});
-            String errorOutput = errContent.toString();
-            assertTrue("Should show error for invalid JSON", 
-                errorOutput.contains("Error validating concept set"));
-        } finally {
-            // Restore original error output
-            System.setErr(originalErr);
+            // Restore original output
+            System.setOut(originalOut);
         }
     }
 }

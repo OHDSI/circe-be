@@ -2,6 +2,9 @@
 # GraalVM Native Image Build Script for Circe
 set -e
 
+# Initialize SDKMAN
+source "/home/ph/.sdkman/bin/sdkman-init.sh"
+
 echo "Circe GraalVM Native Image Build Script"
 echo "========================================"
 
@@ -16,7 +19,7 @@ fi
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="$PROJECT_DIR/target"
 JAR_FILE="$TARGET_DIR/circe-cli.jar"
-NATIVE_IMAGE_NAME="circe-cli-native"
+NATIVE_IMAGE_NAME="libcirce-native"
 
 echo "Project directory: $PROJECT_DIR"
 echo "JAR file: $JAR_FILE"
@@ -25,7 +28,7 @@ echo "Output: $TARGET_DIR/$NATIVE_IMAGE_NAME"
 # Check if JAR exists
 if [ ! -f "$JAR_FILE" ]; then
     echo "Error: JAR file not found at $JAR_FILE"
-    echo "Please run 'mvn package -DskipTests' first."
+    echo "Please run 'mvn compile -DskipTests' first."
     exit 1
 fi
 
@@ -65,5 +68,4 @@ else
     echo "❌ Shared library build failed!"
     echo "Please check the error messages above."
     exit 1
-fi
 fi

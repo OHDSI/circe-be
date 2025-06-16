@@ -9,6 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Utils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
+    public static String serialize(Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize object", e);
+        }
+    }
+    
     public static <T> T deserialize(String json, Class<T> clazz) {
         try {
             return objectMapper.readValue(json, clazz);
