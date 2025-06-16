@@ -33,29 +33,37 @@ echo ""
 echo "Building native image..."
 echo "This may take several minutes..."
 
-# Build native image with GraalVM
+# Build shared library (.so/.dll/.dylib) with GraalVM
+echo "Building shared library..."
 native-image \
     --no-fallback \
+    --shared \
     --enable-all-security-services \
     --allow-incomplete-classpath \
     --report-unsupported-elements-at-runtime \
     -H:+ReportExceptionStackTraces \
     -H:ConfigurationFileDirectories="$PROJECT_DIR/graalvm-config" \
+    -H:Name=circe-native-lib \
     -jar "$JAR_FILE" \
-    "$TARGET_DIR/$NATIVE_IMAGE_NAME"
+    "$TARGET_DIR/libcirce-native"
 
 if [ $? -eq 0 ]; then
     echo ""
-    echo "✅ Native image build successful!"
-    echo "Executable created: $TARGET_DIR/$NATIVE_IMAGE_NAME"
+    echo "✅ Shared library build successful!"
+    
+    # Check which shared library was created
+    if [ -f "$TARGET_DIR/libcirce-native.so" ]; then
+        echo "📚 Shared library created: $TARGET_DIR/libcirce-native.so"
+    elif [ -f "$TARGET_DIR/libcirce-native.dylib" ]; then
+        echo "📚 Shared library created: $TARGET_DIR/libcirce-native.dylib"
+    elif [ -f "$TARGET_DIR/libcirce-native.dll" ]; then
+        echo "📚 Shared library created: $TARGET_DIR/libcirce-native.dll"
+    fi
     echo ""
-    echo "File size comparison:"
-    echo "JAR file: $(du -h "$JAR_FILE" | cut -f1)"
-    echo "Native image: $(du -h "$TARGET_DIR/$NATIVE_IMAGE_NAME" | cut -f1)"
-    echo ""
-    echo "Test the native image:"
-    echo "$TARGET_DIR/$NATIVE_IMAGE_NAME version"
 else
-    echo "❌ Native image build failed!"
+    echo ""
+    echo "❌ Shared library build failed!"
+    echo "Please check the error messages above."
     exit 1
+fi
 fi

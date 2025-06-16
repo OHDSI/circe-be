@@ -1,4 +1,5 @@
-use std::process::Command;
+use std::ffi::{CStr, CString};
+use std::os::raw::c_char;
 use std::path::PathBuf;
 
 #[cfg(test)]
@@ -7,63 +8,41 @@ mod tests;
 #[cfg(test)]
 mod build_test;
 
-/// Get the path to the native executable
-/// This function looks for the native executable in the expected locations
-fn get_native_executable_path() -> Result<PathBuf, CirceError> {
-    let native_binary_name = if cfg!(target_os = "windows") { "circe-cli-native.exe" } else { "circe-cli-native" };
+// Link to the native shared library functions
+extern "C" {
+    fn circe_build_expression_query(json_expression: *const c_char, options: *const c_char) -> *const c_char;
+    fn circe_render_and_translate_sql(sql: *const c_char, target_dialect: *const c_char) -> *const c_char;
+    fn circe_validate_cohort_expression(json_expression: *const c_char) -> *const c_char;
+    fn circe_validate_concept_set_expression(json_expression: *const c_char) -> *const c_char;
+    fn circe_get_version() -> *const c_char;
+}
+
+/// Get the path to the shared library
+fn get_shared_library_path() -> Result<PathBuf, CirceError> {
+    let library_name = if cfg!(target_os = "windows") {
+        "libcirce-native.dll"
+    } else if cfg!(target_os = "macos") {
+        "libcirce-native.dylib"
+    } else {
+        "libcirce-native.so"
+    };
     
-    // First, try to find it in the same directory as the current executable (for bundled distribution)
-    if let Ok(exe_path) = std::env::current_exe() {
-        if let Some(exe_dir) = exe_path.parent() {
-            let native_path = exe_dir.join(native_binary_name);
-            if native_path.exists() {
-                return Ok(native_path);
-            }
+    // Try various locations for the shared library
+    let search_paths = vec![
+        std::env::current_dir().ok().map(|d| d.join("target").join(library_name)),
+        std::env::current_dir().ok().map(|d| d.join("native-binaries").join("linux-x86_64").join(library_name)),
+        std::env::current_exe().ok().and_then(|e| e.parent().map(|p| p.join(library_name))),
+    ];
+    
+    for path in search_paths.into_iter().flatten() {
+        if path.exists() {
+            return Ok(path);
         }
     }
     
-    // Next, try the native-binaries directory (for development/packaging)
-    if let Ok(current_dir) = std::env::current_dir() {
-        // Try linux-x86_64 directory first (most common)
-        let native_linux_path = current_dir.join("native-binaries").join("linux-x86_64").join(native_binary_name);
-        if native_linux_path.exists() {
-            return Ok(native_linux_path);
-        }
-        
-        // Try to find any platform-specific directory
-        if let Ok(native_dir) = std::fs::read_dir(current_dir.join("native-binaries")) {
-            for entry in native_dir.flatten() {
-                if entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false) {
-                    let platform_native_path = entry.path().join(native_binary_name);
-                    if platform_native_path.exists() {
-                        return Ok(platform_native_path);
-                    }
-                }
-            }
-        }
-    }
-    
-    // Next, try the OUT_DIR from build (for cargo build/install)
-    if let Ok(out_dir) = std::env::var("OUT_DIR") {
-        let out_native_path = PathBuf::from(out_dir).join(native_binary_name);
-        if out_native_path.exists() {
-            return Ok(out_native_path);
-        }
-    }
-    
-    // Finally, try PATH (if installed globally)
-    if let Ok(output) = Command::new("which").arg(native_binary_name).output() {
-        if output.status.success() {
-            let path_output = String::from_utf8_lossy(&output.stdout);
-            let path_str = path_output.trim();
-            if !path_str.is_empty() {
-                return Ok(PathBuf::from(path_str));
-            }
-        }
-    }
-    
-    // Return a default path for error reporting
-    Ok(PathBuf::from(native_binary_name))
+    Err(CirceError::InitializationError(
+        format!("Shared library {} not found", library_name)
+    ))
 }
 
 /// Error type for Circe operations
@@ -73,6 +52,7 @@ pub enum CirceError {
     JavaException(String),
     InitializationError(String),
     ProcessError(String),
+    NullPointer,
 }
 
 impl std::fmt::Display for CirceError {
@@ -82,6 +62,7 @@ impl std::fmt::Display for CirceError {
             CirceError::JavaException(msg) => write!(f, "Java exception: {}", msg),
             CirceError::InitializationError(msg) => write!(f, "Initialization error: {}", msg),
             CirceError::ProcessError(msg) => write!(f, "Process error: {}", msg),
+            CirceError::NullPointer => write!(f, "Received null pointer from native library"),
         }
     }
 }
@@ -89,7 +70,6 @@ impl std::fmt::Display for CirceError {
 impl std::error::Error for CirceError {}
 
 /// Options for building expression queries
-/// This is a simplified version that would use serde for JSON serialization in a full implementation
 #[derive(Debug, Clone)]
 pub struct BuildExpressionQueryOptions {
     pub cohort_id_field_name: Option<String>,
@@ -144,190 +124,101 @@ impl BuildExpressionQueryOptions {
     }
 }
 
-/// Initialize the Circe environment using the native executable
+/// Helper function to convert C string to Rust string
+unsafe fn c_str_to_rust_string(c_str: *const c_char) -> Result<String, CirceError> {
+    if c_str.is_null() {
+        return Err(CirceError::NullPointer);
+    }
+    
+    let cstr = CStr::from_ptr(c_str);
+    cstr.to_str()
+        .map_err(|e| CirceError::ProcessError(format!("Invalid UTF-8: {}", e)))
+        .map(|s| s.to_string())
+}
+
+/// Initialize the Circe environment
 pub fn init_jvm() -> Result<(), CirceError> {
-    // Check if the native executable exists
-    let native_path = get_native_executable_path()?;
-
-    if !native_path.exists() {
-        return Err(CirceError::InitializationError(
-            format!("circe-cli-native not found at {}. Native library may not be properly installed.", native_path.display())
-        ));
-    }
-
-    // Test the native executable by running version command
-    let output = Command::new(&native_path)
-        .arg("version")
-        .output()
-        .map_err(|e| CirceError::InitializationError(format!("Failed to execute native library: {}", e)))?;
-
-    if !output.status.success() {
-        return Err(CirceError::InitializationError(
-            "Native library failed to execute properly".to_string()
-        ));
-    }
-
+    // For shared library, just verify it exists and can be loaded
+    let _lib_path = get_shared_library_path()?;
+    // TODO: Actually load the library and verify symbols
     Ok(())
 }
 
-/// Build an expression query using CohortExpressionQueryBuilder
-/// 
-/// NOTE: This is a placeholder implementation that demonstrates the architecture.
-/// In a full implementation with JNI dependencies available, this would directly
-/// call the Java CohortExpressionQueryBuilder.buildExpressionQuery method.
-pub fn build_expression_query(expression_json: &str, options: BuildExpressionQueryOptions) -> Result<String, CirceError> {
-    // Use the native executable approach
-    let native_path = get_native_executable_path()?;
+/// Build an expression query from a cohort definition JSON
+pub fn build_expression_query(
+    expression_json: &str,
+    options: Option<&BuildExpressionQueryOptions>,
+) -> Result<String, CirceError> {
+    build_expression_query_shared_lib(expression_json, options)
+}
 
-    if !native_path.exists() {
-        return Err(CirceError::InitializationError(
-            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
-        ));
-    }
-
-    // For demonstration, we'll validate the cohort (the closest thing our CLI can do)
-    let output = Command::new(&native_path)
-        .arg("validate-cohort")
-        .arg(expression_json)
-        .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(CirceError::JavaException(format!("Java process failed: {}", stderr)));
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
+/// Build expression query using shared library
+fn build_expression_query_shared_lib(
+    expression_json: &str,
+    options: Option<&BuildExpressionQueryOptions>,
+) -> Result<String, CirceError> {
+    let c_expression = CString::new(expression_json)
+        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
     
-    // Since we can't actually build the query without the full dependencies,
-    // we return a placeholder SQL that would be generated
-    Ok(format!(
-        "-- Generated SQL from Circe expression\n-- Expression title: {}\n-- Options: {}\n-- Validation result: {}\n\n-- This would be a complete SQL query in a full implementation\nSELECT 'Expression processing successful' as result;",
-        extract_title_from_json(expression_json),
-        options.to_json(),
-        stdout.trim()
-    ))
-}
-
-/// Extract title from JSON (simple manual parsing for demo)
-fn extract_title_from_json(json: &str) -> String {
-    if let Some(start) = json.find("\"title\"") {
-        if let Some(colon) = json[start..].find(':') {
-            let after_colon = &json[start + colon + 1..];
-            if let Some(quote_start) = after_colon.find('"') {
-                let after_quote = &after_colon[quote_start + 1..];
-                if let Some(quote_end) = after_quote.find('"') {
-                    return after_quote[..quote_end].to_string();
-                }
-            }
-        }
+    let options_json = options.map(|o| o.to_json()).unwrap_or_else(|| "{}".to_string());
+    let c_options = CString::new(options_json)
+        .map_err(|e| CirceError::JsonError(format!("Invalid options JSON: {}", e)))?;
+    
+    unsafe {
+        let result_ptr = circe_build_expression_query(c_expression.as_ptr(), c_options.as_ptr());
+        c_str_to_rust_string(result_ptr)
     }
-    "Unknown".to_string()
 }
 
-/// Render SQL using basic transformations
-/// 
-/// NOTE: This is a placeholder implementation.
-/// In a full implementation with SqlRender dependency available, this would directly
-/// call the Java SqlRender and SqlTranslate methods.
+/// Render and translate SQL to target database dialect
 pub fn render_and_translate_sql(sql: &str, target_dialect: &str) -> Result<String, CirceError> {
-    // Without SqlRender dependency, we provide a basic transformation
-    let mut result = sql.to_string();
+    let c_sql = CString::new(sql)
+        .map_err(|e| CirceError::ProcessError(format!("Invalid SQL: {}", e)))?;
+    let c_dialect = CString::new(target_dialect)
+        .map_err(|e| CirceError::ProcessError(format!("Invalid dialect: {}", e)))?;
     
-    // Basic transformations for different dialects
-    match target_dialect.to_lowercase().as_str() {
-        "postgresql" => {
-            result = result.replace("@cdm_database_schema", "cdm");
-            result = result.replace("@vocabulary_database_schema", "cdm");
-            result = result.replace("@results_database_schema", "results");
-            result = result.replace("@target_database_schema", "results");
-            result = result.replace("@target_cohort_table", "cohort");
-            result = result.replace("[", "\"");
-            result = result.replace("]", "\"");
-        },
-        "sql server" | "sqlserver" => {
-            result = result.replace("@cdm_database_schema", "[cdm]");
-            result = result.replace("@vocabulary_database_schema", "[cdm]");
-            result = result.replace("@results_database_schema", "[results]");
-            result = result.replace("@target_database_schema", "[results]");
-            result = result.replace("@target_cohort_table", "[cohort]");
-        },
-        "oracle" => {
-            result = result.replace("@cdm_database_schema", "cdm");
-            result = result.replace("@vocabulary_database_schema", "cdm");
-            result = result.replace("@results_database_schema", "results");
-            result = result.replace("@target_database_schema", "results");
-            result = result.replace("@target_cohort_table", "cohort");
-            // Add note first, then convert everything to uppercase
-            result = format!("-- SQL transformed for {} dialect (basic transformation)\n{}", target_dialect, result);
-            result = result.to_uppercase();
-            return Ok(result);
-        },
-        _ => {
-            return Err(CirceError::ProcessError(format!("Unsupported dialect: {}", target_dialect)));
-        }
+    unsafe {
+        let result_ptr = circe_render_and_translate_sql(c_sql.as_ptr(), c_dialect.as_ptr());
+        c_str_to_rust_string(result_ptr)
     }
-
-    // Add a note that this is a simplified transformation
-    result = format!("-- SQL transformed for {} dialect (basic transformation)\n{}", target_dialect, result);
-
-    Ok(result)
 }
 
-/// Convenience function that combines buildExpressionQuery and render_and_translate_sql
+/// Validate a cohort expression JSON
+pub fn validate_cohort_expression(expression_json: &str) -> Result<String, CirceError> {
+    let c_expression = CString::new(expression_json)
+        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
+    
+    unsafe {
+        let result_ptr = circe_validate_cohort_expression(c_expression.as_ptr());
+        c_str_to_rust_string(result_ptr)
+    }
+}
+
+/// Validate a concept set expression JSON
+pub fn validate_concept_set_expression(expression_json: &str) -> Result<String, CirceError> {
+    let c_expression = CString::new(expression_json)
+        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
+    
+    unsafe {
+        let result_ptr = circe_validate_concept_set_expression(c_expression.as_ptr());
+        c_str_to_rust_string(result_ptr)
+    }
+}
+
+/// Build and render cohort SQL in one call (convenience function)
 pub fn build_and_render_cohort_sql(
     expression_json: &str,
-    options: BuildExpressionQueryOptions,
-    target_dialect: &str
+    target_dialect: &str,
+    options: Option<&BuildExpressionQueryOptions>,
 ) -> Result<String, CirceError> {
     let cohort_sql = build_expression_query(expression_json, options)?;
     render_and_translate_sql(&cohort_sql, target_dialect)
 }
 
-/// Validate a cohort definition JSON using the native CLI
-pub fn validate_cohort_expression(expression_json: &str) -> Result<String, CirceError> {
-    let native_path = get_native_executable_path()?;
-
-    if !native_path.exists() {
-        return Err(CirceError::InitializationError(
-            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
-        ));
+/// Get library version
+pub fn get_version() -> Result<String, CirceError> {
+    unsafe {
+        let result_ptr = circe_get_version();
+        c_str_to_rust_string(result_ptr)
     }
-
-    let output = Command::new(&native_path)
-        .arg("validate-cohort")
-        .arg(expression_json)
-        .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(CirceError::JavaException(format!("Validation failed: {}", stderr)));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
-}
-
-/// Validate a concept set expression JSON using the Java CLI  
-pub fn validate_concept_set_expression(expression_json: &str) -> Result<String, CirceError> {
-    let native_path = get_native_executable_path()?;
-
-    if !native_path.exists() {
-        return Err(CirceError::InitializationError(
-            format!("circe-cli-native not found at {}. Please ensure the native library is properly installed.", native_path.display())
-        ));
-    }
-
-    let output = Command::new(&native_path)
-        .arg("validate-conceptset")
-        .arg(expression_json)
-        .output()
-        .map_err(|e| CirceError::ProcessError(format!("Failed to execute native command: {}", e)))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(CirceError::JavaException(format!("Validation failed: {}", stderr)));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
 }

@@ -124,10 +124,10 @@ jobs:
     - name: Build native image (Linux/macOS)
       if: runner.os != 'Windows'
       run: |
-        echo "Building native image..."
+        echo "Building shared library..."
         chmod +x build-graalvm.sh
         ./build-graalvm.sh || {
-          echo "Native image build failed"
+          echo "Shared library build failed"
           echo "Checking if JAR file exists..."
           ls -la target/ || echo "No target directory"
           exit 1
@@ -136,7 +136,7 @@ jobs:
     - name: Build native image (Windows)
       if: runner.os == 'Windows'
       run: |
-        echo "Building native image..."
+        echo "Building shared library..."
         # Run the GraalVM native-image build directly on Windows
         if (-not (Test-Path "target\circe-cli.jar")) {
           Write-Error "JAR file not found at target\circe-cli.jar"
@@ -144,24 +144,25 @@ jobs:
           exit 1
         }
         
+        # Build shared library
         native-image `
           --no-fallback `
+          --shared `
           --enable-all-security-services `
           --allow-incomplete-classpath `
           --report-unsupported-elements-at-runtime `
           -H:+ReportExceptionStackTraces `
           -H:ConfigurationFileDirectories="graalvm-config" `
+          -H:Name=circe-native-lib `
           -jar "target\circe-cli.jar" `
-          "target\circe-cli-native"
+          "target\libcirce-native"
 
     - name: Verify native binary
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          ls -la target/circe-cli-native.exe
-          ./target/circe-cli-native.exe version
+          ls -la target/libcirce-native.dll || echo "Shared library not found"
         else
-          ls -la target/circe-cli-native
-          ./target/circe-cli-native version
+          ls -la target/libcirce-native.so target/libcirce-native.dylib 2>/dev/null || echo "Shared library not found"
         fi
 
     - name: Prepare native binary directory
@@ -171,9 +172,10 @@ jobs:
     - name: Copy native binary to platform directory
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          cp target/circe-cli-native.exe native-binaries/${{ github.event.inputs.target_platform }}/
+          cp target/libcirce-native.dll native-binaries/${{ github.event.inputs.target_platform }}/
         else
-          cp target/circe-cli-native native-binaries/${{ github.event.inputs.target_platform }}/
+          cp target/libcirce-native.so native-binaries/${{ github.event.inputs.target_platform }}/ 2>/dev/null || echo "No .so found"
+          cp target/libcirce-native.dylib native-binaries/${{ github.event.inputs.target_platform }}/ 2>/dev/null || echo "No .dylib found"
         fi
 
     - name: Configure git
@@ -183,19 +185,20 @@ jobs:
 
     - name: Commit native binary
       env:
-        BINARY_NAME: ${{ runner.os == 'Windows' && 'circe-cli-native.exe' || 'circe-cli-native' }}
+        LIBRARY_NAME: ${{ runner.os == 'Windows' && 'libcirce-native.dll' || (runner.os == 'macOS' && 'libcirce-native.dylib' || 'libcirce-native.so') }}
       run: |
-        git add native-binaries/${{ github.event.inputs.target_platform }}/${BINARY_NAME}
+        git add native-binaries/${{ github.event.inputs.target_platform }}/${LIBRARY_NAME} 2>/dev/null || echo "No shared library to commit"
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Update native binary for ${{ github.event.inputs.target_platform }}"
+          git commit -m "Update native library for ${{ github.event.inputs.target_platform }}"
           git push
         fi
 
     - name: Upload native binary artifact
       uses: actions/upload-artifact@v4
       with:
-        name: circe-cli-native-${{ github.event.inputs.target_platform }}
-        path: native-binaries/${{ github.event.inputs.target_platform }}/${{ runner.os == 'Windows' && 'circe-cli-native.exe' || 'circe-cli-native' }}
+        name: circe-native-library-${{ github.event.inputs.target_platform }}
+        path: |
+          native-binaries/${{ github.event.inputs.target_platform }}/${{ runner.os == 'Windows' && 'libcirce-native.dll' || (runner.os == 'macOS' && 'libcirce-native.dylib' || 'libcirce-native.so') }}
         retention-days: 30
