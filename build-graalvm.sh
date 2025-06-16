@@ -2,8 +2,10 @@
 # GraalVM Native Image Build Script for Circe
 set -e
 
-# Initialize SDKMAN
-source "/home/ph/.sdkman/bin/sdkman-init.sh"
+# Initialize SDKMAN if available (local development)
+if [ -f "/home/ph/.sdkman/bin/sdkman-init.sh" ]; then
+    source "/home/ph/.sdkman/bin/sdkman-init.sh"
+fi
 
 echo "Circe GraalVM Native Image Build Script"
 echo "========================================"
