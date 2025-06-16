@@ -26,6 +26,7 @@ crate-type = ["cdylib", "rlib"]
 [features]
 default = ["shared-lib"]
 shared-lib = []
+integration-tests = []
 
 # Remove the bin section since we only need the library
 # [[bin]]

@@ -1,14 +1,14 @@
+//! Integration tests for the Circe Rust wrapper
+//! 
+//! These tests require the native shared library to be available.
+
 use crate::{init_jvm, build_expression_query, render_and_translate_sql, build_and_render_cohort_sql, 
     validate_cohort_expression, validate_concept_set_expression, BuildExpressionQueryOptions, CirceError};
 
 /// Integration tests for the Circe Rust library
 /// These tests mirror the functionality of the Java tests but from the Rust side
 
-#[cfg(test)]
-mod integration_tests {
-    use super::*;
-
-    // Test data similar to the Java tests
+// Test data similar to the Java tests
     const SAMPLE_COHORT_EXPRESSION: &str = r#"{
         "title": "Test Cohort",
         "primaryCriteria": {
@@ -61,23 +61,17 @@ mod integration_tests {
     fn test_environment_initialization() {
         match init_jvm() {
             Ok(_) => println!("✓ Environment initialized successfully"),
-            Err(CirceError::InitializationError(msg)) if msg.contains("circe-cli.jar not found") => {
-                println!("⚠ Expected error: JAR not found (run 'mvn package' first)");
-            },
-            Err(e) => panic!("Unexpected initialization error: {:?}", e),
+            Err(e) => panic!("Environment initialization failed: {:?}", e),
         }
     }
 
     #[test]
     fn test_build_expression_query_minimal() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         let options = BuildExpressionQueryOptions::default();
 
-        match build_expression_query(MINIMAL_COHORT_EXPRESSION, options) {
+        match build_expression_query(MINIMAL_COHORT_EXPRESSION, Some(&options)) {
             Ok(sql) => {
                 assert!(!sql.is_empty());
                 assert!(sql.to_uppercase().contains("SELECT") || sql.contains("validation"));
@@ -85,17 +79,14 @@ mod integration_tests {
                 println!("  SQL length: {} characters", sql.len());
             },
             Err(e) => {
-                println!("⚠ Expected error (dependencies may be missing): {:?}", e);
+                panic!("Failed to build expression query: {:?}", e);
             }
         }
     }
 
     #[test]
     fn test_build_expression_query_with_options() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         let options = BuildExpressionQueryOptions {
             cohort_id: Some(123),
@@ -107,24 +98,21 @@ mod integration_tests {
             ..Default::default()
         };
 
-        match build_expression_query(SAMPLE_COHORT_EXPRESSION, options) {
+        match build_expression_query(SAMPLE_COHORT_EXPRESSION, Some(&options)) {
             Ok(sql) => {
                 assert!(!sql.is_empty());
                 println!("✓ Expression query with options generated successfully");
                 println!("  SQL length: {} characters", sql.len());
             },
             Err(e) => {
-                println!("⚠ Expected error (dependencies may be missing): {:?}", e);
+                panic!("Failed to build expression query with options: {:?}", e);
             }
         }
     }
 
     #[test]
     fn test_sql_render_simple() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         let simple_sql = "SELECT * FROM @cdm_database_schema.person";
 
@@ -138,7 +126,7 @@ mod integration_tests {
                 println!("  Rendered: {}", rendered_sql);
             },
             Err(e) => {
-                println!("⚠ Error rendering SQL: {:?}", e);
+                panic!("Failed to render SQL: {:?}", e);
             }
         }
     }
@@ -184,10 +172,7 @@ mod integration_tests {
 
     #[test]
     fn test_validation_functions() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         // Test cohort validation
         match validate_cohort_expression(MINIMAL_COHORT_EXPRESSION) {
@@ -215,10 +200,7 @@ mod integration_tests {
 
     #[test]
     fn test_full_workflow_minimal() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         let options = BuildExpressionQueryOptions {
             cohort_id: Some(1),
@@ -228,24 +210,21 @@ mod integration_tests {
             ..Default::default()
         };
 
-        match build_and_render_cohort_sql(MINIMAL_COHORT_EXPRESSION, options, "postgresql") {
+        match build_and_render_cohort_sql(MINIMAL_COHORT_EXPRESSION, "postgresql", Some(&options)) {
             Ok(final_sql) => {
                 assert!(!final_sql.is_empty());
                 println!("✓ Full workflow completed successfully");
                 println!("  Final SQL length: {} characters", final_sql.len());
             },
             Err(e) => {
-                println!("⚠ Expected error (dependencies may be missing): {:?}", e);
+                panic!("Full workflow failed: {:?}", e);
             }
         }
     }
 
     #[test]
     fn test_error_handling_invalid_json() {
-        if init_jvm().is_err() {
-            println!("⚠ Skipping test - environment initialization failed");
-            return;
-        }
+        init_jvm().expect("Failed to initialize JVM");
 
         let invalid_json = "{ invalid json }";
 
@@ -291,4 +270,3 @@ mod integration_tests {
         println!("✓ Options serialization produces Java-compatible JSON");
         println!("  JSON: {}", json);
     }
-}

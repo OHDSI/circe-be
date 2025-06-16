@@ -115,7 +115,7 @@ jobs:
         echo "Building Maven project..."
         timeout 10m mvn clean package -Dmaven.test.skip=true -q || {
           echo "Maven build with dependencies failed, trying offline compile..."
-          timeout 5m mvn compile -q -o || {
+          timeout 5m mvn compile -q -o -Dmaven.test.skip=true || {
             echo "Maven compile failed, but this may be expected due to dependency issues"
             exit 1
           }
