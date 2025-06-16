@@ -23,16 +23,6 @@ include = [
 name = "circe"
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["shared-lib"]
-shared-lib = []
-integration-tests = []
-
-# Remove the bin section since we only need the library
-# [[bin]]
-# name = "circe-rust-wrapper"
-# path = "src/main.rs"
-
 [dependencies]
 # Using only standard library to avoid dependency issues in CI
 # In a real environment, uncomment these lines:
