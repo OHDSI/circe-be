@@ -98,6 +98,11 @@ jobs:
             echo "✅ Native library built successfully"
             ls -la target/libcirce-native.so
             file target/libcirce-native.so
+            
+            # Copy to native-binaries directory to preserve it
+            mkdir -p native-binaries/linux-x86_64
+            cp target/libcirce-native.so native-binaries/linux-x86_64/
+            echo "✅ Native library backed up to native-binaries/linux-x86_64/"
           else
             echo "❌ Native library build failed"
           fi
@@ -175,6 +180,13 @@ jobs:
         # Ensure LD_LIBRARY_PATH includes the target directory
         export LD_LIBRARY_PATH="$(pwd)/target:${LD_LIBRARY_PATH:-}"
         echo "Using LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
+        
+        # Restore native library if it was cleaned
+        if [ ! -f "target/libcirce-native.so" ] && [ -f "native-binaries/linux-x86_64/libcirce-native.so" ]; then
+          echo "🔄 Restoring native library from backup..."
+          cp native-binaries/linux-x86_64/libcirce-native.so target/
+          echo "✅ Native library restored"
+        fi
         
         if [ -f "target/libcirce-native.so" ]; then
           echo "✅ Native library found, building with full integration"
