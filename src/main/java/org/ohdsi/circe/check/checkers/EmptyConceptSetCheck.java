@@ -29,10 +29,12 @@ public class EmptyConceptSetCheck extends BaseCheck {
     @Override
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
-        Arrays.stream(expression.conceptSets)
-                .filter(conceptSet -> Objects.isNull(conceptSet.expression)
-                        || Objects.isNull(conceptSet.expression.items)
-                        || conceptSet.expression.items.length == 0)
-                .forEach(conceptSet -> reporter.add(EMPTY_ERROR, conceptSet.name));
+        if (expression.conceptSets != null) {
+            Arrays.stream(expression.conceptSets)
+                    .filter(conceptSet -> Objects.isNull(conceptSet.expression)
+                            || Objects.isNull(conceptSet.expression.items)
+                            || conceptSet.expression.items.length == 0)
+                    .forEach(conceptSet -> reporter.add(EMPTY_ERROR, conceptSet.name));
+        }
     }
 }

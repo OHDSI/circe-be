@@ -43,6 +43,10 @@ public class DrugDomainCheck extends BaseCheck {
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
         this.expression = expression;
+        if (expression.primaryCriteria == null || expression.primaryCriteria.criteriaList == null) {
+            return;
+        }
+        
         List<ConceptSet> conceptSets = Arrays.stream(expression.primaryCriteria.criteriaList)
                 .map(this::mapCriteria)
                 .filter(this::isConceptInDrugDomain)
@@ -84,6 +88,10 @@ public class DrugDomainCheck extends BaseCheck {
 
     private boolean isConceptInDrugDomain(Integer codesetId) {
 
+        if (expression.conceptSets == null) {
+            return false;
+        }
+        
         Optional<ConceptSet> conceptSet = Arrays.stream(expression.conceptSets).filter(getConceptSetIdPredicate(codesetId))
                 .findFirst();
         return conceptSet.map(cs ->
@@ -99,6 +107,10 @@ public class DrugDomainCheck extends BaseCheck {
 
     private ConceptSet mapConceptSet(Integer codesetId) {
 
+        if (expression.conceptSets == null) {
+            return null;
+        }
+        
         return Arrays.stream(expression.conceptSets)
                 .filter(getConceptSetIdPredicate(codesetId)).findFirst().orElse(null);
     }

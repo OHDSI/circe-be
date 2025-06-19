@@ -30,8 +30,10 @@ public abstract class BaseCriteriaCheck extends BaseIterableCheck {
     @Override
     final protected void internalCheck(CohortExpression expression, WarningReporter reporter) {
 
-        Arrays.stream(expression.primaryCriteria.criteriaList)
-                .forEach(criteria -> checkCriteriaGroup(criteria, INITIAL_EVENT, reporter));
+        if (expression.primaryCriteria != null && expression.primaryCriteria.criteriaList != null) {
+            Arrays.stream(expression.primaryCriteria.criteriaList)
+                    .forEach(criteria -> checkCriteriaGroup(criteria, INITIAL_EVENT, reporter));
+        }
         expression.inclusionRules.forEach(
                 inclusionRule ->
                         Arrays.stream(inclusionRule.expression.criteriaList)

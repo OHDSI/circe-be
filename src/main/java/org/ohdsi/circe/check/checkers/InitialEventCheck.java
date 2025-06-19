@@ -31,7 +31,8 @@ public class InitialEventCheck extends BaseCheck{
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
         match(expression)
-                .when(e -> Objects.isNull(e.primaryCriteria.criteriaList) ||
+                .when(e -> Objects.isNull(e.primaryCriteria) || 
+                        Objects.isNull(e.primaryCriteria.criteriaList) ||
                         e.primaryCriteria.criteriaList.length == 0)
                 .then(() -> reporter.add(NO_INITIAL_EVENT_ERROR));
     }

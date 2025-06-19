@@ -53,9 +53,12 @@ public class UnusedConceptsCheck extends BaseCheck {
 
         List<Criteria> additionalCriteria = getAdditionalCriteria(expression);
 
-        Arrays.stream(expression.conceptSets)
-                .filter(conceptSet -> this.isNotUsed(expression, additionalCriteria, conceptSet))
-                .forEach(conceptSet -> reporter.add("Concept Set \"%s\" is not used", conceptSet));
+        // Check if conceptSets is null to avoid NullPointerException
+        if (expression.conceptSets != null) {
+            Arrays.stream(expression.conceptSets)
+                    .filter(conceptSet -> this.isNotUsed(expression, additionalCriteria, conceptSet))
+                    .forEach(conceptSet -> reporter.add("Concept Set \"%s\" is not used", conceptSet));
+        }
 
     }
 
@@ -75,7 +78,8 @@ public class UnusedConceptsCheck extends BaseCheck {
     }
 
     private boolean isUsed(CohortExpression expression, List<Criteria> additionalCriteria, ConceptSet conceptSet) {
-        if (isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList))) {
+        if (expression.primaryCriteria != null && expression.primaryCriteria.criteriaList != null && 
+            isConceptSetUsed(conceptSet, Arrays.asList(expression.primaryCriteria.criteriaList))) {
             return true;
         }
         if (isConceptSetUsed(conceptSet, additionalCriteria)) {

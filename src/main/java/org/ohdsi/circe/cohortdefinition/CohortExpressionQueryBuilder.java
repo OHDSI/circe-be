@@ -189,23 +189,42 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   }
 
   public String getPrimaryEventsQuery(PrimaryCriteria primaryCriteria) {
+    System.err.println("DEBUG: ENTERING getPrimaryEventsQuery - VERSION 2.0");
+    
+    if (primaryCriteria == null) {
+      System.err.println("DEBUG: primaryCriteria is null!");
+      return "";
+    }
+    
     String query = PRIMARY_EVENTS_TEMPLATE;
 
     ArrayList<String> criteriaQueries = new ArrayList<>();
 
-    for (Criteria c : primaryCriteria.criteriaList) {
-      criteriaQueries.add(c.accept(this));
+    if (primaryCriteria.criteriaList != null) {
+      System.err.println("DEBUG: criteriaList is not null, size: " + primaryCriteria.criteriaList.length);
+      for (Criteria c : primaryCriteria.criteriaList) {
+        if (c != null) {
+          System.err.println("DEBUG: Processing criteria: " + c.getClass().getSimpleName());
+          criteriaQueries.add(c.accept(this));
+        } else {
+          System.err.println("DEBUG: Skipping null criteria");
+        }
+      }
+    } else {
+      System.err.println("DEBUG: criteriaList is null!");
     }
 
     query = StringUtils.replace(query, "@criteriaQueries", StringUtils.join(criteriaQueries, "\nUNION ALL\n"));
 
     ArrayList<String> primaryEventsFilters = new ArrayList<>();
-    primaryEventsFilters.add(String.format(
-            "DATEADD(day,%d,OP.OBSERVATION_PERIOD_START_DATE) <= E.START_DATE AND DATEADD(day,%d,E.START_DATE) <= OP.OBSERVATION_PERIOD_END_DATE",
-            primaryCriteria.observationWindow.priorDays,
-            primaryCriteria.observationWindow.postDays
-    )
-    );
+    if (primaryCriteria.observationWindow != null) {
+      primaryEventsFilters.add(String.format(
+              "DATEADD(day,%d,OP.OBSERVATION_PERIOD_START_DATE) <= E.START_DATE AND DATEADD(day,%d,E.START_DATE) <= OP.OBSERVATION_PERIOD_END_DATE",
+              primaryCriteria.observationWindow.priorDays,
+              primaryCriteria.observationWindow.postDays
+      )
+      );
+    }
 
     query = StringUtils.replace(query, "@primaryEventsFilter", StringUtils.join(primaryEventsFilters, " AND "));
 

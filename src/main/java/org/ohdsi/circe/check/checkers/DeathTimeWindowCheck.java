@@ -57,7 +57,9 @@ public class DeathTimeWindowCheck extends BaseCorelatedCriteriaCheck {
 		if (expression.additionalCriteria != null) {
 			checkCriteriaList(expression.additionalCriteria.criteriaList, ADDITIONAL_RULE, reporter);
 		}
-		checkCriteriaList(expression.primaryCriteria.criteriaList, INITIAL_EVENT, reporter);
+		if (expression.primaryCriteria != null) {
+			checkCriteriaList(expression.primaryCriteria.criteriaList, INITIAL_EVENT, reporter);
+		}
 	}
 
 	private void checkCriteriaList(Object[] criteriaList, String groupName, WarningReporter reporter) {

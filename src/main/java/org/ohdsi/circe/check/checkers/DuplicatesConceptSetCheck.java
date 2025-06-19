@@ -38,7 +38,7 @@ public class DuplicatesConceptSetCheck extends BaseCheck {
     @Override
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
-        if (expression.conceptSets.length > 1) {
+        if (expression.conceptSets != null && expression.conceptSets.length > 1) {
             int size = expression.conceptSets.length;
             for(int i = 0; i <= size - 2; i++) {
                 ConceptSet conceptSet = expression.conceptSets[i];

@@ -20,6 +20,10 @@ public class CirceNativeLibrary {
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
+    // Stack overflow protection - track recursion depth
+    private static final ThreadLocal<Integer> recursionDepth = ThreadLocal.withInitial(() -> 0);
+    private static final int MAX_RECURSION_DEPTH = 100;
+    
     /**
      * C-compatible entry point for building cohort SQL
      */
@@ -69,21 +73,59 @@ public class CirceNativeLibrary {
      */
     public static String buildCohortSql(String jsonExpression, String options) {
         try {
+            // Stack overflow protection
+            int depth = recursionDepth.get();
+            if (depth > MAX_RECURSION_DEPTH) {
+                return "Error building cohort SQL: Maximum recursion depth exceeded";
+            }
+            recursionDepth.set(depth + 1);
+            
+            // Add debug logging
+            System.err.println("DEBUG: Building cohort SQL");
+            System.err.println("DEBUG: Expression length: " + (jsonExpression != null ? jsonExpression.length() : "null"));
+            System.err.println("DEBUG: Options: " + options);
+            
+            if (jsonExpression == null || jsonExpression.trim().isEmpty()) {
+                return "Error building cohort SQL: Expression is null or empty";
+            }
+            
             CohortExpression cohortExpression = objectMapper.readValue(jsonExpression, CohortExpression.class);
+            System.err.println("DEBUG: Parsed cohort expression successfully");
+            
             CohortExpressionQueryBuilder.BuildExpressionQueryOptions generateOptions = 
                 new CohortExpressionQueryBuilder.BuildExpressionQueryOptions();
             
             if (options != null && !options.trim().isEmpty()) {
                 // Parse options if provided
                 generateOptions = objectMapper.readValue(options, CohortExpressionQueryBuilder.BuildExpressionQueryOptions.class);
+                System.err.println("DEBUG: Parsed options successfully");
             }
             
             CohortExpressionQueryBuilder queryBuilder = new CohortExpressionQueryBuilder();
+            System.err.println("DEBUG: Created query builder");
+            
             String sql = queryBuilder.buildExpressionQuery(cohortExpression, generateOptions);
+            System.err.println("DEBUG: Generated SQL, length: " + (sql != null ? sql.length() : "null"));
+            
+            if (sql == null) {
+                return "Error building cohort SQL: Generated SQL is null";
+            }
             
             return sql;
         } catch (Exception e) {
-            return "Error building cohort SQL: " + e.getMessage();
+            System.err.println("DEBUG: Exception in buildCohortSql: " + e.getClass().getSimpleName());
+            System.err.println("DEBUG: Exception message: " + e.getMessage());
+            e.printStackTrace();
+            
+            String errorMsg = e.getMessage();
+            if (errorMsg == null) {
+                errorMsg = e.getClass().getSimpleName() + " (no message)";
+            }
+            return "Error building cohort SQL: " + errorMsg;
+        } finally {
+            // Reset recursion depth
+            int depth = recursionDepth.get();
+            recursionDepth.set(Math.max(0, depth - 1));
         }
     }
 
@@ -95,13 +137,36 @@ public class CirceNativeLibrary {
      */
     public static String checkCohortExpression(String jsonExpression) {
         try {
-            CohortExpression cohortExpression = objectMapper.readValue(jsonExpression, CohortExpression.class);
-            Checker checker = new Checker();
-            List<Warning> warnings = checker.check(cohortExpression);
+            System.err.println("DEBUG: Checking cohort expression");
+            System.err.println("DEBUG: Expression length: " + (jsonExpression != null ? jsonExpression.length() : "null"));
             
-            return objectMapper.writeValueAsString(warnings);
+            if (jsonExpression == null || jsonExpression.trim().isEmpty()) {
+                return "Error validating cohort expression: Expression is null or empty";
+            }
+            
+            CohortExpression cohortExpression = objectMapper.readValue(jsonExpression, CohortExpression.class);
+            System.err.println("DEBUG: Parsed cohort expression for validation");
+            
+            Checker checker = new Checker();
+            System.err.println("DEBUG: Created checker");
+            
+            List<Warning> warnings = checker.check(cohortExpression);
+            System.err.println("DEBUG: Check completed, warnings count: " + (warnings != null ? warnings.size() : "null"));
+            
+            String result = objectMapper.writeValueAsString(warnings);
+            System.err.println("DEBUG: Serialized warnings to JSON, length: " + (result != null ? result.length() : "null"));
+            
+            return result;
         } catch (Exception e) {
-            return "Error validating cohort expression: " + e.getMessage();
+            System.err.println("DEBUG: Exception in checkCohortExpression: " + e.getClass().getSimpleName());
+            System.err.println("DEBUG: Exception message: " + e.getMessage());
+            e.printStackTrace();
+            
+            String errorMsg = e.getMessage();
+            if (errorMsg == null) {
+                errorMsg = e.getClass().getSimpleName() + " (no message)";
+            }
+            return "Error validating cohort expression: " + errorMsg;
         }
     }
 
