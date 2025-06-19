@@ -41,7 +41,8 @@ public class TimeWindowCheck extends BaseCorelatedCriteriaCheck {
     @Override
     protected void beforeCheck(WarningReporter reporter, CohortExpression expression) {
 
-        observationFilter = expression.primaryCriteria.observationWindow;
+        observationFilter = (expression.primaryCriteria != null) ? 
+            expression.primaryCriteria.observationWindow : null;
     }
 
     @Override

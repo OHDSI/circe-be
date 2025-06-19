@@ -44,7 +44,7 @@ public abstract class BaseValueCheck extends BaseCheck {
     }
 
     protected void checkPrimaryCriteria(PrimaryCriteria primaryCriteria, WarningReporter reporter) {
-        if (Objects.nonNull(primaryCriteria)) {
+        if (Objects.nonNull(primaryCriteria) && Objects.nonNull(primaryCriteria.criteriaList)) {
             Arrays.stream(primaryCriteria.criteriaList)
                     .forEach(criteria -> checkCriteria(criteria, reporter, PRIMARY_CRITERIA));
         }

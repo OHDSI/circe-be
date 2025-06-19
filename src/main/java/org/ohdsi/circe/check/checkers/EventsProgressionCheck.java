@@ -36,7 +36,8 @@ public class EventsProgressionCheck extends BaseCheck {
     @Override
     protected void check(CohortExpression expression, WarningReporter reporter) {
 
-        int initialWeight = getWeight(expression.primaryCriteria.primaryLimit);
+        int initialWeight = (expression.primaryCriteria != null) ? 
+            getWeight(expression.primaryCriteria.primaryLimit) : 0;
         int cohortInitialWeight = getWeight(expression.qualifiedLimit);
         // qualifying limit is ignored when no additionalCriteria specified
 				int qualifyingWeight = (expression.additionalCriteria != null) ? 

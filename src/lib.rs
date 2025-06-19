@@ -176,6 +176,7 @@ unsafe impl Sync for IsolateThreadPtr {}
 // External functions from GraalVM native library
 extern "C" {
     fn graal_create_isolate(params: *const std::os::raw::c_void, isolate: *mut *mut std::os::raw::c_void, thread: *mut *mut IsolateThread) -> std::os::raw::c_int;
+    fn graal_tear_down_isolate(thread: *mut IsolateThread) -> std::os::raw::c_int;
     fn circe_build_cohort_sql(thread: *mut IsolateThread, json_expression: *const c_char, options: *const c_char) -> *mut c_char;
     fn circe_check_cohort_expression(thread: *mut IsolateThread, json_expression: *const c_char) -> *mut c_char;
     #[link_name = "circe_free_string"]
@@ -205,6 +206,36 @@ fn ensure_isolate_initialized() -> Result<*mut IsolateThread, CirceError> {
         
         *isolate_guard = Some(IsolateThreadPtr(thread));
         Ok(thread)
+    }
+}
+
+/// Reset the GraalVM isolate (useful for test cleanup)
+fn reset_isolate() -> Result<(), CirceError> {
+    let mut isolate_guard = ISOLATE_THREAD.lock()
+        .map_err(|_| CirceError::InitializationError("Failed to acquire isolate mutex".to_string()))?;
+    
+    // Clean up existing isolate if it exists
+    if let Some(thread_ptr) = isolate_guard.take() {
+        unsafe {
+            let result = graal_tear_down_isolate(thread_ptr.0);
+            if result != 0 {
+                eprintln!("Warning: Failed to tear down isolate: {}", result);
+            }
+        }
+    }
+    
+    // Create a new isolate
+    unsafe {
+        let mut isolate: *mut std::os::raw::c_void = std::ptr::null_mut();
+        let mut thread: *mut IsolateThread = std::ptr::null_mut();
+        
+        let result = graal_create_isolate(std::ptr::null(), &mut isolate, &mut thread);
+        if result != 0 {
+            return Err(CirceError::InitializationError(format!("Failed to create new GraalVM isolate: {}", result)));
+        }
+        
+        *isolate_guard = Some(IsolateThreadPtr(thread));
+        Ok(())
     }
 }
 
@@ -422,4 +453,9 @@ pub fn get_version() -> Result<String, CirceError> {
         let result_ptr = circe_get_version();
         c_str_to_rust_string(result_ptr)
     }
+}
+
+/// Reset the GraalVM isolate (for test cleanup)
+pub fn reset_native_library() -> Result<(), CirceError> {
+    reset_isolate()
 }
