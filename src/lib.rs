@@ -1,7 +1,5 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
-use std::ptr;
-use std::panic;
 use std::sync::Mutex;
 
 // Global mutex to serialize access to the native library
@@ -37,132 +35,6 @@ impl std::fmt::Display for CirceError {
 
 impl std::error::Error for CirceError {}
 
-/// Helper function to safely convert C string to Rust string
-unsafe fn c_str_to_string(c_str: *const c_char) -> Result<String, CirceError> {
-    if c_str.is_null() {
-        return Err(CirceError::NullPointer);
-    }
-    CStr::from_ptr(c_str)
-        .to_str()
-        .map(|s| s.to_string())
-        .map_err(|e| CirceError::JsonError(format!("UTF-8 error: {}", e)))
-}
-
-/// Helper function to safely convert Rust string to C string
-fn string_to_c_str(s: String) -> *mut c_char {
-    match CString::new(s) {
-        Ok(c_string) => c_string.into_raw(),
-        Err(_) => ptr::null_mut(),
-    }
-}
-
-/// Exported C function: Get library version
-#[no_mangle]
-pub extern "C" fn circe_get_version() -> *mut c_char {
-    string_to_c_str("1.12.1-SNAPSHOT".to_string())
-}
-
-/// Exported C function: Build expression query from JSON
-#[no_mangle]
-pub extern "C" fn circe_build_expression_query(
-    json_expression: *const c_char, 
-    options: *const c_char
-) -> *mut c_char {
-    let result = panic::catch_unwind(|| {
-        unsafe {
-            let expression = match c_str_to_string(json_expression) {
-                Ok(s) => s,
-                Err(e) => return format!("Error reading expression: {}", e),
-            };
-            
-            let options_str = if options.is_null() {
-                String::new()
-            } else {
-                match c_str_to_string(options) {
-                    Ok(s) => s,
-                    Err(e) => return format!("Error reading options: {}", e),
-                }
-            };
-            
-            // Call Java-based functionality through JNI
-            match call_java_build_cohort_sql(&expression, &options_str) {
-                Ok(sql) => sql,
-                Err(e) => format!("Error: {}", e),
-            }
-        }
-    });
-    
-    match result {
-        Ok(sql) => string_to_c_str(sql),
-        Err(_) => string_to_c_str("Error: panic occurred in circe_build_expression_query".to_string()),
-    }
-}
-
-/// Exported C function: Validate cohort expression
-#[no_mangle]
-pub extern "C" fn circe_validate_cohort_expression(json_expression: *const c_char) -> *mut c_char {
-    let result = panic::catch_unwind(|| {
-        unsafe {
-            let expression = match c_str_to_string(json_expression) {
-                Ok(s) => s,
-                Err(e) => return format!("Error reading expression: {}", e),
-            };
-            
-            // Call Java-based validation through JNI
-            match call_java_check_cohort_expression(&expression) {
-                Ok(result) => result,
-                Err(e) => format!("Error: {}", e),
-            }
-        }
-    });
-    
-    match result {
-        Ok(result) => string_to_c_str(result),
-        Err(_) => string_to_c_str("Error: panic occurred in circe_validate_cohort_expression".to_string()),
-    }
-}
-
-/// Exported C function: Render and translate SQL (placeholder)
-#[no_mangle]
-pub extern "C" fn circe_render_and_translate_sql(
-    sql: *const c_char,
-    target_dialect: *const c_char
-) -> *mut c_char {
-    let result = panic::catch_unwind(|| {
-        unsafe {
-            let sql_str = match c_str_to_string(sql) {
-                Ok(s) => s,
-                Err(e) => return format!("Error reading SQL: {}", e),
-            };
-            
-            let dialect = if target_dialect.is_null() {
-                "sql server".to_string()
-            } else {
-                match c_str_to_string(target_dialect) {
-                    Ok(s) => s,
-                    Err(e) => return format!("Error reading dialect: {}", e),
-                }
-            };
-            
-            // For now, just return the original SQL with a comment
-            format!("-- Translated for {}\n{}", dialect, sql_str)
-        }
-    });
-    
-    match result {
-        Ok(sql) => string_to_c_str(sql),
-        Err(_) => string_to_c_str("Error: panic occurred in circe_render_and_translate_sql".to_string()),
-    }
-}
-
-/// Free memory allocated by the library
-#[no_mangle]
-pub extern "C" fn circe_free_string(ptr: *mut c_char) {
-    if !ptr.is_null() {
-        // This function is now a no-op, as memory is managed by the GraalVM library
-    }
-}
-
 #[repr(C)]
 pub struct IsolateThread {
     _private: [u8; 0],
@@ -179,8 +51,6 @@ extern "C" {
     fn graal_tear_down_isolate(thread: *mut IsolateThread) -> std::os::raw::c_int;
     fn circe_build_cohort_sql(thread: *mut IsolateThread, json_expression: *const c_char, options: *const c_char) -> *mut c_char;
     fn circe_check_cohort_expression(thread: *mut IsolateThread, json_expression: *const c_char) -> *mut c_char;
-    #[link_name = "circe_free_string"]
-    fn graal_free_string(thread: *mut IsolateThread, ptr: *mut c_char);
 }
 
 // Global isolate thread - this should be initialized once
@@ -264,8 +134,8 @@ fn call_java_build_cohort_sql(expression: &str, options: &str) -> Result<String,
             .map_err(|e| CirceError::ProcessError(format!("Invalid UTF-8 from native library: {}", e)))?
             .to_string();
         
-        // Free the memory allocated by the native library
-        graal_free_string(thread, result_ptr);
+        // Note: GraalVM manages its own memory, so we skip manual free to avoid double-free issues
+        // graal_free_string(thread, result_ptr);
         
         Ok(result)
     }
@@ -293,8 +163,8 @@ fn call_java_check_cohort_expression(expression: &str) -> Result<String, CirceEr
             .map_err(|e| CirceError::ProcessError(format!("Invalid UTF-8 from native library: {}", e)))?
             .to_string();
         
-        // Free the memory allocated by the native library
-        graal_free_string(thread, result_ptr);
+        // Note: GraalVM manages its own memory, so we skip manual free to avoid double-free issues
+        // graal_free_string(thread, result_ptr);
         
         Ok(result)
     }
@@ -355,22 +225,10 @@ impl BuildExpressionQueryOptions {
     }
 }
 
-/// Helper function to convert C string to Rust string
-unsafe fn c_str_to_rust_string(c_str: *const c_char) -> Result<String, CirceError> {
-    if c_str.is_null() {
-        return Err(CirceError::NullPointer);
-    }
-    
-    let cstr = CStr::from_ptr(c_str);
-    cstr.to_str()
-        .map_err(|e| CirceError::ProcessError(format!("Invalid UTF-8: {}", e)))
-        .map(|s| s.to_string())
-}
-
 /// Initialize the Circe environment
 pub fn init_jvm() -> Result<(), CirceError> {
-    // For GraalVM native library mode, no JVM initialization needed
-    // The native library functions will be called directly via FFI
+    // For GraalVM native library mode, ensure isolate is initialized
+    ensure_isolate_initialized()?;
     Ok(())
 }
 
@@ -379,62 +237,27 @@ pub fn build_expression_query(
     expression_json: &str,
     options: Option<&BuildExpressionQueryOptions>,
 ) -> Result<String, CirceError> {
-    build_expression_query_shared_lib(expression_json, options)
-}
-
-/// Build expression query using shared library
-fn build_expression_query_shared_lib(
-    expression_json: &str,
-    options: Option<&BuildExpressionQueryOptions>,
-) -> Result<String, CirceError> {
-    let c_expression = CString::new(expression_json)
-        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
-    
     let options_json = options.map(|o| o.to_json()).unwrap_or_else(|| "{}".to_string());
-    let c_options = CString::new(options_json)
-        .map_err(|e| CirceError::JsonError(format!("Invalid options JSON: {}", e)))?;
-    
-    unsafe {
-        let result_ptr = circe_build_expression_query(c_expression.as_ptr(), c_options.as_ptr());
-        c_str_to_rust_string(result_ptr)
-    }
+    call_java_build_cohort_sql(expression_json, &options_json)
 }
 
 /// Render and translate SQL to target database dialect
 pub fn render_and_translate_sql(sql: &str, target_dialect: &str) -> Result<String, CirceError> {
-    let c_sql = CString::new(sql)
-        .map_err(|e| CirceError::ProcessError(format!("Invalid SQL: {}", e)))?;
-    let c_dialect = CString::new(target_dialect)
-        .map_err(|e| CirceError::ProcessError(format!("Invalid dialect: {}", e)))?;
-    
-    unsafe {
-        let result_ptr = circe_render_and_translate_sql(c_sql.as_ptr(), c_dialect.as_ptr());
-        c_str_to_rust_string(result_ptr)
-    }
+    // For now, just return the SQL with a comment about the dialect
+    // In a full implementation, this would use SqlRender
+    Ok(format!("-- Rendered for {} dialect\n{}", target_dialect, sql))
 }
 
 /// Validate a cohort expression JSON
 pub fn validate_cohort_expression(expression_json: &str) -> Result<String, CirceError> {
-    let c_expression = CString::new(expression_json)
-        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
-    
-    unsafe {
-        let result_ptr = circe_validate_cohort_expression(c_expression.as_ptr());
-        c_str_to_rust_string(result_ptr)
-    }
+    call_java_check_cohort_expression(expression_json)
 }
 
 /// Validate a concept set expression JSON
 pub fn validate_concept_set_expression(expression_json: &str) -> Result<String, CirceError> {
     // For now, use the same validation as cohort expression
     // In a full implementation, this would call a specific concept set validation function
-    let c_expression = CString::new(expression_json)
-        .map_err(|e| CirceError::JsonError(format!("Invalid expression JSON: {}", e)))?;
-    
-    unsafe {
-        let result_ptr = circe_validate_cohort_expression(c_expression.as_ptr());
-        c_str_to_rust_string(result_ptr)
-    }
+    call_java_check_cohort_expression(expression_json)
 }
 
 /// Build and render cohort SQL in one call (convenience function)
@@ -449,10 +272,7 @@ pub fn build_and_render_cohort_sql(
 
 /// Get library version
 pub fn get_version() -> Result<String, CirceError> {
-    unsafe {
-        let result_ptr = circe_get_version();
-        c_str_to_rust_string(result_ptr)
-    }
+    Ok("1.12.1-SNAPSHOT".to_string())
 }
 
 /// Reset the GraalVM isolate (for test cleanup)
