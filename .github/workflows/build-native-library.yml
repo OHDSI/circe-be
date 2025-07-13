@@ -1,15 +1,13 @@
-name: Build Native Library
+name: Build and Check-in Native Library
 
 on:
   workflow_dispatch:
     inputs:
-      target_platform:
-        description: 'Target platform to build for'
-        required: true
-        default: 'linux-x86_64'
-        type: choice
-        options:
-          - linux-x86_64
+      commit_message:
+        description: 'Custom commit message (optional)'
+        required: false
+        default: 'Update prebuilt native library for Linux x86_64'
+        type: string
 
 jobs:
   build-native-library:
@@ -23,9 +21,10 @@ jobs:
     - name: Set up GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        version: 'latest'
+        version: '22.3.0'
         java-version: '17'
         components: 'native-image'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Cache Maven dependencies
       uses: actions/cache@v4
@@ -114,17 +113,13 @@ jobs:
       run: |
         echo "Building Maven project..."
         timeout 10m mvn clean package -Dmaven.test.skip=true -q || {
-          echo "Maven build with dependencies failed, trying offline compile..."
-          timeout 5m mvn compile -q -o -Dmaven.test.skip=true || {
-            echo "Maven compile failed, but this may be expected due to dependency issues"
-            exit 1
-          }
+          echo "Maven build failed!"
+          exit 1
         }
 
-    - name: Build native image (Linux/macOS)
-      if: runner.os != 'Windows'
+    - name: Build native library
       run: |
-        echo "Building shared library for Linux/macOS..."
+        echo "Building shared library for Linux x86_64..."
         echo "Current directory: $(pwd)"
         echo "Checking for JAR file..."
         ls -la target/circe-cli.jar || {
@@ -145,136 +140,124 @@ jobs:
         
         echo "✅ Native image build completed"
         echo "Checking for generated library files:"
-        ls -la target/libcirce-native* || echo "No native library files found"
+        ls -la target/libcirce-native*
 
-    - name: Build native image (Windows)
-      if: runner.os == 'Windows'
+    - name: Verify native library
       run: |
-        echo "Building shared library..."
-        # Run the GraalVM native-image build directly on Windows
-        if (-not (Test-Path "target\circe-cli.jar")) {
-          Write-Error "JAR file not found at target\circe-cli.jar"
-          Get-ChildItem target\ -ErrorAction SilentlyContinue
+        echo "Verifying native library..."
+        if [ -f "target/libcirce-native.so" ]; then
+          echo "✅ Found Linux shared library: target/libcirce-native.so"
+          ls -la target/libcirce-native.so
+          echo "Library size: $(du -h target/libcirce-native.so | cut -f1)"
+        else
+          echo "❌ Linux shared library not found"
+          echo "Contents of target directory:"
+          ls -la target/
           exit 1
-        }
-        
-        # Build shared library
-        native-image `
-          --no-fallback `
-          --shared `
-          --enable-all-security-services `
-          --allow-incomplete-classpath `
-          --report-unsupported-elements-at-runtime `
-          -H:+ReportExceptionStackTraces `
-          -H:ConfigurationFileDirectories="graalvm-config" `
-          -H:Name=circe-native-lib `
-          -jar "target\circe-cli.jar" `
-          "target\libcirce-native"
-
-    - name: Verify native binary
-      run: |
-        echo "Checking for native library files..."
-        ls -la target/ | grep libcirce-native || echo "No libcirce-native files found in target/"
-        
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          if [ -f "target/libcirce-native.dll" ]; then
-            echo "✅ Found Windows shared library: target/libcirce-native.dll"
-            ls -la target/libcirce-native.dll
-          else
-            echo "❌ Windows shared library not found"
-            exit 1
-          fi
-        else
-          if [ -f "target/libcirce-native.so" ]; then
-            echo "✅ Found Linux shared library: target/libcirce-native.so"
-            ls -la target/libcirce-native.so
-          elif [ -f "target/libcirce-native.dylib" ]; then
-            echo "✅ Found macOS shared library: target/libcirce-native.dylib"
-            ls -la target/libcirce-native.dylib
-          else
-            echo "❌ No shared library found"
-            echo "Contents of target directory:"
-            ls -la target/
-            exit 1
-          fi
         fi
 
-    - name: Prepare native binary directory
+    - name: Prepare native library directory
       run: |
-        mkdir -p native-binaries/${{ github.event.inputs.target_platform }}
-        echo "Created directory: native-binaries/${{ github.event.inputs.target_platform }}"
+        echo "Creating native-libs directory structure..."
+        mkdir -p native-libs/linux-x86_64
+        echo "✅ Created directory: native-libs/linux-x86_64"
 
-    - name: Copy native binary to platform directory
+    - name: Copy native library and header
       run: |
-        echo "Copying native library to platform directory..."
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          if [ -f "target/libcirce-native.dll" ]; then
-            cp target/libcirce-native.dll native-binaries/${{ github.event.inputs.target_platform }}/
-            echo "✅ Copied libcirce-native.dll"
-          else
-            echo "❌ libcirce-native.dll not found"
-            exit 1
-          fi
+        echo "Copying native library files..."
+        
+        # Copy the shared library
+        if [ -f "target/libcirce-native.so" ]; then
+          cp target/libcirce-native.so native-libs/linux-x86_64/
+          echo "✅ Copied libcirce-native.so"
         else
-          if [ -f "target/libcirce-native.so" ]; then
-            cp target/libcirce-native.so native-binaries/${{ github.event.inputs.target_platform }}/
-            echo "✅ Copied libcirce-native.so"
-          elif [ -f "target/libcirce-native.dylib" ]; then
-            cp target/libcirce-native.dylib native-binaries/${{ github.event.inputs.target_platform }}/
-            echo "✅ Copied libcirce-native.dylib"
-          else
-            echo "❌ No shared library found to copy"
-            exit 1
-          fi
+          echo "❌ libcirce-native.so not found"
+          exit 1
         fi
         
-        echo "Contents of native-binaries/${{ github.event.inputs.target_platform }}:"
-        ls -la native-binaries/${{ github.event.inputs.target_platform }}/
+        # Copy the header file
+        if [ -f "include/circe_native_lib.h" ]; then
+          cp include/circe_native_lib.h native-libs/linux-x86_64/libcirce-native.h
+          echo "✅ Copied header file as libcirce-native.h"
+        else
+          echo "⚠️ Header file not found at include/circe_native_lib.h"
+          echo "Creating basic header file..."
+          echo '#ifndef CIRCE_NATIVE_LIB_H' > native-libs/linux-x86_64/libcirce-native.h
+          echo '#define CIRCE_NATIVE_LIB_H' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '#ifdef __cplusplus' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'extern "C" {' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '#endif' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '// GraalVM isolate functions' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'typedef struct __graal_isolate_t graal_isolate_t;' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'typedef struct __graal_isolatethread_t graal_isolatethread_t;' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'int graal_create_isolate(void* params, graal_isolate_t** isolate, graal_isolatethread_t** thread);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'int graal_detach_thread(graal_isolatethread_t* thread);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'int graal_tear_down_isolate(graal_isolate_t* isolate);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '// Circe native functions' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'char* circe_build_cohort_sql(graal_isolatethread_t* thread, const char* cohort_definition, const char* target_dialect);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'char* circe_check_cohort_expression(graal_isolatethread_t* thread, const char* cohort_expression);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo 'void graal_free_string(char* str);' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '#ifdef __cplusplus' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '}' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '#endif' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '' >> native-libs/linux-x86_64/libcirce-native.h
+          echo '#endif // CIRCE_NATIVE_LIB_H' >> native-libs/linux-x86_64/libcirce-native.h
+          echo "✅ Created basic header file"
+        fi
+        
+        echo "Contents of native-libs/linux-x86_64/:"
+        ls -la native-libs/linux-x86_64/
 
     - name: Configure git
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-    - name: Commit native binary
-      env:
-        LIBRARY_NAME: ${{ runner.os == 'Windows' && 'libcirce-native.dll' || (runner.os == 'macOS' && 'libcirce-native.dylib' || 'libcirce-native.so') }}
+    - name: Commit native library
       run: |
-        echo "Preparing to commit native library: ${LIBRARY_NAME}"
-        echo "Platform directory: native-binaries/${{ github.event.inputs.target_platform }}"
+        echo "Preparing to commit native library files..."
+        echo "Native library directory: native-libs/linux-x86_64"
         
-        # Check if the library file exists in the platform directory
-        LIBRARY_PATH="native-binaries/${{ github.event.inputs.target_platform }}/${LIBRARY_NAME}"
-        if [ ! -f "${LIBRARY_PATH}" ]; then
-          echo "❌ Library file not found at: ${LIBRARY_PATH}"
-          echo "Contents of native-binaries/${{ github.event.inputs.target_platform }}:"
-          ls -la native-binaries/${{ github.event.inputs.target_platform }}/ || echo "Directory does not exist"
+        # Check if the library files exist
+        if [ ! -f "native-libs/linux-x86_64/libcirce-native.so" ]; then
+          echo "❌ Library file not found at: native-libs/linux-x86_64/libcirce-native.so"
           exit 1
         fi
         
-        echo "✅ Found library file: ${LIBRARY_PATH}"
-        ls -la "${LIBRARY_PATH}"
+        if [ ! -f "native-libs/linux-x86_64/libcirce-native.h" ]; then
+          echo "❌ Header file not found at: native-libs/linux-x86_64/libcirce-native.h"
+          exit 1
+        fi
         
-        # Add the file to git
-        git add "${LIBRARY_PATH}"
+        echo "✅ Found library files:"
+        ls -la native-libs/linux-x86_64/
+        
+        # Add the files to git
+        git add native-libs/linux-x86_64/libcirce-native.so
+        git add native-libs/linux-x86_64/libcirce-native.h
         
         # Check if there are changes to commit
         if git diff --staged --quiet; then
-          echo "ℹ️ No changes to commit (file may already be up to date)"
+          echo "ℹ️ No changes to commit (files may already be up to date)"
         else
           echo "📝 Committing changes..."
-          git commit -m "Update native library for ${{ github.event.inputs.target_platform }}"
+          git commit -m "${{ github.event.inputs.commit_message }}"
           
           echo "🚀 Pushing changes..."
           git push
           
-          echo "✅ Successfully committed and pushed native library"
+          echo "✅ Successfully committed and pushed native library files"
         fi
 
-    - name: Upload native binary artifact
+    - name: Upload native library artifact
       uses: actions/upload-artifact@v4
       with:
-        name: circe-native-library-${{ github.event.inputs.target_platform }}
-        path: native-binaries/${{ github.event.inputs.target_platform }}/
+        name: circe-native-library-linux-x86_64
+        path: native-libs/linux-x86_64/
         retention-days: 30
         if-no-files-found: error

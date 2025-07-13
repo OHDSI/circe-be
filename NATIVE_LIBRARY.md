@@ -34,6 +34,22 @@ If you need to rebuild the native library (for development or other platforms):
 3. Run: `./build-graalvm.sh`
 4. The library will be created in `target/libcirce-native.so`
 
+## GitHub Action for Building Native Library
+
+For maintainers, there's a GitHub Action that can build and check in the native library automatically:
+
+1. Go to the "Actions" tab in the GitHub repository
+2. Select "Build and Check-in Native Library"
+3. Click "Run workflow"
+4. Optionally customize the commit message
+5. The action will:
+   - Build the native library using GraalVM
+   - Copy it to `native-libs/linux-x86_64/`
+   - Create or update the header file
+   - Commit and push the changes to the repository
+
+This action is useful when updating dependencies or making changes that require rebuilding the native library.
+
 ## Memory Management
 
 The native library uses GraalVM's automatic memory management. The Rust wrapper automatically handles:
