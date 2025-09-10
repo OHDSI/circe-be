@@ -66,5 +66,9 @@ ${cc?counter}. <@ct.Criteria c=cc/>
 
 Remaining events will be combined into cohort eras if they are within ${collapseSettings.eraPad} days of each other.
 
+<#if censorWindow?has_content><#if
+censorWindow.startDate?has_content>Left censor cohort start dates to ${censorWindow.startDate}.  </#if><#if censorWindow.endDate?has_content>
+Right censor cohort end dates to ${censorWindow.endDate}</#if></#if>
+
 <#-- main template: end -->
 

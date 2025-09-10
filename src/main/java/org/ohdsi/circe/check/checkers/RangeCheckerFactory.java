@@ -214,8 +214,6 @@ public class RangeCheckerFactory extends BaseCheckerFactory {
                             .then(x -> warning.accept(WARNING_START_GREATER_THAN_END));
                 })
                 .orElse( r -> match(r)
-                        .when(Comparisons::isStartNegative)
-                        .then(() -> warning.accept(WARNING_START_IS_NEGATIVE))
                         .when(x -> Objects.isNull(x.value))
                         .then(() -> warning.accept(WARNING_EMPTY_START_VALUE)));
     }
