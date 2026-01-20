@@ -139,7 +139,7 @@ public class DrugEraSqlBuilder<T extends DrugEra> extends CriteriaSqlBuilder<T> 
 
     // gapDays
     if (criteria.gapDays != null) {
-      whereClauses.add(buildNumericRangeClause("C.gap_days", criteria.eraLength));
+      whereClauses.add(buildNumericRangeClause("C.gap_days", criteria.gapDays));
     }
 
     // ageAtStart
