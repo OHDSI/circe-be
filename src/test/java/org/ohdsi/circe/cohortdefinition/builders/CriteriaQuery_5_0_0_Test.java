@@ -27,6 +27,8 @@ import org.dbunit.dataset.SortedTable;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import org.ohdsi.circe.AbstractDatabaseTest;
 import org.ohdsi.circe.cohortdefinition.ConceptSetSelection;
 import org.ohdsi.circe.cohortdefinition.ConditionEra;
@@ -64,7 +66,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
   private static final ConceptSetSelection CONCEPTSET_2 = null;
   private static final ConceptSetSelection CONCEPTSET_3 = null;
   private static final ConceptSetSelection CONCEPTSET_4 = null;
-  
+
 
   private String renderQuery(String query) {
     String result = StringUtils.replace(query, "#Codesets", "temp.codesets");
@@ -91,7 +93,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     prepareSchema("cdm", CDM_DDL_PATH);
     prepareSchema("temp", TEMP_DDL_PATH);
   }
-  
+
   private ConceptSetSelection createConceptSetSelection(Integer id, boolean isExcluded) {
     ConceptSetSelection css = new ConceptSetSelection();
     css.codesetId = id;
@@ -147,7 +149,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);
   }
-  
+
   @Test
   public void testConditionEraConceptSet() throws Exception {
     final String[] testDataSetsPrep = new String[]{
@@ -252,7 +254,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.genderCS = createConceptSetSelection(1,false);
     criteria.visitTypeCS = createConceptSetSelection(2,false);
     criteria.providerSpecialtyCS = createConceptSetSelection(3,false);
-    
+
 
     ConditionOccurrenceSqlBuilder<ConditionOccurrence> builder = new ConditionOccurrenceSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
@@ -270,7 +272,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);
   }
-  
+
   @Test
   public void testDeathDateOffset() throws Exception {
     final String[] testDataSetsPrep = new String[]{
@@ -315,7 +317,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     Assertion.assertEquals(expectedDataSet, actualDataSet);
   }
 
-  
+
   @Test
   public void testDeathConceptSet() throws Exception {
     final String[] testDataSetsPrep = new String[]{
@@ -505,7 +507,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.codesetId = 1;
     criteria.genderCS = createConceptSetSelection(1,false);
     criteria.unitCS = createConceptSetSelection(3,false);
-    
+
 
     DoseEraSqlBuilder<DoseEra> builder = new DoseEraSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
@@ -522,7 +524,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
 
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);
-  }  
+  }
 
   @Test
   public void testDrugEraDateOffset() throws Exception {
@@ -691,7 +693,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
 
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);
-  }  
+  }
 
   @Test
   public void testMeasurementDateOffset() throws Exception {
@@ -763,7 +765,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.genderCS = createConceptSetSelection(1,false);
     criteria.providerSpecialtyCS = createConceptSetSelection(3,false);
     criteria.visitTypeCS = createConceptSetSelection(2,false);
-    
+
     MeasurementSqlBuilder<Measurement> builder = new MeasurementSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
 
@@ -942,7 +944,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     // Test 1: simple query with no special conditions
     ObservationPeriod criteria = new ObservationPeriod();
     criteria.periodTypeCS = createConceptSetSelection(1,false);
-    
+
     ObservationPeriodSqlBuilder<ObservationPeriod> builder = new ObservationPeriodSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
 
@@ -1082,7 +1084,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.procedureTypeCS = createConceptSetSelection(2,false);
     criteria.visitTypeCS = createConceptSetSelection(2,false);
     criteria.providerSpecialtyCS = createConceptSetSelection(3,false);
-    
+
     ProcedureOccurrenceSqlBuilder<ProcedureOccurrence> builder = new ProcedureOccurrenceSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
 
@@ -1124,7 +1126,7 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     criteria.unitCS = createConceptSetSelection(3,false);
     criteria.anatomicSiteCS = createConceptSetSelection(2,false);
     criteria.diseaseStatusCS = createConceptSetSelection(3,false);
-    
+
     SpecimenSqlBuilder<Specimen> builder = new SpecimenSqlBuilder<>();
     String query = renderQuery(builder.getCriteriaSql(criteria));
 
@@ -1225,5 +1227,30 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
 
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);
+  }
+
+  @Test
+  public void testMeasurementAbnormal() throws Exception {
+    final IDatabaseConnection dbUnitCon = getConnection();
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, DataSetFactory.createDataSet(new String[]{ "/datasets/vocabulary.json", "/criteria/codesets.json", "/criteria/measurementAbnormal_PREP.json"}));
+
+    Measurement criteria = new Measurement();
+    criteria.codesetId = 1;
+    criteria.abnormal = true;
+
+    String query = renderQuery(new MeasurementSqlBuilder<>().getCriteriaSql(criteria));
+
+    assertThat(query, containsString("m.value_as_concept_id"));
+    assertThat(query, containsString("C.value_as_number < C.range_low"));
+    assertThat(query, containsString("C.value_as_number > C.range_high"));
+    assertThat(query, containsString("C.value_as_concept_id in (4155142, 4155143)"));
+
+    // Verify the query executes without error and returns only abnormal measurements
+    ITable actual = new SortedTable(
+      dbUnitCon.createQueryTable("measurement.abnormal", query),
+      new String[]{"person_id", "start_date"}
+    );
+    IDataSet expected = DataSetFactory.createDataSet(new String[]{"/criteria/measurementAbnormal_VERIFY.json"});
+    Assertion.assertEquals(expected, new CompositeDataSet(new ITable[]{actual}));
   }
 }
