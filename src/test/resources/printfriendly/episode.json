@@ -1,0 +1,89 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Concept Set 1",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "Concept Set 2",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Concept Set 3",
+      "expression": {
+        "items": []
+      }
+    },
+    {
+      "id": 3,
+      "name": "Concept Set 4",
+      "expression": {
+        "items": []
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "Episode": {
+          "CodesetId": 0,
+          "First": true,
+          "EpisodeStartDate": {
+            "Value": "2010-01-01",
+            "Op": "gt"
+          },
+          "EpisodeEndDate": {
+            "Value": "2015-12-31",
+            "Op": "lt"
+          },
+          "EpisodeNumber": {
+            "Value": 2,
+            "Extent": 4,
+            "Op": "bt"
+          },
+          "Age": {
+            "Value": 18,
+            "Op": "gte"
+          },
+          "GenderCS": {
+            "CodesetId": 3
+          },
+          "EpisodeObjectConceptCS": {
+            "CodesetId": 1
+          },
+          "EpisodeTypeCS": {
+            "CodesetId": 2
+          }
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "cdmVersionRange": ">=5.5.0"
+}

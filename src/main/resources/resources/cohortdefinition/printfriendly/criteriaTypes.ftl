@@ -20,6 +20,7 @@ END Note!!!!
 <#elseif c.class.simpleName == "DoseEra"><@DoseEra c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "DrugEra"><@DrugEra c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "DrugExposure"><@DrugExposure c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
+<#elseif c.class.simpleName == "Episode"><@Episode c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "LocationRegion"><@LocationRegion c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "Measurement"><@Measurement c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "Observation"><@Observation c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
@@ -139,6 +140,18 @@ drug exposure<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.
 c.drugSourceConcept??> (including ${utils.codesetName(c.drugSourceConcept, "any drug")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any drug") /><#else>.</#if></#macro>
+
+<#macro Episode c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
+<#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
+<#local temp><@AgeGenderCriteria ageAtStart=c.age!{} genderCS=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@EventDateCriteria c.episodeStartDate!{} c.episodeEndDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
+c.episodeObjectConceptCS??><#local temp>an episode object concept <@inputTypes.ConceptSetSelection selection=c.episodeObjectConceptCS /> concept set</#local><#local attrs+=[temp]></#if><#if 
+c.episodeTypeCS??><#local temp>an episode type concept <@inputTypes.ConceptSetSelection selection=c.episodeTypeCS /> concept set</#local><#local attrs+=[temp]></#if><#if 
+c.episodeNumber??><#local temp>with episode number <@inputTypes.NumericRange range=c.episodeNumber /></#local><#local attrs+=[temp]></#if>
+episode<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.codesetId!"", "any episode")}<#if 
+c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any episode") /><#else>.</#if></#macro>
 
 <#macro LocationRegion c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>

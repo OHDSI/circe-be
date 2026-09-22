@@ -240,6 +240,21 @@ public class PrintFriendlyTest {
   }
 
   @Test
+  public void episodeTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/episode.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. episode of 'Concept Set 1' for the first time in the person's history,",
+            "who are &gt;= 18 years old;",
+          "who have gender in 'Concept Set 4' concept set;",
+         "starting after January 1, 2010 and ending before December 31, 2015;",
+            "an episode object concept in 'Concept Set 2' concept set;",
+            "an episode type concept in 'Concept Set 3' concept set;",
+            "with episode number between 2 and 4."
+    ));
+  }
+
+  @Test
   public void measurementTest() {
     CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/measurement.json"));
     String markdown = pf.renderCohort(expression);

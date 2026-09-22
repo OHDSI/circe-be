@@ -31,6 +31,8 @@ package org.ohdsi.circe;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
+
 import org.junit.rules.ExternalResource;
 
 import com.opentable.db.postgres.embedded.EmbeddedPostgres;
@@ -71,7 +73,7 @@ public class PostgresSingletonRule extends ExternalResource {
   }
 
   private EmbeddedPostgres pg() throws IOException {
-    Builder b = EmbeddedPostgres.builder();
+    Builder b = EmbeddedPostgres.builder().setPGStartupWait(Duration.ofSeconds(30));
     if (this.port.isPresent()) {
       b.setPort(port.get());
     }

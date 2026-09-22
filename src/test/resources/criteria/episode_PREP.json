@@ -1,0 +1,50 @@
+{
+  "cdm.person": [
+    {
+      "person_id": 1,
+      "gender_concept_id": 4,
+      "year_of_birth": 2000,
+      "race_concept_id": 0,
+      "ethnicity_concept_id": 0
+    },
+    {
+      "person_id": 2,
+      "gender_concept_id": 8532,
+      "year_of_birth": 2000,
+      "race_concept_id": 0,
+      "ethnicity_concept_id": 0
+    }
+  ],
+  "cdm.episode": [
+    {
+      "episode_id": 1,
+      "person_id": 1,
+      "episode_concept_id": 1,
+      "episode_start_date": "2018-06-01",
+      "episode_end_date": "2018-06-15",
+      "episode_number": 1,
+      "episode_object_concept_id": 2,
+      "episode_type_concept_id": 3
+    },
+    {
+      "episode_id": 2,
+      "person_id": 1,
+      "episode_concept_id": 1,
+      "episode_start_date": "2018-07-01",
+      "episode_end_date": "2018-07-20",
+      "episode_number": 2,
+      "episode_object_concept_id": 2,
+      "episode_type_concept_id": 3
+    },
+    {
+      "episode_id": 3,
+      "person_id": 2,
+      "episode_concept_id": 1,
+      "episode_start_date": "2018-06-01",
+      "episode_end_date": "2018-06-15",
+      "episode_number": 1,
+      "episode_object_concept_id": 2,
+      "episode_type_concept_id": 3
+    }
+  ]
+}

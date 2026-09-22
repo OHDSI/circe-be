@@ -37,6 +37,7 @@ import org.ohdsi.circe.cohortdefinition.builders.BuilderOptions;
   @JsonSubTypes.Type(value = DoseEra.class, name = "DoseEra"),
   @JsonSubTypes.Type(value = DrugEra.class, name = "DrugEra"),
   @JsonSubTypes.Type(value = DrugExposure.class, name = "DrugExposure"),
+  @JsonSubTypes.Type(value = Episode.class, name = "Episode"),
   @JsonSubTypes.Type(value = LocationRegion.class, name = "LocationRegion"),
   @JsonSubTypes.Type(value = Measurement.class, name = "Measurement"),
   @JsonSubTypes.Type(value = Observation.class, name = "Observation"),
