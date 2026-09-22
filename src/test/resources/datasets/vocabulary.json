@@ -32,6 +32,17 @@
       "standard_concept": "S",
       "valid_start_date": "1900-01-01",
       "valid_end_date": "2099-01-01"
+    },
+    {
+      "concept_id": 4,
+      "concept_name": "Gender Concept",
+      "domain_id": "Gender",
+      "vocabulary_id": "TestVocab",
+      "concept_class_id": "Gender",
+      "concept_code": "G1",
+      "standard_concept": "S",
+      "valid_start_date": "1900-01-01",
+      "valid_end_date": "2099-01-01"
     }
   ],
   "cdm.concept_ancestor": [
@@ -46,6 +57,12 @@
       "descendant_concept_id": 3,
       "min_levels_of_separation": 1,
       "max_levels_of_separation": 1
+    },
+    {
+      "ancestor_concept_id": 4,
+      "descendant_concept_id": 4,
+      "min_levels_of_separation": 0,
+      "max_levels_of_separation": 0
     }
   ]
 }

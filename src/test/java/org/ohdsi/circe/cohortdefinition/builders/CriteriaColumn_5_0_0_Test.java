@@ -93,6 +93,15 @@ public class CriteriaColumn_5_0_0_Test {
     }
 
     @Test
+    public void invalidEpisode() {
+      exceptionRule.expect(IllegalArgumentException.class);
+      CriteriaSqlBuilder<Episode> builder = new EpisodeSqlBuilder<>();
+      BuilderOptions options = new BuilderOptions();
+      options.additionalColumns=Arrays.asList(CriteriaColumn.DAYS_SUPPLY);
+      builder.getCriteriaSql(new Episode(), options);
+    }
+
+    @Test
     public void invalidMeasurement() {
       exceptionRule.expect(IllegalArgumentException.class);
       CriteriaSqlBuilder<Measurement> builder = new MeasurementSqlBuilder<>();

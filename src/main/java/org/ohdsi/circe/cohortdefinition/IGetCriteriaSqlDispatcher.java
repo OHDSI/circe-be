@@ -33,6 +33,7 @@ public interface IGetCriteriaSqlDispatcher {
   String getCriteriaSql(DoseEra doseEraCriteria, BuilderOptions options);
   String getCriteriaSql(DrugEra drugEraCriteria, BuilderOptions options);
   String getCriteriaSql(DrugExposure drugExposureCriteria, BuilderOptions options);
+  String getCriteriaSql(Episode episodeCriteria, BuilderOptions options);
   String getCriteriaSql(Measurement measurementCriteria, BuilderOptions options);
   String getCriteriaSql(Observation observationCriteria, BuilderOptions options);
   String getCriteriaSql(ObservationPeriod observationPeriodCriteria, BuilderOptions options);

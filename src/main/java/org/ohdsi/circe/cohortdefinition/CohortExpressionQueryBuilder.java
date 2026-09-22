@@ -77,6 +77,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static DoseEraSqlBuilder<DoseEra> doseEraSqlBuilder = new DoseEraSqlBuilder<>();
   private final static DrugEraSqlBuilder<DrugEra> drugEraSqlBuilder = new DrugEraSqlBuilder<>();
   private final static DrugExposureSqlBuilder<DrugExposure> drugExposureSqlBuilder = new DrugExposureSqlBuilder<>();
+  private final static EpisodeSqlBuilder<Episode> episodeSqlBuilder = new EpisodeSqlBuilder<>();
   private final static LocationRegionSqlBuilder<LocationRegion> locationRegionSqlBuilder = new LocationRegionSqlBuilder<>();
   private final static MeasurementSqlBuilder<Measurement> measurementSqlBuilder = new MeasurementSqlBuilder<>();
   private final static ObservationPeriodSqlBuilder<ObservationPeriod> observationPeriodSqlBuilder = new ObservationPeriodSqlBuilder<>();
@@ -712,6 +713,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getCriteriaSql(DrugExposure criteria, BuilderOptions options) {
     return getCriteriaSql(drugExposureSqlBuilder, criteria, options);
+  }
+
+  @Override
+  public String getCriteriaSql(Episode criteria, BuilderOptions options) {
+    return getCriteriaSql(episodeSqlBuilder, criteria, options);
   }
 
   @Override
