@@ -75,6 +75,7 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   private final static DeathSqlBuilder<Death> deathSqlBuilder = new DeathSqlBuilder<>();
   private final static DeviceExposureSqlBuilder<DeviceExposure> deviceExposureSqlBuilder = new DeviceExposureSqlBuilder<>();
   private final static DoseEraSqlBuilder<DoseEra> doseEraSqlBuilder = new DoseEraSqlBuilder<>();
+  private final static CustomEraSqlBuilder<CustomEra> customEraSqlBuilder = new CustomEraSqlBuilder<>();
   private final static DrugEraSqlBuilder<DrugEra> drugEraSqlBuilder = new DrugEraSqlBuilder<>();
   private final static DrugExposureSqlBuilder<DrugExposure> drugExposureSqlBuilder = new DrugExposureSqlBuilder<>();
   private final static EpisodeSqlBuilder<Episode> episodeSqlBuilder = new EpisodeSqlBuilder<>();
@@ -673,6 +674,21 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
     return this.getCriteriaSql(builder, criteria, null);
   }
 
+  private String getCustomEraCriteriaQuery(CustomEra criteria, BuilderOptions options) {
+    ArrayList<String> criteriaQueries = new ArrayList<>();
+
+    if (criteria.criteriaList == null || criteria.criteriaList.length == 0) {
+      throw new RuntimeException("CustomEra.CriteriaList can not be null or empty.");
+    }
+
+    for (Criteria c : criteria.criteriaList) {
+      String criteriaQuery = c.accept(this, options);
+      criteriaQueries.add(String.format("select person_id, start_date, end_date from (%s) C", criteriaQuery));
+    }
+
+    return StringUtils.join(criteriaQueries, "\nUNION ALL\n");
+  }
+
   protected String processCorrelatedCriteria(String query, Criteria criteria) {
     if (criteria.CorrelatedCriteria != null && !criteria.CorrelatedCriteria.isEmpty()) {
       query = wrapCriteriaQuery(query, criteria.CorrelatedCriteria);
@@ -713,6 +729,11 @@ public class CohortExpressionQueryBuilder implements IGetCriteriaSqlDispatcher, 
   @Override
   public String getCriteriaSql(DrugExposure criteria, BuilderOptions options) {
     return getCriteriaSql(drugExposureSqlBuilder, criteria, options);
+  }
+
+  @Override
+  public String getCriteriaSql(CustomEra criteria, BuilderOptions options) {
+    return customEraSqlBuilder.getCriteriaSql(criteria, options, getCustomEraCriteriaQuery(criteria, options));
   }
 
   @Override

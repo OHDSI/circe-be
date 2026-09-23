@@ -31,15 +31,18 @@ import org.ohdsi.circe.AbstractDatabaseTest;
 import org.ohdsi.circe.cohortdefinition.ConceptSetSelection;
 import org.ohdsi.circe.cohortdefinition.ConditionEra;
 import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
+import org.ohdsi.circe.cohortdefinition.Criteria;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import org.ohdsi.circe.cohortdefinition.Death;
 import org.ohdsi.circe.cohortdefinition.DeviceExposure;
 import org.ohdsi.circe.cohortdefinition.DoseEra;
 import org.ohdsi.circe.cohortdefinition.DrugEra;
 import org.ohdsi.circe.cohortdefinition.DrugExposure;
+import org.ohdsi.circe.cohortdefinition.CustomEra;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.cohortdefinition.Observation;
 import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
+import org.ohdsi.circe.cohortdefinition.NumericRange;
 import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
 import org.ohdsi.circe.cohortdefinition.Period;
 import org.ohdsi.circe.cohortdefinition.ProcedureOccurrence;
@@ -97,6 +100,91 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
     css.codesetId = id;
     css.isExclusion = isExcluded;
     return css;
+  }
+
+  private NumericRange createNumericRange(String op, Number value, Number extent) {
+    NumericRange range = new NumericRange();
+    range.op = op;
+    range.value = value;
+    range.extent = extent;
+    return range;
+  }
+
+  @Test
+  public void testCustomEraCriteria() throws Exception {
+    final String[] testDataSetsPrep = new String[]{
+      "/datasets/vocabulary.json",
+      "/criteria/codesets.json",
+      "/criteria/customEra_PREP.json"
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep);
+
+    ArrayList<ITable> actualTables = new ArrayList<>();
+
+    ConditionEra conditionEraOne = new ConditionEra();
+    conditionEraOne.codesetId = 1;
+
+    ConditionEra conditionEraTwo = new ConditionEra();
+    conditionEraTwo.codesetId = 2;
+
+    CustomEra criteria = new CustomEra();
+    criteria.criteriaList = new Criteria[]{conditionEraOne, conditionEraTwo};
+    criteria.first = true;
+    criteria.gapDays = 60;
+    criteria.genderCS = createConceptSetSelection(4, false);
+    criteria.duration = createNumericRange("gt", 30, null);
+
+    CustomEraSqlBuilder<CustomEra> builder = new CustomEraSqlBuilder<>();
+    String query = renderQuery(builder.getCriteriaSql(criteria));
+    String comparisonQuery = String.format("select person_id, start_date, end_date from (%s) q", query);
+    actualTables.add(new SortedTable(dbUnitCon.createQueryTable("customEra.simple", comparisonQuery), new String[]{"person_id", "start_date"}));
+
+    final IDataSet actualDataSet = new CompositeDataSet(actualTables.toArray(new ITable[]{}));
+    final String[] testDataSetsVerify = new String[]{"/criteria/customEra_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    Assertion.assertEquals(expectedDataSet, actualDataSet);
+  }
+
+  @Test
+  public void testCustomEraFirstCriteria() throws Exception {
+    final String[] testDataSetsPrep = new String[]{
+      "/datasets/vocabulary.json",
+      "/criteria/codesets.json",
+      "/criteria/customEra_PREP.json"
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep);
+
+    ArrayList<ITable> actualTables = new ArrayList<>();
+
+    ConditionEra conditionEraOne = new ConditionEra();
+    conditionEraOne.codesetId = 1;
+
+    ConditionEra conditionEraTwo = new ConditionEra();
+    conditionEraTwo.codesetId = 2;
+
+    CustomEra criteria = new CustomEra();
+    criteria.criteriaList = new Criteria[]{conditionEraOne, conditionEraTwo};
+    criteria.first = true;
+    criteria.gapDays = 60;
+    criteria.genderCS = createConceptSetSelection(4, false);
+
+    CustomEraSqlBuilder<CustomEra> builder = new CustomEraSqlBuilder<>();
+    String query = renderQuery(builder.getCriteriaSql(criteria));
+    String comparisonQuery = String.format("select person_id, start_date, end_date from (%s) q", query);
+    actualTables.add(new SortedTable(dbUnitCon.createQueryTable("customEra.first", comparisonQuery), new String[]{"person_id", "start_date"}));
+
+    final IDataSet actualDataSet = new CompositeDataSet(actualTables.toArray(new ITable[]{}));
+    final String[] testDataSetsVerify = new String[]{"/criteria/customEra_first_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    Assertion.assertEquals(expectedDataSet, actualDataSet);
   }
 
   @Test
