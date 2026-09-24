@@ -20,6 +20,7 @@ END Note!!!!
 <#elseif c.class.simpleName == "DoseEra"><@DoseEra c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "DrugEra"><@DrugEra c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "DrugExposure"><@DrugExposure c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
+<#elseif c.class.simpleName == "CustomEra"><@CustomEra c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "Episode"><@Episode c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "LocationRegion"><@LocationRegion c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
 <#elseif c.class.simpleName == "Measurement"><@Measurement c=c level=level isPlural=isPlural countCriteria=countCriteria indexLabel=indexLabel />
@@ -140,6 +141,18 @@ drug exposure<#if isPlural && !(c.first!false)>s</#if> of ${utils.codesetName(c.
 c.drugSourceConcept??> (including ${utils.codesetName(c.drugSourceConcept, "any drug")} source concepts)</#if><#if 
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel=utils.codesetName(c.codesetId!"", "any drug") /><#else>.</#if></#macro>
+
+<#macro CustomEra c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#if countCriteria?has_content>
+<#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
+<#local temp><@AgeGenderCriteria ageAtStart=c.ageAtStart!{} genderCS=c.genderCS!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@inputTypes.DateAdjustment da=c.dateAdjustment!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if>
+<#local temp><@EventDateCriteria c.startDate!{} c.endDate!{} /></#local><#if temp?has_content><#local attrs+=[temp]></#if><#if 
+c.duration??><#local temp>with duration <@inputTypes.NumericRange range=c.duration /> days</#local><#local attrs+=[temp]></#if>
+custom era<#if isPlural && !(c.first!false)>s</#if> created using a ${c.gapDays!0}-day gap<#if 
+c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
+c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel="custom era" /></#if> from the following criteria:<#list c.criteriaList as nestedCriteria>
+
+<@utils.indent level=level+1 />${nestedCriteria?counter}. <@Criteria c=nestedCriteria level=level+1 /></#list></#macro>
 
 <#macro Episode c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -299,11 +312,11 @@ c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLab
 <#-- Criteria attribute templates -->
 
 <#macro AgeGenderCriteria ageAtStart gender={} genderCS={} ageAtEnd={}>
-<#if ageAtStart?has_content || ageAtEnd?has_content || gender?has_content>
-who are<#if gender?has_content> <@inputTypes.ConceptList list=gender quote=""/><#if (ageAtStart?has_content || ageAtEnd?has_content) && gender?size gt 1>,</#if></#if><#if 
+<#if ageAtStart?has_content || ageAtEnd?has_content || gender?has_content || genderCS?has_content>
+<#if ageAtStart?has_content || ageAtEnd?has_content || gender?has_content>who are<#if gender?has_content> <@inputTypes.ConceptList list=gender quote=""/><#if (ageAtStart?has_content || ageAtEnd?has_content) && gender?size gt 1>,</#if></#if><#if 
 ageAtStart?has_content> <@inputTypes.NumericRange range=ageAtStart /> years old<#if ageAtEnd?has_content> at era start and</#if><#if 
 ageAtEnd?has_content> <@inputTypes.NumericRange range=ageAtEnd /> years old at era end</#if></#if><#if genderCS?has_content>; </#if></#if><#if 
-genderCS?has_content>who have gender <@inputTypes.ConceptSetSelection selection=genderCS /> concept set</#if></#macro>
+genderCS?has_content>who have gender <@inputTypes.ConceptSetSelection selection=genderCS /> concept set</#if></#if></#macro>
 
 <#macro EventDateCriteria startRange endRange><#if 
 startRange?has_content && endRange?has_content>starting <@inputTypes.DateRange range=startRange /> and ending <@inputTypes.DateRange range=endRange /><#else><#if 
