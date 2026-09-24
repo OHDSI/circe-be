@@ -35,6 +35,12 @@ public class CustomEra extends Criteria {
   @JsonProperty("GapDays")
   public Integer gapDays;
 
+  @JsonProperty("StartDate")
+  public DateRange startDate;
+
+  @JsonProperty("EndDate")
+  public DateRange endDate;
+
   @JsonProperty("AgeAtStart")
   public NumericRange ageAtStart;
 

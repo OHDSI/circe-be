@@ -42,6 +42,7 @@ import org.ohdsi.circe.cohortdefinition.CustomEra;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.cohortdefinition.Observation;
 import org.ohdsi.circe.cohortdefinition.ObservationPeriod;
+import org.ohdsi.circe.cohortdefinition.DateRange;
 import org.ohdsi.circe.cohortdefinition.NumericRange;
 import org.ohdsi.circe.cohortdefinition.PayerPlanPeriod;
 import org.ohdsi.circe.cohortdefinition.Period;
@@ -104,6 +105,14 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
 
   private NumericRange createNumericRange(String op, Number value, Number extent) {
     NumericRange range = new NumericRange();
+    range.op = op;
+    range.value = value;
+    range.extent = extent;
+    return range;
+  }
+
+  private DateRange createDateRange(String op, String value, String extent) {
+    DateRange range = new DateRange();
     range.op = op;
     range.value = value;
     range.extent = extent;
@@ -182,6 +191,40 @@ public class CriteriaQuery_5_0_0_Test extends AbstractDatabaseTest {
 
     final IDataSet actualDataSet = new CompositeDataSet(actualTables.toArray(new ITable[]{}));
     final String[] testDataSetsVerify = new String[]{"/criteria/customEra_first_VERIFY.json"};
+    final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
+
+    Assertion.assertEquals(expectedDataSet, actualDataSet);
+  }
+
+  @Test
+  public void testCustomEraDateFilters() throws Exception {
+    final String[] testDataSetsPrep = new String[]{
+      "/datasets/vocabulary.json",
+      "/criteria/codesets.json",
+      "/criteria/customEra_dateFilter_PREP.json"
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep);
+
+    ArrayList<ITable> actualTables = new ArrayList<>();
+
+    ConditionEra conditionEra = new ConditionEra();
+    conditionEra.codesetId = 1;
+
+    CustomEra criteria = new CustomEra();
+    criteria.criteriaList = new Criteria[]{conditionEra};
+    criteria.startDate = createDateRange("gte", "2000-02-01", null);
+    criteria.endDate = createDateRange("lte", "2000-03-31", null);
+
+    CustomEraSqlBuilder<CustomEra> builder = new CustomEraSqlBuilder<>();
+    String query = renderQuery(builder.getCriteriaSql(criteria));
+    String comparisonQuery = String.format("select person_id, start_date, end_date from (%s) q", query);
+    actualTables.add(new SortedTable(dbUnitCon.createQueryTable("customEra.dateFilters", comparisonQuery), new String[]{"person_id", "start_date"}));
+
+    final IDataSet actualDataSet = new CompositeDataSet(actualTables.toArray(new ITable[]{}));
+    final String[] testDataSetsVerify = new String[]{"/criteria/customEra_dateFilter_VERIFY.json"};
     final IDataSet expectedDataSet = DataSetFactory.createDataSet(testDataSetsVerify);
 
     Assertion.assertEquals(expectedDataSet, actualDataSet);
