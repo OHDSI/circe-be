@@ -250,7 +250,24 @@ public class PrintFriendlyTest {
          "starting after January 1, 2010 and ending before December 31, 2015;",
             "an episode object concept in 'Concept Set 2' concept set;",
             "an episode type concept in 'Concept Set 3' concept set;",
-            "with episode number between 2 and 4."
+            "with episode number between 2 and 4.",
+            "2. episodes of 'Concept Set 1', who have gender in 'Concept Set 4' concept set."
+    ));
+  }
+
+  @Test
+  public void customEraTest() {
+    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/customEra.json"));
+    String markdown = pf.renderCohort(expression);
+    assertThat(markdown, stringContainsInOrder(
+            "1. custom era created using a 30-day gap for the first time in the person's history,",
+            "who are &gt;= 18 years old;",
+            "who have gender in 'Gender Concept Set' concept set;",
+            "starting 5 days after and ending 10 days after the event start date;",
+            "starting on or after January 1, 2010 and ending before December 31, 2015;",
+            "with duration between 14 and 90 days from the following criteria:",
+            "1. condition occurrences of 'Condition Concept Set'.",
+            "2. drug exposures of 'Drug Concept Set'."
     ));
   }
 

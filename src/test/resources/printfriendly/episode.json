@@ -62,6 +62,14 @@
             "CodesetId": 2
           }
         }
+      },
+      {
+        "Episode": {
+          "CodesetId": 0,
+          "GenderCS": {
+            "CodesetId": 3
+          }
+        }
       }
     ],
     "ObservationWindow": {

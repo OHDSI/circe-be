@@ -1,0 +1,87 @@
+{
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "Condition Concept Set",
+      "expression": { "items": [] }
+    },
+    {
+      "id": 1,
+      "name": "Drug Concept Set",
+      "expression": { "items": [] }
+    },
+    {
+      "id": 2,
+      "name": "Gender Concept Set",
+      "expression": { "items": [] }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "CustomEra": {
+          "First": true,
+          "GapDays": 30,
+          "StartDate": {
+            "Value": "2010-01-01",
+            "Op": "gte"
+          },
+          "EndDate": {
+            "Value": "2015-12-31",
+            "Op": "lt"
+          },
+          "AgeAtStart": {
+            "Value": 18,
+            "Op": "gte"
+          },
+          "GenderCS": {
+            "CodesetId": 2
+          },
+          "Duration": {
+            "Value": 14,
+            "Extent": 90,
+            "Op": "bt"
+          },
+          "DateAdjustment": {
+            "StartWith": "START_DATE",
+            "StartOffset": 5,
+            "EndWith": "START_DATE",
+            "EndOffset": 10
+          },
+          "CriteriaList": [
+            {
+              "ConditionOccurrence": {
+                "CodesetId": 0
+              }
+            },
+            {
+              "DrugExposure": {
+                "CodesetId": 1
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 0,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {}
+}
