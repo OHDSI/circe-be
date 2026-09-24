@@ -29,6 +29,7 @@ import org.ohdsi.circe.cohortdefinition.CustomEra;
 import org.ohdsi.circe.cohortdefinition.DateAdjustment;
 import org.ohdsi.circe.helper.ResourceHelper;
 
+import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildDateRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.buildNumericRangeClause;
 import static org.ohdsi.circe.cohortdefinition.builders.BuilderUtils.getCodesetInExpression;
 
@@ -104,6 +105,14 @@ public class CustomEraSqlBuilder<T extends CustomEra> extends CriteriaSqlBuilder
   @Override
   protected List<String> resolveWhereClauses(T criteria) {
     List<String> whereClauses = super.resolveWhereClauses(criteria);
+
+    if (criteria.startDate != null) {
+      whereClauses.add(buildDateRangeClause("C.start_date", criteria.startDate));
+    }
+
+    if (criteria.endDate != null) {
+      whereClauses.add(buildDateRangeClause("C.end_date", criteria.endDate));
+    }
 
     if (criteria.ageAtStart != null) {
       whereClauses.add(buildNumericRangeClause("YEAR(C.start_date) - P.year_of_birth", criteria.ageAtStart));
