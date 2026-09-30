@@ -80,7 +80,7 @@ delete from @results_database_schema.cohort_censor_stats where @cohort_id_field_
 @cohortCensoredStatsQuery
 -- END: Censored Stats
 }
-{@generateStats != 0 & @ruleTotal != 0}?{
+{@generateStats != 0}?{
 
 @inclusionRuleTable
 
