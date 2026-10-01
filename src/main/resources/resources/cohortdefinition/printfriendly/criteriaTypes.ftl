@@ -152,7 +152,7 @@ custom era<#if isPlural && !(c.first!false)>s</#if> created using a ${c.gapDays!
 c.first!false> for the first time in the person's history</#if><#if attrs?size gt 0>, ${attrs?join("; ")}</#if><#if 
 c.CorrelatedCriteria??>; <@Group group=c.CorrelatedCriteria level=level indexLabel="custom era" /></#if> from the following criteria:<#list c.criteriaList as nestedCriteria>
 
-<@utils.indent level=level+1 />${nestedCriteria?counter}. <@Criteria c=nestedCriteria level=level+1 /></#list></#macro>
+<@utils.indent level=level+1 />1. <@Criteria c=nestedCriteria level=level+1 /></#list></#macro>
 
 <#macro Episode c level isPlural=true countCriteria={} indexLabel="cohort entry"><#local attrs = []><#local attrs = []><#if countCriteria?has_content>
 <#local temp><@WindowCriteria countCriteria=countCriteria indexLabel=indexLabel/></#local><#if temp?has_content><#local attrs+=[temp]></#if></#if>
@@ -327,21 +327,12 @@ endRange?has_content>ending <@inputTypes.DateRange range=endRange /></#if></#if>
 
 <#macro GroupHeader group>with ${utils.optionName(inputTypes.groupTypeOptions, group.type)}<#if group.type?starts_with("AT_")> ${group.count}</#if> of the following criteria:</#macro>
 
-<#macro Group group parentGroup = utils._nullArg isFirst=true indexLabel="cohort entry" level=0><#if 
-	(group.demographicCriteriaList?size + group.criteriaList?size) gt 1 || ["ANY","ALL"]?seq_index_of(group.type) == -1 || group.groups?size gt 0><@GroupHeader group=group />
-<#list group.demographicCriteriaList as demoCriteria>
-
-<@utils.indent level=level+1 />${demoCriteria?counter}. <@DemographicCriteria c=demoCriteria level=level+1 indexLabel=indexLabel /></#list>
-<#list group.criteriaList as countCriteria>
-
-<@utils.indent level=level+1 />${(group.demographicCriteriaList?size + countCriteria?counter)}. <@CountCriteria countCriteria=countCriteria level=level+1 indexLabel=indexLabel /></#list>
-<#list group.groups as subgroup>
-
-<@utils.indent level=level+1 />${(group.demographicCriteriaList?size + group.criteriaList?size + subgroup?counter)}. <@Group group=subgroup 
+<#macro Group group parentGroup = utils._nullArg isFirst=true indexLabel="cohort entry" level=0 standalone=false><#if standalone><#local itemLevel=level><#else><#local itemLevel=level+1></#if><#if
+	(group.demographicCriteriaList?size + group.criteriaList?size) gt 1 || ["ANY","ALL"]?seq_index_of(group.type) == -1 || group.groups?size gt 0><@GroupHeader group=group />${"\n"}<#list group.demographicCriteriaList as demoCriteria><@utils.indent level=itemLevel />1. <@DemographicCriteria c=demoCriteria level=itemLevel indexLabel=indexLabel />${"\n"}</#list><#list group.criteriaList as countCriteria><@utils.indent level=itemLevel />1. <@CountCriteria countCriteria=countCriteria level=itemLevel indexLabel=indexLabel />${"\n"}</#list><#list group.groups as subgroup><@utils.indent level=itemLevel />1. <@Group group=subgroup
   parentGroup=group 
   isFirst = !(subgroup?counter gt 1 || group.criteriaList?size gt 0 || group.demographicCriteriaList?size gt 0)
-  level=level+1 
-  indexLabel=indexLabel /></#list>  
+  level=itemLevel
+  indexLabel=indexLabel />${"\n"}</#list>
 <#else><#if 
 group.criteriaList?size == 1><@CountCriteria countCriteria=group.criteriaList[0] level=level indexLabel=indexLabel/></#if><#if
 group.demographicCriteriaList?size == 1><@DemographicCriteria c=group.demographicCriteriaList[0] level=level indexLabel=indexLabel/></#if></#if></#macro>
