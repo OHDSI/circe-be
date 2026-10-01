@@ -3,6 +3,8 @@ package org.ohdsi.circe.cohortdefinition.printfriendly;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.regex.Pattern;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
@@ -11,18 +13,23 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Assume;
 import org.junit.rules.ExpectedException;
 import org.ohdsi.analysis.Utils;
 import org.ohdsi.circe.cohortdefinition.CohortExpression;
 import org.ohdsi.circe.cohortdefinition.ConceptSet;
+import org.ohdsi.circe.cohortdefinition.ConditionOccurrence;
+import org.ohdsi.circe.cohortdefinition.CorelatedCriteria;
+import org.ohdsi.circe.cohortdefinition.Criteria;
+import org.ohdsi.circe.cohortdefinition.CriteriaGroup;
+import org.ohdsi.circe.cohortdefinition.ObservationFilter;
+import org.ohdsi.circe.cohortdefinition.PrimaryCriteria;
+import org.ohdsi.circe.cohortdefinition.builders.CriteriaUtils;
 import org.ohdsi.circe.helper.ResourceHelper;
 
 public class PrintFriendlyTest {
-
-  private final String OUTPUT_PATH = "C:\\Documents\\OHDSI\\Circe\\printFriendly\\";
 
   private final MarkdownRender pf = new MarkdownRender();
 
@@ -30,38 +37,65 @@ public class PrintFriendlyTest {
     return Pattern.compile(regex, Pattern.DOTALL);
   }
 
+  private int countOccurrences(String value, String target) {
+    int count = 0;
+    int index = 0;
+    while ((index = value.indexOf(target, index)) >= 0) {
+      count++;
+      index += target.length();
+    }
+    return count;
+  }
+
+  private CorelatedCriteria correlatedCondition() {
+    CorelatedCriteria correlatedCriteria = new CorelatedCriteria();
+    correlatedCriteria.criteria = new ConditionOccurrence();
+    correlatedCriteria.occurrence = CriteriaUtils.getAtLeast1Occurrence();
+    correlatedCriteria.startWindow = CriteriaUtils.getAnyTimeWindow();
+    return correlatedCriteria;
+  }
+
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
   
   @Test
-  @Ignore
-  public void processExpression() {
-    CohortExpression expression = CohortExpression.fromJson(ResourceHelper.GetResourceAsString("/printfriendly/allAttributes.json"));
+  public void previewLocalExpression() throws Exception {
+    String inputPath = System.getProperty("printfriendly.input");
+    Assume.assumeTrue("Set -Dprintfriendly.input=<path-to-cohort-expression.json> to run this preview.",
+            inputPath != null && !inputPath.trim().isEmpty());
+
+    File inputFile = new File(inputPath);
+    if (!inputFile.isFile()) {
+      throw new IllegalArgumentException("Print-friendly input file was not found: " + inputFile.getAbsolutePath());
+    }
+
+    File outputDirectory = new File(System.getProperty("printfriendly.output", inputFile.getParent()));
+    if (!outputDirectory.isDirectory()) {
+      throw new IllegalArgumentException("Print-friendly output directory was not found: " + outputDirectory.getAbsolutePath());
+    }
+
+    String inputJson = new String(Files.readAllBytes(inputFile.toPath()), StandardCharsets.UTF_8);
+    CohortExpression expression = CohortExpression.fromJson(inputJson);
     String markdown = pf.renderCohort(expression);
-    System.out.println("Markdown:");
-    System.out.println("=====================================");
-    System.out.println(markdown);
 
     Parser parser = Parser.builder().build();
     Node document = parser.parse(markdown);
     HtmlRenderer renderer = HtmlRenderer.builder().build();
-    String html = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"		
-    System.out.println("HTML:");
-    System.out.println("=====================================");
-    System.out.println(html);
+    String html = renderer.render(document);
 
-    try {
-      FileWriter mdWriter = new FileWriter(new File(OUTPUT_PATH + "sampleOutput.md"), false);
+    String fileName = inputFile.getName();
+    int extensionIndex = fileName.lastIndexOf('.');
+    String outputBaseName = extensionIndex > 0 ? fileName.substring(0, extensionIndex) : fileName;
+    File markdownFile = new File(outputDirectory, outputBaseName + ".printfriendly.md");
+    File htmlFile = new File(outputDirectory, outputBaseName + ".printfriendly.html");
+    try (FileWriter mdWriter = new FileWriter(markdownFile, false);
+            FileWriter htmlWriter = new FileWriter(htmlFile, false)) {
       mdWriter.write(markdown);
-      mdWriter.close();
-
-      FileWriter htmlWriter = new FileWriter(new File(OUTPUT_PATH + "sampleOutput.html"), false);
       htmlWriter.write(html);
-      htmlWriter.close();
-
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
+
+    System.out.println("Markdown preview: " + markdownFile.getAbsolutePath());
+    System.out.println("HTML preview: " + htmlFile.getAbsolutePath());
   }
 
   // example regex assert
@@ -88,7 +122,7 @@ public class PrintFriendlyTest {
             "1. condition occurrence of 'Concept Set 1' (including 'Concept Set 2' source concepts) for the first time in the person's history, who are male or female, &gt;= 18 years old; starting before January 1, 2010 and ending after June 1, 2016; a condition type that is not: \"admission note\" or \"ancillary report\"; with a stop reason containing \"some stop reason\"; a provider specialty that is: \"rheumatology\"; a visit occurrence that is: \"emergency room visit\" or \"inpatient visit\"; with any of the following criteria:",
             // nested criteria
             "1. with the following event criteria: who are male &gt;= 18 years old.",
-            "2. having at least 1 condition occurrence of 'Concept Set 1', starting  1 days after 'Concept Set 1' start date; who are female &lt; 30 years old.",
+            "1. having at least 1 condition occurrence of 'Concept Set 1', starting  1 days after 'Concept Set 1' start date; who are female &lt; 30 years old.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
             "Entry events having at least 1 condition occurrence of 'Concept Set 3' for the first time in the person's history, starting between all days before and 1 days after cohort entry start date."
@@ -161,16 +195,16 @@ public class PrintFriendlyTest {
             // nested criteria
             "with any of the following criteria:",
             "1. having at least 1 dose era of 'Concept Set 2' for the first time in the person's history, starting between 30 days before and 0 days after 'Concept Set 1' start date.",
-            "2. having at least 1 dose era of 'Concept Set 3', starting in the 30 days prior to 'Concept Set 1' start date.",
+            "1. having at least 1 dose era of 'Concept Set 3', starting in the 30 days prior to 'Concept Set 1' start date.",
             // inital event restriction
             "Restrict entry events to with all of the following criteria:",
             "1. having at least 1 dose era of 'Concept Set 2' for the first time in the person's history, starting between 60 days before and 0 days after cohort entry start date.",
-            "2. having at least 1 dose era of 'Concept Set 3', starting in the 60 days prior to cohort entry start date.",
+            "1. having at least 1 dose era of 'Concept Set 3', starting in the 60 days prior to cohort entry start date.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
             "Entry events with all of the following criteria:",
             "1. having at least 1 dose era of 'Concept Set 3' for the first time in the person's history, starting anytime on or before cohort entry start date.",
-            "2. having no dose eras of 'Concept Set 2', starting anytime prior to cohort entry start date; who are &gt; 18 years old."
+            "1. having no dose eras of 'Concept Set 2', starting anytime prior to cohort entry start date; who are &gt; 18 years old."
     ));
   }
 
@@ -192,7 +226,7 @@ public class PrintFriendlyTest {
             // nested criteria
             "with all of the following criteria:",
             "1. having at least 1 drug era of 'Concept Set 2' for the first time in the person's history, starting anytime prior to 'Concept Set 1' start date.",
-            "2. having at least 1 drug era of 'Concept Set 3', starting on or after January 1, 2010.",
+            "1. having at least 1 drug era of 'Concept Set 3', starting on or after January 1, 2010.",
             // inclusion rules
             "#### 1. Inclusion Rule 1",
             "Entry events having at least 1 drug era of 'Concept Set 3' for the first time in the person's history, starting between 0 days before and all days after cohort entry start date."
@@ -235,7 +269,7 @@ public class PrintFriendlyTest {
             // nested criteria
             "with all of the following criteria:",
             "1. having at least 1 drug exposure of 'Concept Set 2', starting anytime prior to 'Concept Set 1' start date.",
-            "2. having at least 1 drug exposure of 'Concept Set 3', starting between 14 days before and 0 days before 'Concept Set 1' start date."
+            "1. having at least 1 drug exposure of 'Concept Set 3', starting between 14 days before and 0 days before 'Concept Set 1' start date."
     ));
   }
 
@@ -251,7 +285,7 @@ public class PrintFriendlyTest {
             "an episode object concept in 'Concept Set 2' concept set;",
             "an episode type concept in 'Concept Set 3' concept set;",
             "with episode number between 2 and 4.",
-            "2. episodes of 'Concept Set 1', who have gender in 'Concept Set 4' concept set."
+            "1. episodes of 'Concept Set 1', who have gender in 'Concept Set 4' concept set."
     ));
   }
 
@@ -267,7 +301,7 @@ public class PrintFriendlyTest {
             "starting on or after January 1, 2010 and ending before December 31, 2015;",
             "with duration between 14 and 90 days from the following criteria:",
             "1. condition occurrences of 'Condition Concept Set'.",
-            "2. drug exposures of 'Drug Concept Set'."
+            "1. drug exposures of 'Drug Concept Set'."
     ));
   }
 
@@ -309,7 +343,7 @@ public class PrintFriendlyTest {
             // nested criteria
             "with all of the following criteria:",
             "1. having at least 1 measurement of 'Concept Set 2' for the first time in the person's history, starting anytime on or before 'Concept Set 1' start date.",
-            "2. having at least 1 measurement of 'Concept Set 3', starting between 0 days before and all days after 'Concept Set 1' start date."
+            "1. having at least 1 measurement of 'Concept Set 3', starting between 0 days before and all days after 'Concept Set 1' start date."
     ));
   }
 
@@ -580,10 +614,10 @@ public class PrintFriendlyTest {
     String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "1. condition occurrences of 'Empty Concept Set', starting on or after January 1, 2010.",
-            "2. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
-            "3. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
+            "1. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
+            "1. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
             "1. having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
-            "2. having at least 1 condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old.",
+            "1. having at least 1 condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old.",
             "#### 1. any time",
             "Entry events having at least 1 condition occurrence of any condition.",
             "#### 2. any time +visit",
@@ -599,11 +633,21 @@ public class PrintFriendlyTest {
             "#### 7. sub-groups",
             "Entry events with all of the following criteria:",
             "1. having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before cohort entry start date.",
-            "2. having no condition occurrences of 'Empty Concept Set', starting between 0 days before and all days after cohort entry start date.",
-            "3. with any of the following criteria:",
+            "1. having no condition occurrences of 'Empty Concept Set', starting between 0 days before and all days after cohort entry start date.",
+            "1. with any of the following criteria:",
             "1. having at least 1 condition occurrence of 'Empty Concept Set', starting between 30 days before and 30 days after cohort entry start date.",
-            "2. having no condition occurrences of 'Empty Concept Set', starting anytime up to 31 days before cohort entry start date."
+            "1. having no condition occurrences of 'Empty Concept Set', starting anytime up to 31 days before cohort entry start date."
     ));
+
+              Node document = Parser.builder().build().parse(markdown);
+              String html = HtmlRenderer.builder().build().render(document);
+              assertThat(html, not(stringContainsInOrder("<pre><code>")));
+              assertThat(html, stringContainsInOrder(
+                "<h4>7. sub-groups</h4>",
+                "<ol>",
+                "<li>having at least 1 condition occurrence of 'Empty Concept Set', starting anytime on or before cohort entry start date.</li>",
+                "<li>having no condition occurrences of 'Empty Concept Set', starting between 0 days before and all days after cohort entry start date.</li>"
+              ));
     
   }
   
@@ -613,11 +657,11 @@ public class PrintFriendlyTest {
     String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "1. condition occurrences of 'Empty Concept Set', starting on or after January 1, 2010.",
-            "2. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 distinct standard concepts from condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
-            "3. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
+            "1. condition occurrences of 'Empty Concept Set', who are between 18 and 64 years old; having at least 1 distinct standard concepts from condition occurrence of any condition, starting between 30 days before and 30 days after 'Empty Concept Set' start date.",
+            "1. condition occurrences of 'Empty Concept Set'; with all of the following criteria:",
             "1. having at least 1 distinct standard concepts from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
-            "2. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
-            "3. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
+            "1. having at least 1 distinct start dates from condition occurrence of 'Empty Concept Set', starting anytime on or before 'Empty Concept Set' start date; who are &gt; 18 years old.",
+            "1. having at least 1 distinct visits from condition occurrence of any condition, starting between 0 days before and all days after 'Empty Concept Set' start date; who are &lt; 64 years old."
     ));
     
   }
@@ -679,19 +723,55 @@ public class PrintFriendlyTest {
     String markdown = pf.renderCohort(expression);
     assertThat(markdown, stringContainsInOrder(
             "1. condition eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "2. condition occurrences of 'Concept Set 1', starting 30 days after and ending 40 days after the event end date.",
-            "3. dose eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "4. drug eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "6. device exposures of 'Concept Set 1', starting on the event start date and ending 20 days after the event end date.",
-            "7. measurements of 'Concept Set 1', starting on and ending 20 days after the event end date.",
-            "8. observations of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "9. observation periods, starting 10 days after and ending 20 days after the event start date.",
-            "10. procedure occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "11. specimens of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "12. visit occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
-            "13. visit details of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date."
+            "1. condition occurrences of 'Concept Set 1', starting 30 days after and ending 40 days after the event end date.",
+            "1. dose eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. drug eras of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. device exposures of 'Concept Set 1', starting on the event start date and ending 20 days after the event end date.",
+            "1. measurements of 'Concept Set 1', starting on and ending 20 days after the event end date.",
+            "1. observations of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. observation periods, starting 10 days after and ending 20 days after the event start date.",
+            "1. procedure occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. specimens of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. visit occurrences of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date.",
+            "1. visit details of 'Concept Set 1', starting 10 days after and ending 20 days after the event start date."
     ));
     
+  }
+
+  @Test
+  public void stableOrderedListMarkersSupportLargeNestedGroups() {
+    CohortExpression expression = new CohortExpression();
+    expression.conceptSets = new ConceptSet[0];
+    expression.primaryCriteria = new PrimaryCriteria();
+    expression.primaryCriteria.observationWindow = new ObservationFilter();
+
+    CriteriaGroup nestedGroup = new CriteriaGroup();
+    nestedGroup.type = "ALL";
+    nestedGroup.criteriaList = new CorelatedCriteria[] { correlatedCondition(), correlatedCondition() };
+
+    CriteriaGroup group = new CriteriaGroup();
+    group.type = "ALL";
+    group.criteriaList = new CorelatedCriteria[100];
+    for (int index = 0; index < group.criteriaList.length; index++) {
+      group.criteriaList[index] = correlatedCondition();
+    }
+    group.groups = new CriteriaGroup[] { nestedGroup };
+
+    ConditionOccurrence primaryCriteria = new ConditionOccurrence();
+    primaryCriteria.CorrelatedCriteria = group;
+    expression.primaryCriteria.criteriaList = new Criteria[] { primaryCriteria };
+
+    String markdown = pf.renderCohort(expression);
+    assertThat(countOccurrences(markdown, "\n    1. having at least 1 condition occurrence of any condition."), equalTo(100));
+    assertThat(markdown, stringContainsInOrder(
+            "\n    1. with all of the following criteria:",
+            "\n        1. having at least 1 condition occurrence of any condition.",
+            "\n        1. having at least 1 condition occurrence of any condition."));
+
+    Node document = Parser.builder().build().parse(markdown);
+    String html = HtmlRenderer.builder().build().render(document);
+    assertThat(countOccurrences(html, "<ol>"), equalTo(3));
+    assertThat(countOccurrences(html, "<li>"), equalTo(104));
   }
   
   @Test
