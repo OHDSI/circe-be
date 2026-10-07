@@ -1,5 +1,6 @@
 package org.ohdsi.circe.cohortdefinition.builders;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ohdsi.circe.cohortdefinition.Measurement;
 import org.ohdsi.circe.helper.ResourceHelper;
@@ -102,10 +103,8 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
       selectCols.add("m.operator_concept_id");
     }
 
-    // valueAsConcept
-    if ((criteria.valueAsConcept != null && criteria.valueAsConcept.length > 0) ||
-      criteria.valueAsConceptCS != null
-    ) {
+    // valueAsConcept or abnormal
+    if (ArrayUtils.isNotEmpty(criteria.valueAsConcept) || criteria.valueAsConceptCS != null || Boolean.TRUE.equals(criteria.abnormal)) {
       selectCols.add("m.value_as_concept_id");
     }
 
@@ -140,7 +139,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     List<String> joinClauses = new ArrayList<>();
 
     // join to PERSON
-    if (criteria.age != null || 
+    if (criteria.age != null ||
       (criteria.gender != null && criteria.gender.length > 0) ||
       criteria.genderCS != null
     ) {
@@ -207,7 +206,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     if (criteria.valueAsConceptCS != null) {
       whereClauses.add(getCodesetInExpression("C.value_as_concept_id", criteria.valueAsConceptCS));
     }
-    
+
     // unit
     if (criteria.unit != null && criteria.unit.length > 0) {
       ArrayList<Long> conceptIds = getConceptIdsFromConcepts(criteria.unit);
@@ -218,7 +217,7 @@ public class MeasurementSqlBuilder<T extends Measurement> extends CriteriaSqlBui
     if (criteria.unitCS != null) {
       whereClauses.add(getCodesetInExpression("C.unit_concept_id", criteria.unitCS));
     }
-    
+
     // rangeLow
     if (criteria.rangeLow != null) {
       whereClauses.add(buildNumericRangeClause("C.range_low", criteria.rangeLow, ".4f"));

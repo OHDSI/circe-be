@@ -1,0 +1,86 @@
+{
+  "cdm.person": [
+    {
+      "person_id":1,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    },
+    {
+      "person_id":2,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    },
+    {
+      "person_id":3,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    },
+    {
+      "person_id":4,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    },
+    {
+      "person_id":5,
+      "gender_concept_id":0,
+      "year_of_birth":0,
+      "race_concept_id":0,
+      "ethnicity_concept_id":0
+    }
+  ],
+  "cdm.measurement": [
+    {
+      "measurement_id": 1,
+      "person_id":1,
+      "measurement_concept_id":1,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0,
+      "value_as_number":5,
+      "range_low":10,
+      "range_high":20
+    },
+    {
+      "measurement_id": 2,
+      "person_id":2,
+      "measurement_concept_id":1,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0,
+      "value_as_concept_id":4155142
+    },
+    {
+      "measurement_id": 3,
+      "person_id":3,
+      "measurement_concept_id":1,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0,
+      "value_as_number":15,
+      "range_low":10,
+      "range_high":20
+    },
+    {
+      "measurement_id": 4,
+      "person_id":4,
+      "measurement_concept_id":1,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0
+    },
+    {
+      "measurement_id": 5,
+      "person_id":5,
+      "measurement_concept_id":1,
+      "measurement_date":"2000-01-01",
+      "measurement_type_concept_id":0,
+      "value_as_number":25,
+      "range_low":10,
+      "range_high":20
+    }
+  ]
+}
