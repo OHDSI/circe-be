@@ -16,6 +16,7 @@ import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ohdsi.circe.AbstractDatabaseTest;
@@ -482,6 +483,69 @@ public class CohortGeneration_5_0_0_Test extends AbstractDatabaseTest {
     // Assert actual database table match expected table
     Assertion.assertEquals(expectedDataSet, actualDataSet);     
 
+  }
+
+  /**
+   * A cohort with no inclusion rules still records its base and final counts.
+   *
+   * The inclusion impact analysis was skipped whenever a cohort had no
+   * inclusion rules, and that block is the only thing that writes
+   * cohort_summary_stats. Generation succeeded and the cohort filled, but the
+   * summary row was never written, so WebAPI's inclusion report fell back to a
+   * default all-zero Summary and reported a populated cohort as having matched
+   * nobody (OHDSI/Atlas3#299).
+   */
+  @Test
+  public void testSummaryStatsWithoutInclusionRules() throws Exception {
+    final String RESULTS_SCHEMA = "summaryStatsNoRules";
+    final String[] testDataSetsPrep = new String[] {
+      "/datasets/vocabulary.json",
+      "/cohortgeneration/inclusionRules/simpleInclusionRule_PREP.json"
+    };
+    final IDatabaseConnection dbUnitCon = getConnection();
+
+    prepareSchema(RESULTS_SCHEMA, RESULTS_DDL_PATH);
+
+    final IDataSet dsPrep = DataSetFactory.createDataSet(testDataSetsPrep);
+    DatabaseOperation.CLEAN_INSERT.execute(dbUnitCon, dsPrep);
+
+    // The same design as testSimpleInclusionRule, with its one rule removed.
+    final CohortExpression expression = CohortExpression.fromJson(
+        ResourceHelper.GetResourceAsString("/cohortgeneration/inclusionRules/simpleInclusionRule.json"));
+    expression.inclusionRules.clear();
+
+    final CohortExpressionQueryBuilder.BuildExpressionQueryOptions options =
+        buildExpressionQueryOptions(1, RESULTS_SCHEMA);
+    final String cohortSql = buildExpressionSql(expression, options);
+    jdbcTemplate.batchUpdate(SqlSplit.splitSql(cohortSql));
+
+    final long cohortCount = jdbcTemplate.queryForObject(
+        String.format("select count(*) from %s.cohort where cohort_definition_id = 1", RESULTS_SCHEMA), Long.class);
+    Assert.assertTrue("the design should produce a non-empty cohort to be worth measuring", cohortCount > 0);
+
+    // Both modes are reported: 0 counts every qualifying event, 1 counts the
+    // best event per person.
+    for (int modeId : new int[] { 0, 1 }) {
+      final Long baseCount = jdbcTemplate.queryForObject(
+          String.format("select base_count from %s.cohort_summary_stats where cohort_definition_id = 1 and mode_id = %d",
+              RESULTS_SCHEMA, modeId), Long.class);
+      final Long finalCount = jdbcTemplate.queryForObject(
+          String.format("select final_count from %s.cohort_summary_stats where cohort_definition_id = 1 and mode_id = %d",
+              RESULTS_SCHEMA, modeId), Long.class);
+
+      Assert.assertNotNull("mode " + modeId + " recorded no summary row", baseCount);
+      Assert.assertTrue("mode " + modeId + " recorded a base count of zero", baseCount > 0);
+      // Nothing filters the qualifying events when there are no rules, so every
+      // one of them reaches the final cohort.
+      Assert.assertEquals("mode " + modeId + " lost events with no rule to lose them to", baseCount, finalCount);
+    }
+
+    // No rules means nothing to report per rule, which is not the same as no
+    // summary at all.
+    final long ruleStatsCount = jdbcTemplate.queryForObject(
+        String.format("select count(*) from %s.cohort_inclusion_stats where cohort_definition_id = 1", RESULTS_SCHEMA),
+        Long.class);
+    Assert.assertEquals("a cohort with no rules should have no per-rule statistics", 0L, ruleStatsCount);
   }
 
   /**
