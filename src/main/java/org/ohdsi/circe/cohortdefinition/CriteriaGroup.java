@@ -41,6 +41,10 @@ public class CriteriaGroup {
 
   @JsonProperty("Groups")
   public CriteriaGroup[] groups = new CriteriaGroup[0];
+
+  /** Set when this group is a use of an imported reusable; see ReusableRef. */
+  @JsonProperty("ReusableCriteriaGroupRef")
+  public ReusableRef reusableCriteriaGroupRef;
 	
   @JsonIgnore
 	public boolean isEmpty() {
