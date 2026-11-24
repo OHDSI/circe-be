@@ -63,4 +63,8 @@ public abstract class Criteria {
   @JsonProperty("DateAdjustment")
   public DateAdjustment dateAdjustment;
 
+  /** Set when this criterion is a use of an imported reusable; see ReusableRef. */
+  @JsonProperty("ReusableCriteriaRef")
+  public ReusableRef reusableCriteriaRef;
+
 }

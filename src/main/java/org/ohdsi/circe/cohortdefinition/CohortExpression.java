@@ -73,6 +73,14 @@ public class CohortExpression implements CdmCompatibilitySpec {
   @JsonProperty("CensorWindow")
   public Period censorWindow;
 
+  /** Single-criterion reusables imported into this expression; see ReusableCriteria. */
+  @JsonProperty("ReusableCriteria")
+  public ReusableCriteria[] reusableCriteria;
+
+  /** Criteria group reusables imported into this expression; see ReusableCriteriaGroup. */
+  @JsonProperty("ReusableCriteriaGroups")
+  public ReusableCriteriaGroup[] reusableCriteriaGroups;
+
   @Override
   public String getCdmVersionRange() {
     return cdmVersionRange;
